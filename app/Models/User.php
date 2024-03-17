@@ -49,4 +49,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Address::class);
     }
+
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
 }
