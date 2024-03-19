@@ -62,8 +62,9 @@
                         @endforeach
                         </tbody>
                     </table>
-
-                    {{ $contracts->links() }}
+                    <div class="mt-3">
+                        {{ $contracts->links() }}
+                    </div>
                 </div>
             </div>
         </div>

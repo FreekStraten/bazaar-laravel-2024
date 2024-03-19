@@ -13,6 +13,7 @@ return [
     'Street' => 'Straat',
     'HouseNumber' => 'Huisnummer',
     'City' => 'Stad',
+    'ZipCode' => 'Postcode',
     'Password' => 'Wachtwoord',
     'ConfirmPassword' => 'Bevestig wachtwoord',
     'RememberMe' => 'Remember Me',

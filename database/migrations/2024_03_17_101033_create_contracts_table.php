@@ -17,7 +17,7 @@ class CreateContractsTable extends Migration
             $table->id();
             $table->string('contract_name');
             $table->binary('contract_file')->nullable();
-            $table->boolean('approved')->default(false);
+            $table->integer('approved')->default(0);
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
         });

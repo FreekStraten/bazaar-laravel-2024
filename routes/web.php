@@ -3,6 +3,7 @@
 use App\Http\Controllers\BusinessAccountController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RentalAdController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,6 +45,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/contracts', [BusinessAccountController::class, 'storeContract'])->name('contracts.store');
     Route::get('/contracts/{id}/approve', [BusinessAccountController::class, 'approveContract'])->name('contracts.approve');
     Route::get('/contracts/{id}/reject', [BusinessAccountController::class, 'rejectContract'])->name('contracts.reject');
+
+    Route::get('/rental-ads', [RentalAdController::class, 'index'])->name('rental-ads.index');
+    Route::get('/rental-ads/create', [RentalAdController::class, 'create'])->name('rental-ads.create');
+    Route::post('/rental-ads', [RentalAdController::class, 'store'])->name('rental-ads.store');
+
 });
 
 require __DIR__.'/auth.php';

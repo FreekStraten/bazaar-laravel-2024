@@ -17,6 +17,12 @@
                     </x-nav-link>
                 </div>
 
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('rental-ads.index')" :active="request()->routeIs('rental-ads.index')">
+                        {{ __('rental-ads.rental_ads') }}
+                    </x-nav-link>
+                </div>
+
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">

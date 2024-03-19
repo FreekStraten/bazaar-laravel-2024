@@ -93,7 +93,7 @@ class BusinessAccountController extends Controller
     public function approveContract($id)
     {
         $contract = Contract::findOrFail($id);
-        $contract->approved = true;
+        $contract->approved = 1;
         $contract->save();
 
         return redirect()->route('business-accounts.index')->with('success', 'Contract approved successfully.');
@@ -108,7 +108,7 @@ class BusinessAccountController extends Controller
     public function rejectContract($id)
     {
         $contract = Contract::findOrFail($id);
-        $contract->approved = false;
+        $contract->approved = 2;
         $contract->save();
 
         return redirect()->route('business-accounts.index')->with('success', 'Contract rejected successfully.');

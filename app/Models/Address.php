@@ -23,4 +23,9 @@ class Address extends Model
         return $this->hasMany(User::class);
     }
 
+    public function rentalAds()
+    {
+        return $this->hasMany(RentalAd::class);
+    }
+
 }

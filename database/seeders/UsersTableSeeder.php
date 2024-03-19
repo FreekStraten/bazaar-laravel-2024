@@ -21,7 +21,7 @@ class UsersTableSeeder extends Seeder
         $user->email = 'freekstraten@gmail.com';
         $user->email_verified_at = now();
         $user->password = Hash::make('12345678');
-        $user->user_type = 'business';
+        $user->user_type = 'admin';
         $user->remember_token = null;
         $user->address_id = 1; // Assuming you have already created an address record
         $user->save();
