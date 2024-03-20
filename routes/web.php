@@ -26,7 +26,7 @@ Route::get('locale/{locale}', function ($locale) {
 })->name('locale');
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('/profile');
 });
 
 Route::middleware('auth')->group(function () {

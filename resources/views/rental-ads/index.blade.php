@@ -58,7 +58,7 @@
                                         @endif
                                     </td>
                                     <td class="border px-4 py-2">{{ $ad->description }}</td>
-                                    <td class="border px-4 py-2">{{ $ad->price }}</td>
+                                    <td class="border px-4 py-2">€{{ $ad->price }}</td>
                                     <td class="border px-4 py-2">
                                         {{ $ad->address->street }} {{ $ad->address->house_number }}
                                         , {{ $ad->address->city }} {{ $ad->address->zip_code }}
@@ -84,47 +84,6 @@
     <script>
         function openCreateModal() {
             document.getElementById('create-modal').classList.remove('hidden');
-        }
-
-        function closeCreateModal() {
-            document.getElementById('create-modal').classList.add('hidden');
-        }
-
-        function createRentalAd() {
-            const form = document.getElementById('create-form');
-            const formData = new FormData(form);
-
-            fetch('{{ route("rental-ads.store") }}', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        return response.text().then(text => {
-                            throw new Error(text);
-                        });
-                    }
-                })
-                .then(data => {
-                    if (data.success) {
-                        console.log(data);
-                        alert(data.message);
-                        closeCreateModal();
-                        location.reload();
-                    } else {
-                        console.log(data);
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while creating the rental ad.');
-                });
         }
 
         function updateFileName(input) {

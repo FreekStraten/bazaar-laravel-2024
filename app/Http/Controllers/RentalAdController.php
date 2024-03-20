@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\RentalAd;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class RentalAdController extends Controller
 {
@@ -21,42 +22,52 @@ class RentalAdController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $validatedData = $request->validate([
-                'title' => 'required|string|max:255',
-                'description' => 'required|string',
-                'price' => 'required|numeric',
-                'street' => 'required|string|max:255',
-                'house_number' => 'required|string|max:50',
-                'city' => 'required|string|max:255',
-                'zip_code' => 'required|string|max:20',
-                'image' => 'nullable|image|max:5120',
-            ]);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'street' => 'required|string|max:255',
+            'house_number' => 'required|string|max:50',
+            'city' => 'required|string|max:255',
+            'zip_code' => 'required|string|max:20',
+            'image' => 'nullable|image|max:5120',
+        ]);
 
-            $address = Address::firstOrCreate([
-                'street' => $request->input('street'),
-                'house_number' => $request->input('house_number'),
-                'city' => $request->input('city'),
-                'zip_code' => $request->input('zip_code'),
-            ]);
-
-            $rentalAd = new RentalAd($validatedData);
-            $rentalAd->user_id = auth()->id();
-            $rentalAd->address()->associate($address);
-
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $image->storeAs('rental-ads/ads', $imageName, 'public');
-                $rentalAd->image = $imageName;
-            }
-
-            $rentalAd->save();
-
-            return response()->json(['success' => true, 'message' => 'Rental ad created successfully.']);
-        } catch (\Exception $e) {
-            logger()->error('Error creating rental ad: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'An error occurred while creating the rental ad.'], 500);
+        // Annoying error: "Unknown: file created in the system's temporary directory in Unknown on line 0" thus
+        // Create a temporary file to test if the server can create files
+        $tempFile = tempnam(sys_get_temp_dir(), 'prefix_');
+        if ($tempFile === false) {
+            Log::error('Failed to create temporary file');
+            return redirect()->back()->withErrors(['message' => 'An error occurred while processing the file.']);
+        } else {
+            file_put_contents($tempFile, 'This is some temporary content.');
+            unlink($tempFile);
         }
+
+        $address = Address::firstOrCreate([
+            'street' => $request->input('street'),
+            'house_number' => $request->input('house_number'),
+            'city' => $request->input('city'),
+            'zip_code' => $request->input('zip_code'),
+        ]);
+
+        // Create a new rental ad
+        $rentalAd = new RentalAd();
+        $rentalAd->title = $request->input('title');
+        $rentalAd->description = $request->input('description');
+        $rentalAd->price = $request->input('price');
+        $rentalAd->user_id = auth()->id();
+        $rentalAd->address()->associate($address);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('ads'), $imageName);
+            $rentalAd->image = $imageName;
+        }
+
+        $rentalAd->save();
+
+        return redirect()->route('rental-ads.index')->with('success', 'Rental ad created successfully.');
     }
 }
