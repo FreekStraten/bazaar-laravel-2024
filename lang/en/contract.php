@@ -18,4 +18,6 @@ return [
     'Status' => 'Status',
     'ManageContracts' => 'Manage Contracts',
     'NoContractsFound' => 'No contracts found.',
+    'NoBusinessAccounts' => 'No business accounts found.',
+    'PDF' => 'PDF',
 ];

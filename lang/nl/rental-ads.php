@@ -14,4 +14,5 @@ return [
     'create_ad' => 'Advertentie maken',
     'create_new_ad' => 'Nieuwe advertentie maken',
     'address' => 'Adres',
+    'favorite' => 'Favoriet',
 ];

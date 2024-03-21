@@ -11,7 +11,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-medium mb-4">{{__('contract.UploadContract')}}</h3>
-                    <form id="create-form" action="{{ route('rental-ads.store') }}" method="POST" enctype="multipart/form-data">
+                    <form id="create-form" action="{{ route('contracts.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-4">
                             <label for="contract_name" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{__('contract.ContractName')}}</label>
@@ -61,6 +61,7 @@
                         <tr>
                             <th class="border px-4 py-2">{{__('contract.ContractName')}}</th>
                             <th class="border px-4 py-2">{{__('contract.UploadedBy')}}</th>
+                            <th class="border px-4 py-2">{{__('contract.PDF')}}</th>
                             <th class="border px-4 py-2">{{__('contract.Status')}}</th>
                             <th class="border px-4 py-2">{{__('action.Action')}}</th>
                         </tr>
@@ -70,6 +71,15 @@
                                 <tr>
                                     <td class="border px-4 py-2">{{ $contract->contract_name }}</td>
                                     <td class="border px-4 py-2">{{ $contract->user->name }}</td>
+
+                                    <td class="border px-4 py-2">
+                                        <a href="{{ route('contracts.download', $contract->id) }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </a>
+                                    </td>
+
                                     <td class="border px-4 py-2">
                                         @if ($contract->approved == 0)
                                             <span class="text-orange-500">{{__('contract.Pending')}}</span>
@@ -99,6 +109,13 @@
             <div class="mt-6 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-medium mb-4">{{ __('contract.BusinessAccounts') }}</h3>
+
+                    @if($businessAccounts->isEmpty())
+                        <tr>
+                            <td class="border px-4 py-2" colspan="5">{{__('contract.NoBusinessAccounts')}}</td>
+                        </tr>
+                    @else
+
                     <table class="table-auto w-full">
                         <thead>
                         <tr>
@@ -133,6 +150,7 @@
                     <div class="mt-3">
                         {{ $businessAccounts->links() }}
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

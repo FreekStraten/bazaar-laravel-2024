@@ -14,4 +14,5 @@ return [
     'create_ad' => 'Create Ad',
     'create_new_ad' => 'Create New Ad',
     'address' => 'Address',
+    'favorite' => 'Favorite',
 ];

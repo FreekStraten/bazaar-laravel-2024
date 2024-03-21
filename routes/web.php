@@ -41,14 +41,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/business-accounts', [BusinessAccountController::class, 'index'])->name('business-accounts.index');
-    Route::get('/business-accounts/download-contract/{id}', [BusinessAccountController::class, 'downloadContract'])->name('business-accounts.export-pdf');
+    Route::get('/business-accounts/export-contract/{id}', [BusinessAccountController::class, 'exportContract'])->name('business-accounts.export-pdf');
     Route::post('/contracts', [BusinessAccountController::class, 'storeContract'])->name('contracts.store');
     Route::get('/contracts/{id}/approve', [BusinessAccountController::class, 'approveContract'])->name('contracts.approve');
     Route::get('/contracts/{id}/reject', [BusinessAccountController::class, 'rejectContract'])->name('contracts.reject');
+    Route::get('/contracts/{id}/download', [BusinessAccountController::class, 'downloadContract'])->name('contracts.download');
 
     Route::get('/rental-ads', [RentalAdController::class, 'index'])->name('rental-ads.index');
     Route::get('/rental-ads/create', [RentalAdController::class, 'create'])->name('rental-ads.create');
     Route::post('/rental-ads', [RentalAdController::class, 'store'])->name('rental-ads.store');
+    Route::post('/rental-ads/{rentalAd}/toggle-favorite', [RentalAdController::class, 'toggleFavorite'])->name('rental-ads.toggle-favorite');
 
 });
 

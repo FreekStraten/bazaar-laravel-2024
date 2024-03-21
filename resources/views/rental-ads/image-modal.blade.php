@@ -18,6 +18,10 @@
         const imageModal = document.getElementById('image-modal');
         const modalImage = document.getElementById('modal-image');
         modalImage.src = imageUrl;
+
+        //log imageUrl
+        console.log(imageUrl);
+
         imageModal.classList.remove('hidden');
     }
 

@@ -7,6 +7,7 @@ use App\Models\Contract;
 use Illuminate\Http\Request;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Smalot\PdfParser\Parser;
 
 class BusinessAccountController extends Controller
@@ -34,11 +35,14 @@ class BusinessAccountController extends Controller
     /**
      * Store a new contract.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function storeContract(Request $request)
     {
+        //log "test"
+        Log::info('test');
+
         $validatedData = $request->validate([
             'contract_name' => 'required|string',
             'contract_file' => 'required|file|mimes:pdf',
@@ -56,10 +60,12 @@ class BusinessAccountController extends Controller
             'contract_file' => $request->file('contract_file')->store('contracts'),
             'user_id' => $userId,
         ]);
+
         $contract->save();
 
         return redirect()->route('business-accounts.index')->with('success', 'Contract uploaded successfully.');
     }
+
     private function extractUserId($pdfFile)
     {
         $parser = new Parser();
@@ -73,7 +79,7 @@ class BusinessAccountController extends Controller
                 if (str_starts_with(trim($line), 'User Id')) {
                     $parts = explode(' ', trim($line));
                     $userId = end($parts);
-                    return (int) preg_replace('/\D/', '', $userId); // Return only the integer value
+                    return (int)preg_replace('/\D/', '', $userId); // Return only the integer value
                 }
             }
         } catch (\Exception $e) {
@@ -87,7 +93,7 @@ class BusinessAccountController extends Controller
     /**
      * Approve a contract.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function approveContract($id)
@@ -102,7 +108,7 @@ class BusinessAccountController extends Controller
     /**
      * Reject a contract.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function rejectContract($id)
@@ -117,10 +123,10 @@ class BusinessAccountController extends Controller
     /**
      * Download a business account contract as PDF.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function downloadContract($id)
+    public function exportContract($id)
     {
         $user = User::findOrFail($id);
 
@@ -131,5 +137,12 @@ class BusinessAccountController extends Controller
         $fileName = $user->name . '_BusinessRegisterContract.pdf';
 
         return $dompdf->stream($fileName);
+    }
+
+    public function downloadContract($id)
+    {
+        $contract = Contract::findOrFail($id);
+        return Storage::download($contract->contract_file);
+
     }
 }

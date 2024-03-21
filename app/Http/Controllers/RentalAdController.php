@@ -70,4 +70,21 @@ class RentalAdController extends Controller
 
         return redirect()->route('rental-ads.index')->with('success', 'Rental ad created successfully.');
     }
+
+
+    public function toggleFavorite(RentalAd $rentalAd)
+    {
+        $user = auth()->user();
+        $userFavorite = $user->rentalAdFavorites()->where('rental_ad_id', $rentalAd->id)->first();
+
+        if ($userFavorite) {
+            $userFavorite->toggleFavorite();
+        } else {
+            $user->rentalAdFavorites()->create([
+                'rental_ad_id' => $rentalAd->id,
+            ]);
+        }
+
+        return redirect()->back();
+    }
 }

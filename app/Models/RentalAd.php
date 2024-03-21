@@ -20,6 +20,11 @@ class RentalAd extends Model
         'image',
     ];
 
+    public function userFavorites()
+    {
+        return $this->hasMany(UserRentalAdFavorite::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -29,4 +34,6 @@ class RentalAd extends Model
     {
         return $this->belongsTo(Address::class);
     }
+
+
 }
