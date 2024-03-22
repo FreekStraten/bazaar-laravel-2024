@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\BusinessAccountController;
-use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RentalAdController;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,30 +18,21 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('locale/{locale}', function ($locale) {
-    Log::info('Current locale before setting: ' . App::getLocale());
     App::setLocale($locale);
     session()->put('locale', $locale);
-    Log::info('Current locale after setting: ' . App::getLocale());
     return redirect()->back();
 })->name('locale');
 
-Route::get('/', function () {
-    return view('/profile');
-});
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+    Route::get('/', [RentalAdController::class, 'homepage'])->name('rental-ads.homepage');
 
-Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/business-accounts', [BusinessAccountController::class, 'index'])->name('business-accounts.index');
-    Route::get('/business-accounts/export-contract/{id}', [BusinessAccountController::class, 'exportContract'])->name('business-accounts.export-pdf');
+    Route::get('/business-accounts-contract', [BusinessAccountController::class, 'index'])->name('business-accounts-contract.index');
+    Route::get('/business-accounts-contract/export-contract/{id}', [BusinessAccountController::class, 'exportContract'])->name('business-accounts-contract.export-pdf');
     Route::post('/contracts', [BusinessAccountController::class, 'storeContract'])->name('contracts.store');
     Route::get('/contracts/{id}/approve', [BusinessAccountController::class, 'approveContract'])->name('contracts.approve');
     Route::get('/contracts/{id}/reject', [BusinessAccountController::class, 'rejectContract'])->name('contracts.reject');
@@ -51,7 +42,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/rental-ads/create', [RentalAdController::class, 'create'])->name('rental-ads.create');
     Route::post('/rental-ads', [RentalAdController::class, 'store'])->name('rental-ads.store');
     Route::post('/rental-ads/{rentalAd}/toggle-favorite', [RentalAdController::class, 'toggleFavorite'])->name('rental-ads.toggle-favorite');
-
 });
 
 require __DIR__.'/auth.php';

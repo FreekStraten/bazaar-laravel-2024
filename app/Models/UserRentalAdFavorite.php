@@ -49,5 +49,4 @@ class UserRentalAdFavorite extends Model
             $this->save();
         }
     }
-
 }

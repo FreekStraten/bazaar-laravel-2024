@@ -15,4 +15,6 @@ return [
     'create_new_ad' => 'Create New Ad',
     'address' => 'Address',
     'favorite' => 'Favorite',
+    'error' => 'Error',
+    'max_ads_reached' => 'You have reached the maximum number of ads you can create.',
 ];

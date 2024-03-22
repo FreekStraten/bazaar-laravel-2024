@@ -12,7 +12,7 @@ class RentalAdController extends Controller
     public function index()
     {
         $rentalAds = RentalAd::with('user')->paginate(10);
-        return view('rental-ads.index', compact('rentalAds'));
+        return view('ads.index', compact('rentalAds'));
     }
 
     public function create()
@@ -30,18 +30,12 @@ class RentalAdController extends Controller
             'house_number' => 'required|string|max:50',
             'city' => 'required|string|max:255',
             'zip_code' => 'required|string|max:20',
-            'image' => 'nullable|image|max:5120',
+            'image' => 'image|max:5120',
         ]);
 
-        // Annoying error: "Unknown: file created in the system's temporary directory in Unknown on line 0" thus
-        // Create a temporary file to test if the server can create files
-        $tempFile = tempnam(sys_get_temp_dir(), 'prefix_');
-        if ($tempFile === false) {
-            Log::error('Failed to create temporary file');
-            return redirect()->back()->withErrors(['message' => 'An error occurred while processing the file.']);
-        } else {
-            file_put_contents($tempFile, 'This is some temporary content.');
-            unlink($tempFile);
+        $userAdCount = auth()->user()->rentalAds()->count();
+        if ($userAdCount >= 4) {
+            return redirect()->back()->withErrors(['message' => __('rental-ads.max_ads_reached')]);
         }
 
         $address = Address::firstOrCreate([
@@ -51,7 +45,6 @@ class RentalAdController extends Controller
             'zip_code' => $request->input('zip_code'),
         ]);
 
-        // Create a new rental ad
         $rentalAd = new RentalAd();
         $rentalAd->title = $request->input('title');
         $rentalAd->description = $request->input('description');
@@ -87,4 +80,10 @@ class RentalAdController extends Controller
 
         return redirect()->back();
     }
+
+    public function homepage() {
+        $rentalAds = RentalAd::with('user')->orderBy('created_at', 'desc')->take(5)->paginate(5);
+        return view('homepage', compact('rentalAds'));
+    }
+
 }

@@ -29,7 +29,7 @@ class BusinessAccountController extends Controller
         // Get all the contracts
         $contracts = Contract::with('user')->paginate(10);
 
-        return view('business-accounts.index', compact('businessAccounts', 'contracts'));
+        return view('business-accounts-contract.index', compact('businessAccounts', 'contracts'));
     }
 
     /**
@@ -63,7 +63,7 @@ class BusinessAccountController extends Controller
 
         $contract->save();
 
-        return redirect()->route('business-accounts.index')->with('success', 'Contract uploaded successfully.');
+        return redirect()->route('business-accounts-contract.index')->with('success', 'Contract uploaded successfully.');
     }
 
     private function extractUserId($pdfFile)
@@ -102,7 +102,7 @@ class BusinessAccountController extends Controller
         $contract->approved = 1;
         $contract->save();
 
-        return redirect()->route('business-accounts.index')->with('success', 'Contract approved successfully.');
+        return redirect()->route('business-accounts-contract.index')->with('success', 'Contract approved successfully.');
     }
 
     /**
@@ -117,7 +117,7 @@ class BusinessAccountController extends Controller
         $contract->approved = 2;
         $contract->save();
 
-        return redirect()->route('business-accounts.index')->with('success', 'Contract rejected successfully.');
+        return redirect()->route('business-accounts-contract.index')->with('success', 'Contract rejected successfully.');
     }
 
     /**
@@ -131,7 +131,7 @@ class BusinessAccountController extends Controller
         $user = User::findOrFail($id);
 
         $dompdf = new Dompdf();
-        $html = view('business-accounts.business-registration-contract', compact('user'))->render();
+        $html = view('business-accounts-contract.business-registration-contract', compact('user'))->render();
         $dompdf->loadHtml($html);
         $dompdf->render();
         $fileName = $user->name . '_BusinessRegisterContract.pdf';

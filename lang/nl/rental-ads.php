@@ -15,4 +15,6 @@ return [
     'create_new_ad' => 'Nieuwe advertentie maken',
     'address' => 'Adres',
     'favorite' => 'Favoriet',
+    'error' => 'Fout',
+    'max_ads_reached' => 'Je hebt het maximale aantal advertenties dat je kunt maken bereikt.',
 ];

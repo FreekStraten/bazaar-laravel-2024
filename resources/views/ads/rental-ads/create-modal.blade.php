@@ -7,6 +7,14 @@
                 <div class="mt-3 text-center sm:mt-0 sm:my-4 sm:mx-4 sm:text-left">
                     <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100" id="modal-title">{{ __('rental-ads.create_new_ad') }}</h3>
                     <div class="mt-2">
+
+                        @if ($errors->has('message'))
+                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                                <strong class="font-bold">{{ __('rental-ads.error') }}</strong>
+                                <span class="block sm:inline">{{ __('rental-ads.max_ads_reached') }}</span>
+                            </div>
+                        @endif
+
                         <form id="create-form" enctype="multipart/form-data" method="POST" action="{{ route('rental-ads.store') }}">
                             @csrf
                             <div class="mt-4">

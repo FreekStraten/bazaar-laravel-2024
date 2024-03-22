@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('description');
             $table->decimal('price', 8, 2);
             $table->string('image')->nullable();
+            $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('address_id')->references('id')->on('addresses')->onDelete('cascade');

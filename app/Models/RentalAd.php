@@ -9,8 +9,6 @@ class RentalAd extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-
     protected $fillable = [
         'user_id',
         'address_id',
@@ -18,6 +16,8 @@ class RentalAd extends Model
         'description',
         'price',
         'image',
+        'created_at',
+        'updated_at',
     ];
 
     public function userFavorites()
