@@ -2,6 +2,7 @@
 
 return [
     'rental_ads' => 'Verhuur Advertenties',
+    'rental_ad' => 'Verhuur Advertentie',
     'title' => 'Titel',
     'description' => 'Omschrijving',
     'price' => 'Prijs',
@@ -18,4 +19,7 @@ return [
     'error' => 'Fout',
     'max_ads_reached' => 'Je hebt het maximale aantal advertenties dat je kunt maken bereikt.',
     'ads' => 'Advertenties',
+    'normal_ads' => 'Normale Advertenties',
+    'normal_ad' => 'Normale Advertentie',
+    'type' => 'Type',
 ];

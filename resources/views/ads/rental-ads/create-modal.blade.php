@@ -17,6 +17,20 @@
 
                         <form id="create-form" enctype="multipart/form-data" method="POST" action="{{ route('rental-ads.store') }}">
                             @csrf
+
+                            <div class="mt-4">
+                                <label for="is_rental" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('ads.type') }}</label>
+                                <div class="mt-1">
+                                    <select name="is_rental" id="is_rental" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-md @error('is_rental') border-red-500 @enderror">
+                                        <option value="0">{{ __('ads.normal_ad') }}</option>
+                                        <option value="1">{{ __('ads.rental_ad') }}</option>
+                                    </select>
+                                </div>
+                                @error('is_rental')
+                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <div class="mt-4">
                                 <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('ads.title') }}</label>
                                 <input type="text" name="title" id="title" value="{{ old('title') }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-md @error('title') border-red-500 @enderror">

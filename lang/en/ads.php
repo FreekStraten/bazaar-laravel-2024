@@ -2,6 +2,7 @@
 
 return [
     'rental_ads' => 'Rental Ads',
+    'rental_ad' => 'Rental Ad',
     'title' => 'Title',
     'description' => 'Description',
     'price' => 'Price',
@@ -18,4 +19,7 @@ return [
     'error' => 'Error',
     'max_ads_reached' => 'You have reached the maximum number of ads you can create.',
     'ads' => 'Ads',
+    'normal_ads' => 'Normal Ads',
+    'normal_ad' => 'Normal Ad',
+    'type' => 'Type',
 ];
