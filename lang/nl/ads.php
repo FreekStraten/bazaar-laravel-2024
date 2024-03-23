@@ -22,4 +22,6 @@ return [
     'normal_ads' => 'Normale Advertenties',
     'normal_ad' => 'Normale Advertentie',
     'type' => 'Type',
+    'homepage' => 'Startpagina',
+    'recent_ads' => 'Recente Advertenties',
 ];

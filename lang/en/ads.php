@@ -22,4 +22,6 @@ return [
     'normal_ads' => 'Normal Ads',
     'normal_ad' => 'Normal Ad',
     'type' => 'Type',
+    'homepage' => 'Homepage',
+    'recent_ads' => 'Recent Ads',
 ];
