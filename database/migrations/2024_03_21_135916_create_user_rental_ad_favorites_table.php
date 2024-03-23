@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_rental_ad_favorites', function (Blueprint $table) {
+        Schema::create('user_ad_favorites', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('rental_ad_id');
+            $table->unsignedBigInteger('ad_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('rental_ad_id')->references('id')->on('rental_ads')->onDelete('cascade');
+            $table->foreign('ad_id')->references('id')->on('ads')->onDelete('cascade');
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_rental_ad_favorites');
+        Schema::dropIfExists('user_ad_favorites');
     }
 };

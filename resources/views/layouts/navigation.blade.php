@@ -19,7 +19,7 @@
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('rental-ads.index')" :active="request()->routeIs('rental-ads.index')">
-                        {{ __('rental-ads.rental_ads') }}
+                        {{ __('ads.ads') }}
                     </x-nav-link>
                 </div>
 

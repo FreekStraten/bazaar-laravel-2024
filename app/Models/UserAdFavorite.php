@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserRentalAdFavorite extends Model
+class UserAdFavorite extends Model
 {
     use HasFactory;
 
@@ -16,7 +16,7 @@ class UserRentalAdFavorite extends Model
      *
      * @var string
      */
-    protected $table = 'user_rental_ad_favorites';
+    protected $table = 'user_ad_favorites';
 
     /**
      * The attributes that are mass assignable.
@@ -25,7 +25,7 @@ class UserRentalAdFavorite extends Model
      */
     protected $fillable = [
         'user_id',
-        'rental_ad_id',
+        'ad_id',
     ];
 
     /**
@@ -36,9 +36,9 @@ class UserRentalAdFavorite extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function rentalAd()
+    public function Ad()
     {
-        return $this->belongsTo(RentalAd::class);
+        return $this->belongsTo(Ad::class);
     }
 
     public function toggleFavorite()

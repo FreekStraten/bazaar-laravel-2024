@@ -17,4 +17,5 @@ return [
     'favorite' => 'Favoriet',
     'error' => 'Fout',
     'max_ads_reached' => 'Je hebt het maximale aantal advertenties dat je kunt maken bereikt.',
+    'ads' => 'Advertenties',
 ];

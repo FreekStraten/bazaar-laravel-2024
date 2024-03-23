@@ -23,9 +23,9 @@ class Address extends Model
         return $this->hasMany(User::class);
     }
 
-    public function rentalAds()
+    public function Ad()
     {
-        return $this->hasMany(RentalAd::class);
+        return $this->hasMany(Ad::class);
     }
 
 }

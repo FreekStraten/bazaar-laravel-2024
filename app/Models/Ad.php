@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RentalAd extends Model
+class Ad extends Model
 {
     use HasFactory;
 
@@ -16,13 +16,14 @@ class RentalAd extends Model
         'description',
         'price',
         'image',
+        'is_rental',
         'created_at',
         'updated_at',
     ];
 
     public function userFavorites()
     {
-        return $this->hasMany(UserRentalAdFavorite::class);
+        return $this->hasMany(UserAdFavorite::class);
     }
 
     public function user()

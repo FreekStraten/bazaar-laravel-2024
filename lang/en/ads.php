@@ -17,4 +17,5 @@ return [
     'favorite' => 'Favorite',
     'error' => 'Error',
     'max_ads_reached' => 'You have reached the maximum number of ads you can create.',
+    'ads' => 'Ads',
 ];

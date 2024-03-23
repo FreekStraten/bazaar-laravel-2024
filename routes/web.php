@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\BusinessAccountController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RentalAdController;
+use App\Http\Controllers\AdController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +25,7 @@ Route::get('locale/{locale}', function ($locale) {
 
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', [RentalAdController::class, 'homepage'])->name('rental-ads.homepage');
+    Route::get('/', [AdController::class, 'homepage'])->name('rental-ads.homepage');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -38,10 +38,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/contracts/{id}/reject', [BusinessAccountController::class, 'rejectContract'])->name('contracts.reject');
     Route::get('/contracts/{id}/download', [BusinessAccountController::class, 'downloadContract'])->name('contracts.download');
 
-    Route::get('/rental-ads', [RentalAdController::class, 'index'])->name('rental-ads.index');
-    Route::get('/rental-ads/create', [RentalAdController::class, 'create'])->name('rental-ads.create');
-    Route::post('/rental-ads', [RentalAdController::class, 'store'])->name('rental-ads.store');
-    Route::post('/rental-ads/{rentalAd}/toggle-favorite', [RentalAdController::class, 'toggleFavorite'])->name('rental-ads.toggle-favorite');
+    Route::get('/rental-ads', [AdController::class, 'index'])->name('rental-ads.index');
+    Route::get('/rental-ads/create', [AdController::class, 'create'])->name('rental-ads.create');
+    Route::post('/rental-ads', [AdController::class, 'store'])->name('rental-ads.store');
+    Route::post('/rental-ads/{rentalAd}/toggle-favorite', [AdController::class, 'toggleFavorite'])->name('rental-ads.toggle-favorite');
 });
 
 require __DIR__.'/auth.php';

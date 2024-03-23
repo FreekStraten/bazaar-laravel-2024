@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
-use App\Models\RentalAd;
+use App\Models\Ad;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class RentalAdController extends Controller
+class AdController extends Controller
 {
     public function index()
     {
-        $rentalAds = RentalAd::with('user')->paginate(10);
+        $rentalAds = Ad::with('user')->paginate(10);
         return view('ads.index', compact('rentalAds'));
     }
 
@@ -35,7 +35,7 @@ class RentalAdController extends Controller
 
         $userAdCount = auth()->user()->rentalAds()->count();
         if ($userAdCount >= 4) {
-            return redirect()->back()->withErrors(['message' => __('rental-ads.max_ads_reached')]);
+            return redirect()->back()->withErrors(['message' => __('ads.max_ads_reached')]);
         }
 
         $address = Address::firstOrCreate([
@@ -45,7 +45,7 @@ class RentalAdController extends Controller
             'zip_code' => $request->input('zip_code'),
         ]);
 
-        $rentalAd = new RentalAd();
+        $rentalAd = new Ad();
         $rentalAd->title = $request->input('title');
         $rentalAd->description = $request->input('description');
         $rentalAd->price = $request->input('price');
@@ -65,16 +65,16 @@ class RentalAdController extends Controller
     }
 
 
-    public function toggleFavorite(RentalAd $rentalAd)
+    public function toggleFavorite(Ad $rentalAd)
     {
         $user = auth()->user();
-        $userFavorite = $user->rentalAdFavorites()->where('rental_ad_id', $rentalAd->id)->first();
+        $userFavorite = $user->AdFavorites()->where('ad_id', $rentalAd->id)->first();
 
         if ($userFavorite) {
             $userFavorite->toggleFavorite();
         } else {
-            $user->rentalAdFavorites()->create([
-                'rental_ad_id' => $rentalAd->id,
+            $user->AdFavorites()->create([
+                'ad_id' => $rentalAd->id,
             ]);
         }
 
@@ -82,8 +82,8 @@ class RentalAdController extends Controller
     }
 
     public function homepage() {
-        $rentalAds = RentalAd::with('user')->orderBy('created_at', 'desc')->take(5)->paginate(5);
-        return view('homepage', compact('rentalAds'));
+        $ads = Ad::with('user')->orderBy('created_at', 'desc')->take(5)->paginate(5);
+        return view('homepage', compact('ads'));
     }
 
 }

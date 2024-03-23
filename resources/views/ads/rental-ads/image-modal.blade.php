@@ -14,20 +14,16 @@
 </div>
 
 <script>
+    function closeImageModal() {
+        const imageModal = document.getElementById('image-modal');
+        imageModal.classList.add('hidden');
+    }
+
     function openImageModal(imageUrl) {
         const imageModal = document.getElementById('image-modal');
         const modalImage = document.getElementById('modal-image');
         modalImage.src = imageUrl;
-
-        //log imageUrl
-        console.log(imageUrl);
-
         imageModal.classList.remove('hidden');
-    }
-
-    function closeImageModal() {
-        const imageModal = document.getElementById('image-modal');
-        imageModal.classList.add('hidden');
     }
 </script>
 

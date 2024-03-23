@@ -45,14 +45,14 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function rentalAdFavorites()
+    public function AdFavorites()
     {
-        return $this->hasMany(UserRentalAdFavorite::class);
+        return $this->hasMany(UserAdFavorite::class);
     }
 
     public function rentalAds()
     {
-        return $this->hasMany(RentalAd::class);
+        return $this->hasMany(Ad::class);
     }
 
     public function address()
