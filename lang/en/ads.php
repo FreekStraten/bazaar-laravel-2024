@@ -24,4 +24,5 @@ return [
     'type' => 'Type',
     'homepage' => 'Homepage',
     'recent_ads' => 'Recent Ads',
+    'upload_csv' => 'Upload CSV',
 ];

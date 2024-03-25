@@ -36,7 +36,7 @@ class UserAdFavorite extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function Ad()
+    public function ad()
     {
         return $this->belongsTo(Ad::class);
     }

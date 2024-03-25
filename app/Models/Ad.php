@@ -36,5 +36,10 @@ class Ad extends Model
         return $this->belongsTo(Address::class);
     }
 
+    public function bids()
+    {
+        return $this->hasMany(Bid::class);
+    }
+
 
 }

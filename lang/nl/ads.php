@@ -24,4 +24,5 @@ return [
     'type' => 'Type',
     'homepage' => 'Startpagina',
     'recent_ads' => 'Recente Advertenties',
+    'upload_csv' => 'CSV uploaden',
 ];

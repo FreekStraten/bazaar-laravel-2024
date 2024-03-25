@@ -38,10 +38,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/contracts/{id}/reject', [BusinessAccountController::class, 'rejectContract'])->name('contracts.reject');
     Route::get('/contracts/{id}/download', [BusinessAccountController::class, 'downloadContract'])->name('contracts.download');
 
-    Route::get('/rental-ads', [AdController::class, 'index'])->name('rental-ads.index');
+    Route::get('/rental-ads', [AdController::class, 'rental_ads'])->name('rental-ads.index');
     Route::get('/rental-ads/create', [AdController::class, 'create'])->name('rental-ads.create');
     Route::post('/rental-ads', [AdController::class, 'store'])->name('rental-ads.store');
     Route::post('/rental-ads/{rentalAd}/toggle-favorite', [AdController::class, 'toggleFavorite'])->name('rental-ads.toggle-favorite');
+
+    Route::post('/ads/upload-csv', [AdController::class, 'uploadCsv'])->name('ads.upload-csv');
+    Route::post('/ads/{ad}/bids', [AdController::class, 'placeBid'])->name('ads.place-bid');
+    Route::get('/ads/{id}', [AdController::class, 'show'])->name('ads.show');
+    Route::get('/ads/{ad}/bids', [AdController::class, 'getBids'])->name('ads.get-bids');
+
 });
+
+
 
 require __DIR__.'/auth.php';
