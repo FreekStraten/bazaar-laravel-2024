@@ -30,11 +30,6 @@ Route::get('locale/{locale}', function ($locale) {
 Route::middleware('auth')->group(function () {
     Route::get('/', [HomeController::class, 'homepage'])->name('ads.homepage');
 
-//    Route::get('/', function () {
-//        Log::info('The /home route was called');
-//        return (new HomeController())->homepage();
-//    })->name('ads.homepage');
-
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -45,8 +40,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/contracts/{id}/approve', [BusinessAccountController::class, 'approveContract'])->name('contracts.approve');
     Route::get('/contracts/{id}/reject', [BusinessAccountController::class, 'rejectContract'])->name('contracts.reject');
     Route::get('/contracts/{id}/download', [BusinessAccountController::class, 'downloadContract'])->name('contracts.download');
-
-
 
     Route::get('/ads', [AdController::class, 'index'])->name('ads.index');
     Route::get('/ads/create', [AdController::class, 'create'])->name('ads.create');

@@ -59,10 +59,12 @@
     @endforeach
     </tbody>
 </table>
-<div class="mt-3">
-    {{ $ads->links() }}
-</div>
 
+@if ($ads->count() > 10)
+    <div class="mt-4">
+        {{ $ads->links() }}
+    </div>
+@endif
 
 @include('ads.partials.image-modal')
 @include('ads.partials.bid-modal')

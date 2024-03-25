@@ -39,12 +39,13 @@ class AdsTableSeeder extends Seeder
     private function createAd($faker, $images, &$usedImages, $isRental)
     {
         $address = Address::inRandomOrder()->first();
-        $ad = new Ad();
-        $ad->title = $faker->sentence(3, true);
-        $ad->description = $faker->paragraph(3);
-        $ad->price = $faker->randomFloat(2, 500, 2000);
-        $ad->is_rental = $isRental;
-        $ad->user_id = User::inRandomOrder()->first()->id;
+        $ad = new Ad([
+            'title' => $faker->sentence(3, true),
+            'description' => $faker->paragraph(3),
+            'price' => $faker->randomFloat(2, 500, 2000),
+            'is_rental' => $isRental,
+            'user_id' => User::inRandomOrder()->first()->id,
+        ]);
         $ad->address()->associate($address);
 
         do {

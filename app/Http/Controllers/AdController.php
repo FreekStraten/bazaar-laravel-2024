@@ -12,8 +12,6 @@ class AdController extends Controller
 {
     public function index()
     {
-//        dd('test');
-
         $rentalAds = Ad::with('user')->where('is_rental', true)->paginate(10);
         $normalAds = Ad::with('user')->where('is_rental', false)->paginate(10);
         return view('ads.index', compact('rentalAds', 'normalAds'));
@@ -99,7 +97,6 @@ class AdController extends Controller
     protected function processCsvFile($csvFile)
     {
         $rows = array_map('str_getcsv', file($csvFile->getRealPath()));
-
         array_shift($rows);
 
         foreach ($rows as $row) {
@@ -110,7 +107,7 @@ class AdController extends Controller
                 'zip_code' => $row[6],
             ]);
 
-            $ad = Ad::create([
+            $ad = new Ad([
                 'title' => $row[0],
                 'description' => $row[1],
                 'price' => $row[2],
