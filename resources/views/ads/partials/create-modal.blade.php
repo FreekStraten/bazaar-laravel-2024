@@ -15,7 +15,7 @@
                             </div>
                         @endif
 
-                        <form id="create-form" enctype="multipart/form-data" method="POST" action="{{ route('rental-ads.store') }}">
+                        <form id="create-form" enctype="multipart/form-data" method="POST" action="{{ route('ads.store') }}">
                             @csrf
 
                             <div class="mt-4">

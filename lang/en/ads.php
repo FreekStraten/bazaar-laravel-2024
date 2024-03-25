@@ -25,4 +25,6 @@ return [
     'homepage' => 'Homepage',
     'recent_ads' => 'Recent Ads',
     'upload_csv' => 'Upload CSV',
+    'bid' => 'Bid',
+    'place_bid' => 'Place Bid',
 ];

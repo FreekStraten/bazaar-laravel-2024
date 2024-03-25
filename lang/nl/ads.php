@@ -25,4 +25,6 @@ return [
     'homepage' => 'Startpagina',
     'recent_ads' => 'Recente Advertenties',
     'upload_csv' => 'CSV uploaden',
+    'bid' => 'Bod',
+    'place_bid' => 'Bod plaatsen',
 ];

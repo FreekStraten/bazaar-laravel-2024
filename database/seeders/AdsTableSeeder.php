@@ -15,7 +15,7 @@ class AdsTableSeeder extends Seeder
     public function run()
     {
         $faker = Faker::create();
-        $images = File::files(public_path('ads'));
+        $images = File::files(public_path('ads-images'));
         $usedImages = [];
 
         $this->createRentalAds($faker, $images, $usedImages);

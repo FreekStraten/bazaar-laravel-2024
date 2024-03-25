@@ -35,7 +35,7 @@
             </td>
             <td class="border px-4 py-2">{{ $ad->user->name }}</td>
             <td class="border px-4 py-2">
-                <form action="{{ route('rental-ads.toggle-favorite', $ad) }}" method="POST">
+                <form action="{{ route('ads.toggle-favorite', $ad) }}" method="POST">
                     @csrf
                     <button type="submit" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
                         @if (auth()->user()->AdFavorites()->where('ad_id', $ad->id)->exists())
@@ -52,9 +52,9 @@
                 </form>
             </td>
             <td class="border px-4 py-2">
-                <button class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150" onclick="openModal({{ $ad->id }})">
-                    Place Bid
-                </button>
+                <x-primary-button onclick="openBidModal({{ $ad->id }})">
+                    {{ __('ads.place_bid') }}
+                </x-primary-button>
             </td>
     @endforeach
     </tbody>
@@ -76,7 +76,7 @@
         imageModal.classList.remove('hidden');
     }
 
-    function openModal(adId) {
+    function openBidModal(adId) {
         const modal = document.getElementById('bid-modal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');

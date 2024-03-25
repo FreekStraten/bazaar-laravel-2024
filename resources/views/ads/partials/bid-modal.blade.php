@@ -16,8 +16,7 @@
                     Address: {{ $ad->address->street }} {{ $ad->address->house_number }}
                     , {{ $ad->address->city }} {{ $ad->address->zip_code }}</p>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Posted by: {{ $ad->user->name }}</p>
-                <form action="{{ route('ads.place-bid', ['ad' => $ad->id]) }}" method="POST" class="mt-4"
-                      id="bid-forum">
+                <form action="{{ route('ads.place-bid', ['ad' => $ad->id]) }}" method="POST" class="mt-4" id="bid-forum">
                     @csrf
                     <div class="mb-4">
                         <label for="bid-amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bid Amount</label>
@@ -50,12 +49,6 @@
 
 
 <script>
-    function openModal() {
-        const modal = document.getElementById('bid-modal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-
     function closeBidModal() {
         const bidModal = document.getElementById('bid-modal');
         bidModal.classList.remove('flex');

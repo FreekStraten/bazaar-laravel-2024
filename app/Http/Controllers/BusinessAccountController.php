@@ -19,14 +19,12 @@ class BusinessAccountController extends Controller
      */
     public function index()
     {
-        // Get all the business accounts with their addresses and contracts
         $businessAccounts = User::where('user_type', 'business')
             ->with('address')
             ->with('contracts')
             ->orderBy('name')
             ->paginate(10);
 
-        // Get all the contracts
         $contracts = Contract::with('user')->paginate(10);
 
         return view('business-accounts-contract.index', compact('businessAccounts', 'contracts'));
@@ -40,9 +38,6 @@ class BusinessAccountController extends Controller
      */
     public function storeContract(Request $request)
     {
-        //log "test"
-        Log::info('test');
-
         $validatedData = $request->validate([
             'contract_name' => 'required|string',
             'contract_file' => 'required|file|mimes:pdf',
@@ -51,10 +46,6 @@ class BusinessAccountController extends Controller
         $pdfFile = $request->file('contract_file')->getRealPath();
         $userId = $this->extractUserId($pdfFile);
 
-        // Log the user ID
-        Log::info('User ID extracted from the PDF: ' . $userId);
-
-        // Create a new Contract model instance
         $contract = new Contract([
             'contract_name' => $validatedData['contract_name'],
             'contract_file' => $request->file('contract_file')->store('contracts'),
@@ -62,7 +53,6 @@ class BusinessAccountController extends Controller
         ]);
 
         $contract->save();
-
         return redirect()->route('business-accounts-contract.index')->with('success', 'Contract uploaded successfully.');
     }
 

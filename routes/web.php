@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\BidController;
 use App\Http\Controllers\BusinessAccountController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdController;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,7 +28,12 @@ Route::get('locale/{locale}', function ($locale) {
 
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', [AdController::class, 'homepage'])->name('rental-ads.homepage');
+    Route::get('/', [HomeController::class, 'homepage'])->name('ads.homepage');
+
+//    Route::get('/', function () {
+//        Log::info('The /home route was called');
+//        return (new HomeController())->homepage();
+//    })->name('ads.homepage');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -38,16 +46,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/contracts/{id}/reject', [BusinessAccountController::class, 'rejectContract'])->name('contracts.reject');
     Route::get('/contracts/{id}/download', [BusinessAccountController::class, 'downloadContract'])->name('contracts.download');
 
-    Route::get('/rental-ads', [AdController::class, 'rental_ads'])->name('rental-ads.index');
-    Route::get('/rental-ads/create', [AdController::class, 'create'])->name('rental-ads.create');
-    Route::post('/rental-ads', [AdController::class, 'store'])->name('rental-ads.store');
-    Route::post('/rental-ads/{rentalAd}/toggle-favorite', [AdController::class, 'toggleFavorite'])->name('rental-ads.toggle-favorite');
 
+
+    Route::get('/ads', [AdController::class, 'index'])->name('ads.index');
+    Route::get('/ads/create', [AdController::class, 'create'])->name('ads.create');
+    Route::post('/ads', [AdController::class, 'store'])->name('ads.store');
+    Route::post('/ads/{ad}/toggle-favorite', [AdController::class, 'toggleFavorite'])->name('ads.toggle-favorite');
     Route::post('/ads/upload-csv', [AdController::class, 'uploadCsv'])->name('ads.upload-csv');
-    Route::post('/ads/{ad}/bids', [AdController::class, 'placeBid'])->name('ads.place-bid');
-    Route::get('/ads/{id}', [AdController::class, 'show'])->name('ads.show');
-    Route::get('/ads/{ad}/bids', [AdController::class, 'getBids'])->name('ads.get-bids');
 
+    Route::post('/ads/{ad}/bids', [BidController::class, 'placeBid'])->name('ads.place-bid');
+    Route::get('/ads/{ad}/bids', [BidController::class, 'getBids'])->name('ads.get-bids');
 });
 
 
