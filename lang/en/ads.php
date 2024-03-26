@@ -18,6 +18,7 @@ return [
     'favorite' => 'Favorite',
     'error' => 'Error',
     'max_ads_reached' => 'You have reached the maximum number of ads you can create.',
+    'max_bid_reached' => 'You have reached the maximum number of bids you can place.',
     'ads' => 'Ads',
     'normal_ads' => 'Normal Ads',
     'normal_ad' => 'Normal Ad',
@@ -27,4 +28,10 @@ return [
     'upload_csv' => 'Upload CSV',
     'bid' => 'Bid',
     'place_bid' => 'Place Bid',
+    'ad_details' => 'Ad Details',
+    'bids' => 'Bids',
+    'no_bids' => 'No bids',
+    'bid_amount' => 'Bid Amount',
+    'bidder' => 'Bidder',
+    'amount' => 'Amount',
 ];

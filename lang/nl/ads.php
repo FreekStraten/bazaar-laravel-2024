@@ -18,6 +18,7 @@ return [
     'favorite' => 'Favoriet',
     'error' => 'Fout',
     'max_ads_reached' => 'Je hebt het maximale aantal advertenties dat je kunt maken bereikt.',
+    'max_bid_reached' => 'Je hebt het maximale aantal biedingen dat je kunt plaatsen bereikt.',
     'ads' => 'Advertenties',
     'normal_ads' => 'Normale Advertenties',
     'normal_ad' => 'Normale Advertentie',
@@ -27,4 +28,11 @@ return [
     'upload_csv' => 'CSV uploaden',
     'bid' => 'Bod',
     'place_bid' => 'Bod plaatsen',
+    'ad_details' => 'Advertentie details',
+    'bids' => 'Biedingen',
+    'no_bids' => 'Geen biedingen',
+    'bid_amount' => 'Biedingsbedrag',
+    'bidder' => 'Bieder',
+    'amount' => 'Bedrag',
+
 ];

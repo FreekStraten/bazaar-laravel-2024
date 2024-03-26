@@ -8,23 +8,25 @@ use Illuminate\Http\Request;
 
 class BidController extends Controller
 {
-    public function placeBid(Request $request, Ad $ad)
+    public function placeBid(Request $request)
     {
         $validatedData = $request->validate([
             'bid-amount' => 'required|numeric|min:1',
+            'ad_id' => 'required|exists:ads,id',
         ]);
+
+        $ad = Ad::findOrFail($validatedData['ad_id']);
+
+        $userBidCount = auth()->user()->bid()->count();
+        if ($userBidCount >= 4) {
+            return redirect()->back()->withErrors(['bid-max-error' => __('ads.max_bid_reached')]);
+        }
 
         $ad->bids()->create([
             'amount' => $validatedData['bid-amount'],
             'user_id' => auth()->id(),
         ]);
 
-        return redirect()->back()->with('success', 'Bid placed successfully!');
-    }
-
-    public function getBids(Ad $ad)
-    {
-        $bids = $ad->bids()->with('user')->get();
-        return redirect()->back()->with('bids', $bids);
+        return redirect()->route('ads.show', $ad);
     }
 }

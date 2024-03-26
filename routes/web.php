@@ -42,13 +42,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/contracts/{id}/download', [BusinessAccountController::class, 'downloadContract'])->name('contracts.download');
 
     Route::get('/ads', [AdController::class, 'index'])->name('ads.index');
+    Route::get('/ads/{ad}', [AdController::class, 'show'])->name('ads.show');
     Route::get('/ads/create', [AdController::class, 'create'])->name('ads.create');
     Route::post('/ads', [AdController::class, 'store'])->name('ads.store');
     Route::post('/ads/{ad}/toggle-favorite', [AdController::class, 'toggleFavorite'])->name('ads.toggle-favorite');
     Route::post('/ads/upload-csv', [AdController::class, 'uploadCsv'])->name('ads.upload-csv');
 
     Route::post('/ads/{ad}/bids', [BidController::class, 'placeBid'])->name('ads.place-bid');
-    Route::get('/ads/{ad}/bids', [BidController::class, 'getBids'])->name('ads.get-bids');
+
+
+
 });
 
 

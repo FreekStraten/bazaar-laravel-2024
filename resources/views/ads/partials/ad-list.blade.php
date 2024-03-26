@@ -8,16 +8,16 @@
         <th class="border px-4 py-2">{{ __('ads.address') }}</th>
         <th class="border px-4 py-2">{{ __('ads.posted_by') }}</th>
         <th class="border px-4 py-2">{{ __('ads.favorite') }}</th>
-        <th class="border px-4 py-2">{{ __('ads.bid') }}</th>
     </tr>
     </thead>
     <tbody>
     @foreach ($ads as $ad)
-        <tr>
+        <tr onclick="window.location.href='{{ route('ads.show', $ad) }}'" style="cursor: pointer;">
             <td class="border px-4 py-2">{{ $ad->title }}</td>
             <td class="border px-4 py-2">
                 @if ($ad->image)
-                    <button class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150" onclick="openImageModal('{{ asset('ads-images/' . $ad->image) }}')">
+                    <button class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                            onclick="event.stopPropagation(); openImageModal('{{ asset('ads-images/' . $ad->image) }}')">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -51,11 +51,6 @@
                     </button>
                 </form>
             </td>
-            <td class="border px-4 py-2">
-                <x-primary-button onclick="openBidModal({{ $ad->id }})">
-                    {{ __('ads.place_bid') }}
-                </x-primary-button>
-            </td>
     @endforeach
     </tbody>
 </table>
@@ -67,7 +62,6 @@
 @endif
 
 @include('ads.partials.image-modal')
-@include('ads.partials.bid-modal')
 
 
 <script>
@@ -76,11 +70,5 @@
         const modalImage = document.getElementById('modal-image');
         modalImage.src = imageUrl;
         imageModal.classList.remove('hidden');
-    }
-
-    function openBidModal(adId) {
-        const modal = document.getElementById('bid-modal');
-        modal.style.display = 'flex';
-        modal.classList.remove('hidden');
     }
 </script>

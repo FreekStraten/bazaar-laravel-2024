@@ -119,4 +119,9 @@ class AdController extends Controller
             $ad->save();
         }
     }
+
+    public function show(Ad $ad)
+    {
+        return view('ads.show', compact('ad'));
+    }
 }
