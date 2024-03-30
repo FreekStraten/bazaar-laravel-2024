@@ -58,5 +58,6 @@ return [
     'can_only_review_rented' => 'You can only leave a review for an ad you have rented.',
     'reviews' => 'Reviews',
     'no_reviews' => 'There are no reviews for this ad yet.',
+    'set-return_date' => 'Set Return Date',
 
 ];

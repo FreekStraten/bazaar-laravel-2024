@@ -198,4 +198,27 @@ class AdController extends Controller
 
         return redirect()->back()->with('success', 'Review created successfully.');
     }
+
+    public function setReturnDate(Request $request, Ad $ad)
+    {
+        $request->validate([
+            'return-date' => 'required|date',
+            'return-photo' => 'required|image|max:5120',
+        ]);
+
+        $bid = $ad->bids()->where('is_accepted', true)->first();
+        $bid->return_date = $request->input('return-date');
+
+        if ($request->hasFile('return-photo')) {
+            $image = $request->file('return-photo');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('ads-images'), $imageName);
+            $ad->return_photo = $imageName;
+        }
+
+        $bid->save();
+        $ad->save();
+
+        return redirect()->back()->with('success', 'Dates and return photo updated successfully.');
+    }
 }

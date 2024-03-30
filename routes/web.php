@@ -59,6 +59,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/reviews/{user}', [ReviewController::class, 'store'])->name('user.reviews.store');
     Route::post('/ads/{ad}/reviews', [AdController::class, 'storeReview'])->name('ads.reviews.store');
 
+    Route::post('/ads/{ad}/set-return-date', [AdController::class, 'setReturnDate'])->name('ads.set-return-date');
+
 
 });
 
