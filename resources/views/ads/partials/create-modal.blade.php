@@ -132,5 +132,9 @@
     function closeModal() {
         document.getElementById('create-modal').classList.add('hidden');
     }
+
+    function openCreateModal() {
+        document.getElementById('create-modal').classList.remove('hidden');
+    }
 </script>
 

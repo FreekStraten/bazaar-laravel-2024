@@ -25,7 +25,7 @@ class AddressesTableSeeder extends Seeder
         $address->zip_code = '12345';
         $address->save();
 
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 11; $i++) {
             $newAddress = new Address();
             $newAddress->street = $faker->streetName;
             $newAddress->house_number = $faker->buildingNumber;

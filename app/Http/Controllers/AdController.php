@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use App\Models\Ad;
+use App\Models\AdReview;
+use App\Models\Bid;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -120,8 +123,79 @@ class AdController extends Controller
         }
     }
 
+
+
+    public function showQrCode(Ad $ad)
+    {
+        $url = route('ads.show', $ad);
+        $qrCode = QrCode::size(250)->generate($url);
+        $ad->qr_code = $qrCode;
+
+        return view('ads.qr-code', compact('ad'));
+    }
+
+    public function getUserRentedAds()
+    {
+        $user_id = auth()->id();
+
+        $ads = Ad::whereHas('bids', function ($query) use ($user_id) {
+            $query->where('user_id', $user_id)
+                ->where('is_accepted', true);
+        })->with('bids')->paginate(10);
+
+        $AdsIAmRentingOut = Ad::where('user_id', $user_id)
+            ->whereHas('bids', function ($query) {
+                $query->where('is_accepted', true);
+            })->with('bids')->paginate(10);
+
+        return view('ads.rental', compact('ads', 'AdsIAmRentingOut'));
+    }
+
+    public function setDates(Request $request, Ad $ad)
+    {
+        $request->validate([
+            'pickup-date' => 'required|date',
+            'return-date' => 'required|date',
+        ]);
+
+        $bid = $ad->bids()->where('is_accepted', true)->first();
+        $bid->pickup_date = $request->input('pickup-date');
+        $bid->return_date = $request->input('return-date');
+        $bid->save();
+
+        return redirect()->back()->with('success', 'Dates updated successfully.');
+    }
+
     public function show(Ad $ad)
     {
-        return view('ads.show', compact('ad'));
+        $reviews = $ad->reviews()->with('user')->get();
+        $user = auth()->user();
+        $hasBid = $ad->bids()->where('user_id', $user->id)->where('is_accepted', true)->exists();
+
+        return view('ads.show', compact('ad', 'reviews', 'hasBid'));
+    }
+
+    public function storeReview(Request $request, Ad $ad)
+    {
+        $request->validate([
+            'review' => 'required|string',
+            'rating' => 'required|integer|between:1,5',
+        ]);
+
+        $user = auth()->user();
+
+        $hasBid = $ad->bids()->where('user_id', $user->id)->where('is_accepted', true)->exists();
+        if (!$hasBid) {
+            return redirect()->back()->withErrors(['message' => 'You can only leave a review for an ad you have rented.']);
+        }
+
+        $review = AdReview::create([
+            'ad_id' => $ad->id,
+            'user_id' => $user->id,
+            'review' => $request->input('review'),
+            'rating' => $request->input('rating'),
+        ]);
+
+        return redirect()->back()->with('success', 'Review created successfully.');
     }
 }

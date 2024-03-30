@@ -19,6 +19,7 @@ class Ad extends Model
         'is_rental',
         'created_at',
         'updated_at',
+        'qr_code'
     ];
 
     public function userFavorites()
@@ -41,5 +42,8 @@ class Ad extends Model
         return $this->hasMany(Bid::class);
     }
 
-
+    public function reviews()
+    {
+        return $this->hasMany(AdReview::class);
+    }
 }

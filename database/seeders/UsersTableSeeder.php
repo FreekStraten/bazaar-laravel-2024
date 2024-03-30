@@ -32,6 +32,17 @@ class UsersTableSeeder extends Seeder
         $user->address_id = array_shift($availableAddresses); // Use the first available address
         $user->save();
 
+        // Create an admin user
+        $user = new User();
+        $user->name = 'Seller';
+        $user->email = 'freekstratenn@gmail.com';
+        $user->email_verified_at = now();
+        $user->password = Hash::make('12345678');
+        $user->user_type = 'admin';
+        $user->remember_token = null;
+        $user->address_id = array_shift($availableAddresses); // Use the first available address
+        $user->save();
+
         // Create 5 business users
         for ($i = 1; $i <= 5; $i++) {
             $businessUser = new User();

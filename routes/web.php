@@ -5,6 +5,7 @@ use App\Http\Controllers\BusinessAccountController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -47,9 +48,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/ads', [AdController::class, 'store'])->name('ads.store');
     Route::post('/ads/{ad}/toggle-favorite', [AdController::class, 'toggleFavorite'])->name('ads.toggle-favorite');
     Route::post('/ads/upload-csv', [AdController::class, 'uploadCsv'])->name('ads.upload-csv');
+    Route::get('/ads/{ad}/qr-code', [AdController::class, 'showQrCode'])->name('ads.show-qr-code');
+    Route::get('/user-rented-ads', [AdController::class, 'getUserRentedAds'])->name('ads.user-rented-ads');
+    Route::post('/ads/{ad}/set-dates', [AdController::class, 'setDates'])->name('ads.set-dates');
 
     Route::post('/ads/{ad}/bids', [BidController::class, 'placeBid'])->name('ads.place-bid');
+    Route::post('/ads/{ad}/bids/{bid}/accept', [BidController::class, 'acceptBid'])->name('ads.accept-bid');
 
+    Route::get('/reviews/{id}', [ReviewController::class, 'show'])->name('user.reviews.show');
+    Route::post('/reviews/{user}', [ReviewController::class, 'store'])->name('user.reviews.store');
+    Route::post('/ads/{ad}/reviews', [AdController::class, 'storeReview'])->name('ads.reviews.store');
 
 
 });

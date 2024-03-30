@@ -15,6 +15,9 @@ class Bid extends Model
         'user_id',
         'ad_id',
         'amount',
+        'is_accepted',
+        'pickup_date',
+        'return_date',
     ];
 
     public function user()

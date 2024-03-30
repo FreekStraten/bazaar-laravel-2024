@@ -18,6 +18,8 @@ class AdsTableSeeder extends Seeder
         $images = File::files(public_path('ads-images'));
         $usedImages = [];
 
+        $this->DemoAd();
+
         $this->createRentalAds($faker, $images, $usedImages);
         $this->createNormalAds($faker, $images, $usedImages);
     }
@@ -54,6 +56,27 @@ class AdsTableSeeder extends Seeder
 
         $ad->image = basename($image);
         $usedImages[] = basename($image);
+        $ad->save();
+    }
+
+    /**
+     * @return void
+     */
+    public function DemoAd(): void
+    {
+        $user = User::where('name', 'Seller')->first();
+        $image = public_path('ads-images/ad_11.png');
+
+        $ad = new Ad([
+            'title' => 'Camera',
+            'description' => 'A camera for rent',
+            'price' => 500,
+            'is_rental' => true,
+            'user_id' => $user->id,
+        ]);
+        $ad->address()->associate($user->address);
+
+        $ad->image = basename($image);
         $ad->save();
     }
 }

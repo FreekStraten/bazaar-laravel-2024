@@ -12,7 +12,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex space-x-4">
                             <button
-                                class="tab-button inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                                class="underline tab-button inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
                                 data-tab="normal-ads">
                                 {{ __('ads.normal_ads') }}
                             </button>
@@ -78,9 +78,7 @@
             document.getElementById('csv-upload-form').submit();
         }
 
-        function openCreateModal() {
-            document.getElementById('create-modal').classList.remove('hidden');
-        }
+
 
         document.querySelector('.create-button').addEventListener('click', openCreateModal);
 
@@ -92,6 +90,8 @@
                 const tabId = button.dataset.tab;
                 tabContents.forEach(content => content.style.display = 'none');
                 document.getElementById(tabId).style.display = 'block';
+                tabButtons.forEach(button => button.classList.remove('underline'));
+                button.classList.add('underline');
             });
         });
     </script>

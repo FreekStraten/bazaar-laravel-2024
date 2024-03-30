@@ -19,7 +19,13 @@
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('ads.index')" :active="request()->routeIs('ads.index')">
-                        {{ __('ads.ads') }}
+                        {{ __('ads.all_ads') }}
+                    </x-nav-link>
+                </div>
+
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('ads.user-rented-ads')" :active="request()->routeIs('ads.user-rented-ads')">
+                        {{ __('ads.rented_ads') }}
                     </x-nav-link>
                 </div>
 

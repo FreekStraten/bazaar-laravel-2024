@@ -22,12 +22,7 @@
     function openImageModal(imageUrl) {
         const imageModal = document.getElementById('image-modal');
         const modalImage = document.getElementById('modal-image');
-
-        //log the imageUrl to the console
-        console.log(imageUrl);
-
         modalImage.src = imageUrl;
         imageModal.classList.remove('hidden');
     }
 </script>
-

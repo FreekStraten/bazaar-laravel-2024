@@ -1,6 +1,7 @@
 <table class="table-auto w-full">
     <thead>
     <tr>
+        <th class="border px-4 py-2">{{ __('ads.qr') }}</th>
         <th class="border px-4 py-2">{{ __('ads.title') }}</th>
         <th class="border px-4 py-2">{{ __('ads.image') }}</th>
         <th class="border px-4 py-2">{{ __('ads.description') }}</th>
@@ -13,6 +14,7 @@
     <tbody>
     @foreach ($ads as $ad)
         <tr onclick="window.location.href='{{ route('ads.show', $ad) }}'" style="cursor: pointer;">
+            <td class="border px-4 py-2"><a onclick="event.stopPropagation();" href="{{ route('ads.show-qr-code', $ad) }}" class="fa fa-qrcode inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md text-xs dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150" style="font-size:24px"></a></td>
             <td class="border px-4 py-2">{{ $ad->title }}</td>
             <td class="border px-4 py-2">
                 @if ($ad->image)
@@ -33,7 +35,17 @@
                 {{ $ad->address->street }} {{ $ad->address->house_number }}
                 , {{ $ad->address->city }} {{ $ad->address->zip_code }}
             </td>
-            <td class="border px-4 py-2">{{ $ad->user->name }}</td>
+
+            @if($ad->user->id == auth()->id())
+                <td class="border px-4 py-2 underline">{{ __('ads.me') }}</td>
+            @else
+                <td class="border px-4 py-2">
+                    <form action="{{ route('user.reviews.show', $ad->id) }}" method="GET">
+                        @csrf
+                        <button type="submit" onclick="event.stopPropagation();">{{ $ad->user->name }}</button>
+                    </form>
+                </td>
+            @endif
             <td class="border px-4 py-2">
                 <form action="{{ route('ads.toggle-favorite', $ad) }}" method="POST">
                     @csrf
@@ -64,11 +76,5 @@
 @include('ads.partials.image-modal')
 
 
-<script>
-    function openImageModal(imageUrl) {
-        const imageModal = document.getElementById('image-modal');
-        const modalImage = document.getElementById('modal-image');
-        modalImage.src = imageUrl;
-        imageModal.classList.remove('hidden');
-    }
-</script>
+
+
