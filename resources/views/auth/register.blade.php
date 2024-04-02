@@ -41,6 +41,8 @@
             <x-input-error :messages="$errors->get('city')" class="mt-2" />
         </div>
 
+        <p>Register</p>
+
         <div class="mt-4">
             <x-input-label for="zip_code" :value="__('auth.ZipCode')" />
             <x-text-input id="zip_code" class="block mt-1 w-full" type="text" name="zip_code" :value="old('zip_code')" required autofocus />
@@ -75,7 +77,7 @@
                 {{ __('auth.AlreadyRegistered') }}
             </a>
 
-            <x-primary-button class="ms-4">
+            <x-primary-button class="ms-4" id="register-as-button">
                 {{ __('auth.RegisterAs') }}
             </x-primary-button>
         </div>

@@ -10,19 +10,6 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="flex justify-between items-center mb-4">
-                        <div class="flex space-x-4">
-                            <button
-                                class="underline tab-button inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
-                                data-tab="normal-ads">
-                                {{ __('ads.normal_ads') }}
-                            </button>
-                            <button
-                                class="tab-button inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
-                                data-tab="rental-ads">
-                                {{ __('ads.rental_ads') }}
-                            </button>
-                        </div>
-
 
                         <div class="flex space-x-4">
                             @if(auth()->user()->user_type === 'business' || auth()->user()->user_type === 'admin')
@@ -45,31 +32,47 @@
                                 </div>
                             @endif
 
-                            <button
-                                class="create-button inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
-                                onclick="openCreateModal()">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            <button class="create-button inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150" onclick="openCreateModal()">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
                                 {{ __('ads.create_ad') }}
                             </button>
                         </div>
-
                     </div>
 
-                    <div id="normal-ads" class="tab-content">
-                        @include('ads.partials.ad-list', ['ads' => $normalAds])
-                    </div>
+                    <div>
+                        <form id="filter-sort-form" action="{{ route('ads.index') }}" method="GET">
+                            <div class="my-4">
+                                <select name="filter" id="filter" class="form-control mr-2 inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <option value="2" {{ request()->input('filter') == '2' ? 'selected' : '' }}>{{ __('ads.all_ads') }}</option>
+                                    <option value="0" {{ request()->input('filter') == '0' ? 'selected' : '' }}>{{ __('ads.normal_ads') }}</option>
+                                    <option value="1" {{ request()->input('filter') == '1' ? 'selected' : '' }}>{{ __('ads.rental_ads') }}</option>
+                                </select>
 
-                    <div id="rental-ads" class="tab-content" style="display:none;">
-                        @include('ads.partials.ad-list', ['ads' => $rentalAds])
+                                <select name="sort" id="sort" class="form-control mr-2 inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                    <option value="price_asc" {{ request()->input('sort') == 'price_asc' ? 'selected' : '' }}>{{ __('ads.sort_by_price_asc') }}</option>
+                                    <option value="price_desc" {{ request()->input('sort') == 'price_desc' ? 'selected' : '' }}>{{ __('ads.sort_by_price_desc') }}</option>
+                                    <option value="date_desc" {{ request()->input('sort') == 'date_desc' ? 'selected' : '' }}>{{ __('ads.sort_by_date_desc') }}</option>
+                                    <option value="date_asc" {{ request()->input('sort') == 'date_asc' ? 'selected' : '' }}>{{ __('ads.sort_by_date_asc') }}</option>
+                                </select>
+
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
+                                    {{ __('ads.apply') }}
+                                </button>
+                            </div>
+                        </form>
+
+
+                        @include('ads.partials.ad-list', ['ads' => $ads])
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+
+
 
     @include('ads.partials.create-modal')
 
@@ -78,21 +81,6 @@
             document.getElementById('csv-upload-form').submit();
         }
 
-
-
         document.querySelector('.create-button').addEventListener('click', openCreateModal);
-
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabButtons.forEach((button, index) => {
-            button.addEventListener('click', () => {
-                const tabId = button.dataset.tab;
-                tabContents.forEach(content => content.style.display = 'none');
-                document.getElementById(tabId).style.display = 'block';
-                tabButtons.forEach(button => button.classList.remove('underline'));
-                button.classList.add('underline');
-            });
-        });
     </script>
 </x-app-layout>

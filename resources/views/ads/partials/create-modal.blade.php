@@ -134,8 +134,6 @@
 
     function updateFileName(input){
         document.getElementById('file-name').innerText = input.files[0].name;
-
-
     }
 </script>
 

@@ -18,6 +18,8 @@ class Bid extends Model
         'is_accepted',
         'pickup_date',
         'return_date',
+        'return_image',
+        'damage',
     ];
 
     public function user()

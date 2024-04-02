@@ -54,14 +54,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/ads/{ad}/bids', [BidController::class, 'placeBid'])->name('ads.place-bid');
     Route::post('/ads/{ad}/bids/{bid}/accept', [BidController::class, 'acceptBid'])->name('ads.accept-bid');
-
     Route::get('/reviews/{id}', [ReviewController::class, 'show'])->name('user.reviews.show');
     Route::post('/reviews/{user}', [ReviewController::class, 'store'])->name('user.reviews.store');
+
     Route::post('/ads/{ad}/reviews', [AdController::class, 'storeReview'])->name('ads.reviews.store');
-
-    Route::post('/ads/{ad}/set-return-date', [AdController::class, 'setReturnDate'])->name('ads.set-return-date');
-
-
+    Route::post('/ads/{id}/set-return', [AdController::class, 'setReturn'])->name('ads.set-return');
 });
 
 

@@ -13,11 +13,41 @@ use Illuminate\Support\Facades\Log;
 
 class AdController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rentalAds = Ad::with('user')->where('is_rental', true)->paginate(10);
-        $normalAds = Ad::with('user')->where('is_rental', false)->paginate(10);
-        return view('ads.index', compact('rentalAds', 'normalAds'));
+        $query = Ad::with('user');
+
+        // Filter ads based on the 'filter' parameter
+        if ($request->has('filter')) {
+            $filter = $request->input('filter');
+            if ($filter == '0') {
+                $query->where('is_rental', false);
+            } elseif ($filter == '1') {
+                $query->where('is_rental', true);
+            }
+        }
+
+        // Sort ads based on the 'sort' parameter
+        if ($request->has('sort')) {
+            $sort = $request->input('sort');
+            switch ($sort) {
+                case 'price_asc':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_desc':
+                    $query->orderBy('price', 'desc');
+                    break;
+                case 'date_desc':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+                case 'date_asc':
+                    $query->orderBy('created_at', 'asc');
+                    break;
+            }
+        }
+
+        $ads = $query->paginate(10);
+        return view('ads.index', compact('ads'));
     }
 
     public function create()
@@ -199,26 +229,27 @@ class AdController extends Controller
         return redirect()->back()->with('success', 'Review created successfully.');
     }
 
-    public function setReturnDate(Request $request, Ad $ad)
+    public function setReturn(Request $request, $id)
     {
+        $bid = Bid::find($id);
+
         $request->validate([
-            'return-date' => 'required|date',
-            'return-photo' => 'required|image|max:5120',
+            'return_image' => 'required|image|max:2048',
+            'is_rental' => 'required|in:0,1,2',
         ]);
 
-        $bid = $ad->bids()->where('is_accepted', true)->first();
-        $bid->return_date = $request->input('return-date');
-
-        if ($request->hasFile('return-photo')) {
-            $image = $request->file('return-photo');
+        if ($request->hasFile('return_image')) {
+            $image = $request->file('return_image');
             $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('ads-images'), $imageName);
-            $ad->return_photo = $imageName;
+            $image->move(public_path('return-images'), $imageName);
+            $bid->return_image = $imageName;
         }
 
-        $bid->save();
-        $ad->save();
+        $bid->damage = $request->input('is_rental');
 
-        return redirect()->back()->with('success', 'Dates and return photo updated successfully.');
+        $bid->save();
+        $ad = Ad::find($bid->ad_id);
+
+        return redirect()->route('ads.show', $ad->id)->with('success', 'Dates and return photo updated successfully.');
     }
 }

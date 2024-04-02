@@ -59,5 +59,17 @@ return [
     'reviews' => 'Reviews',
     'no_reviews' => 'There are no reviews for this ad yet.',
     'set-return_date' => 'Set Return Date',
+    'set-return-image' => 'Set Return Image',
+    'save-return-file' => 'Save Return',
+    'damage' => 'Damage',
+    'no-damage' => 'No Damage',
+    'slight-damage' => 'Slight Damage',
+    'heavy-damage' => 'Heavy Damage',
+    'sort_by_price_asc' => 'Sort by Price Ascending',
+    'sort_by_price_desc' => 'Sort by Price Descending',
+    'sort_by_date_asc' => 'Sort by Date Ascending',
+    'sort_by_date_desc' => 'Sort by Date Descending',
+    'sort' => 'Sort',
+    'apply' => 'Apply',
 
 ];

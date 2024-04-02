@@ -58,6 +58,20 @@ return [
     'no_dates_set_yet' => 'Nog geen datums ingesteld',
     'no_reviews' => 'Er zijn nog geen recensies voor deze advertentie.',
     'reviews' => 'Recensies',
+    'set-return_date' => 'Retourdatum instellen',
+    'set-return-image' => 'Retourafbeelding instellen',
+    'save-return-file' => 'Retourneren',
+    'damage' => 'Schade',
+    'no-damage' => 'Geen schade',
+    'slight-damage' => 'Lichte schade',
+    'heavy-damage' => 'Ernstige schade',
+    'sort_by_price_asc' => 'Sorteer op prijs oplopend',
+    'sort_by_price_desc' => 'Sorteer op prijs aflopend',
+    'sort_by_date_asc' => 'Sorteer op datum oplopend',
+    'sort_by_date_desc' => 'Sorteer op datum aflopend',
+    'sort' => 'Sorteren',
+    'apply' => 'Toepassen',
+
 
 
 ];

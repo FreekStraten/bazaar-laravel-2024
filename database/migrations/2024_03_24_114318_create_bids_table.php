@@ -18,6 +18,9 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->boolean('is_accepted')->default(false);
 
+            $table->string('return_image')->nullable();
+            $table->integer('damage')->nullable();
+
             $table->dateTime('pickup_date')->nullable();
             $table->dateTime('return_date')->nullable();
 

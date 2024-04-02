@@ -78,7 +78,8 @@
                         </div>
                         @if ($ad->image)
                             <div class="mb-4 w-full md:w-1/2 mx-5 my-5">
-                                <img src="{{ asset('ads-images/' . $ad->image) }}" alt="{{ $ad->title }}" class="max-w-full h-auto border rounded">
+                                <img src="{{ asset('ads-images/' . $ad->image) }}" alt="{{ $ad->title }}"
+                                     class="max-w-full h-auto border rounded">
                             </div>
                         @endif
                     </div>
@@ -90,17 +91,17 @@
 
     @if($ad->bids->where('is_accepted', true)->first())
         @if($ad->bids->where('is_accepted', true)->first()->user_id == auth()->id() || $ad->user_id == auth()->id())
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-12">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         @if($ad->bids->where('is_accepted', true)->first()->pickup_date && $ad->bids->where('is_accepted', true)->first()->return_date)
                             <h3 class="text-lg font-medium mb-4">{{ __('ads.pickup-return-dates') }}</h3>
                             @if(app()->getLocale() == 'nl')
-                                <p>{{ __('ads.pickup_date') }}: {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->pickup_date)->format('d-m-Y') }}</p>
-                                <p>{{ __('ads.return_date') }}: {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->return_date)->format('d-m-Y') }}</p>
+                                <p>{{ __('ads.pickup_date') }} : {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->pickup_date)->format('d-m-Y') }}</p>
+                                <p>{{ __('ads.return_date') }} : {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->return_date)->format('d-m-Y') }}</p>
                             @else
-                                <p>{{ __('ads.pickup_date') }}: {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->pickup_date)->format('d-m-Y') }}</p>
-                                <p>{{ __('ads.return_date') }}: {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->return_date)->format('d-m-Y') }}</p>
+                                <p>{{ __('ads.pickup_date') }} : {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->pickup_date)->format('d-m-Y') }}</p>
+                                <p>{{ __('ads.return_date') }} : {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->return_date)->format('d-m-Y') }}</p>
                             @endif
 
                         @elseif($ad->user_id == auth()->id())
@@ -118,27 +119,38 @@
                                 <x-primary-button type="submit">{{ __('ads.save_dates') }}</x-primary-button>
                             </form>
                         @endif
-
                         @if($ad->bids->where('is_accepted', true)->first()->user_id == auth()->id())
                             <h3 class="text-lg font-medium my-4">{{ __('ads.set-return-image') }}</h3>
-                            <form action="{{ route('ads.set-return-date', $ad->id) }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('ads.set-return', $ad->bids->where('is_accepted', true)->first()->id) }}" method="POST" enctype="multipart/form-data" id="return-form">
                                 @csrf
                                 <div class="mt-4">
                                     <label for="image" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('ads.image') }}</label>
                                     <div class="relative">
-                                        <x-secondary-button type="button" onclick="document.getElementById('image').click()">
+                                        <x-secondary-button type="button" onclick="document.getElementById('return_image').click()">
                                             <span id="file-name">{{ __('Action.ChooseFile') }}</span>
                                         </x-secondary-button>
                                         <input type="file" id="return_image" name="return_image" class="sr-only" onchange="updateFileName(this)">
                                     </div>
-                                    @error('image')
+                                    @error('return_image')
                                     <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <x-primary-button type="submit" class="mt-2">{{ __('ads.save-return-file') }}</x-primary-button>
+                                <div class="mt-4">
+                                    <label for="damage" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('ads.damage') }}</label>
+                                    <div class="mt-1">
+                                        <select name="is_rental" id="damage" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-md @error('is_rental') border-red-500 @enderror">
+                                            <option value="0">{{ __('ads.no-damage') }}</option>
+                                            <option value="1">{{ __('ads.slight-damage') }}</option>
+                                            <option value="1">{{ __('ads.heavy-damage') }}</option>
+                                        </select>
+                                    </div>
+                                    @error('is_rental')
+                                    <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <x-primary-button type="submit" class="mt-4">{{ __('ads.save-return-file') }}</x-primary-button>
                             </form>
                         @endif
-
                     </div>
                 </div>
             </div>
@@ -151,6 +163,12 @@
     'cannotLeaveReviewMessage' => __('ads.can_only_review_rented'),
     'reviews' => $reviews
 ])
+
+    <script>
+        function updateFileName(input) {
+            document.getElementById('file-name').innerText = input.files[0].name;
+        }
+    </script>
 
 </x-app-layout>
 
