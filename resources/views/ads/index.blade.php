@@ -44,13 +44,13 @@
                     <div>
                         <form id="filter-sort-form" action="{{ route('ads.index') }}" method="GET">
                             <div class="my-4">
-                                <select name="filter" id="filter" class="form-control mr-2 inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                <select name="filter" id="filter" class="control mr-2 inline-flex items-center pr-6 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150 w-max">
                                     <option value="2" {{ request()->input('filter') == '2' ? 'selected' : '' }}>{{ __('ads.all_ads') }}</option>
                                     <option value="0" {{ request()->input('filter') == '0' ? 'selected' : '' }}>{{ __('ads.normal_ads') }}</option>
                                     <option value="1" {{ request()->input('filter') == '1' ? 'selected' : '' }}>{{ __('ads.rental_ads') }}</option>
                                 </select>
 
-                                <select name="sort" id="sort" class="form-control mr-2 inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150">
+                                <select name="sort" id="sort" class="form-control mr-2 inline-flex items-center pr-6 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-25 transition ease-in-out duration-150 w-max">
                                     <option value="price_asc" {{ request()->input('sort') == 'price_asc' ? 'selected' : '' }}>{{ __('ads.sort_by_price_asc') }}</option>
                                     <option value="price_desc" {{ request()->input('sort') == 'price_desc' ? 'selected' : '' }}>{{ __('ads.sort_by_price_desc') }}</option>
                                     <option value="date_desc" {{ request()->input('sort') == 'date_desc' ? 'selected' : '' }}>{{ __('ads.sort_by_date_desc') }}</option>

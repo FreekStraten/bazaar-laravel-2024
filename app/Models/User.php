@@ -12,6 +12,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+
     /**
      * The attributes that are mass assignable.
      *
@@ -23,6 +24,7 @@ class User extends Authenticatable
         'password',
         'user_type',
         'address_id',
+        'role_id'
     ];
 
     /**
@@ -74,5 +76,22 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserReview::class);
     }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function permissions()
+    {
+        return $this->role->permissions;
+    }
+
+    public function hasPermission($permission)
+    {
+        $userPermissions = $this->permissions()->pluck('name')->toArray();
+        return in_array($permission, $userPermissions);
+    }
+
 
 }

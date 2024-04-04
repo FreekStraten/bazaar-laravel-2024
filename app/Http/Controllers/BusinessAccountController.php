@@ -12,16 +12,28 @@ use Smalot\PdfParser\Parser;
 
 class BusinessAccountController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('check.permissions:view_contracts')->only('index');
+        $this->middleware('check.permissions:approve_contracts')->only('approveContract');
+        $this->middleware('check.permissions:reject_contracts')->only('rejectContract');
+        $this->middleware('check.permissions:export_contracts')->only('exportContract');
+        $this->middleware('check.permissions:download_contracts')->only('downloadContract');
+        $this->middleware('check.permissions:store_contracts')->only('storeContract');
+    }
+
     /**
      * Display a listing of business accounts and contracts.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
      */
     public function index()
     {
-        $businessAccounts = User::where('user_type', 'business')
-            ->with('address')
-            ->with('contracts')
+        $businessAccounts = User::whereHas('role', function ($query) {
+            $query->where('name', 'Company');
+        })
+            ->with(['address', 'contracts'])
             ->orderBy('name')
             ->paginate(10);
 
@@ -34,7 +46,7 @@ class BusinessAccountController extends Controller
      * Store a new contract.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function storeContract(Request $request)
     {
@@ -84,7 +96,7 @@ class BusinessAccountController extends Controller
      * Approve a contract.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function approveContract($id)
     {
@@ -99,7 +111,7 @@ class BusinessAccountController extends Controller
      * Reject a contract.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function rejectContract($id)
     {

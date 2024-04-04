@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use App\Models\Address;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -20,6 +21,7 @@ class UsersTableSeeder extends Seeder
     {
         $faker = Faker::create();
         $availableAddresses = Address::pluck('id')->toArray();
+        $roles = Role::pluck('id')->toArray();
 
         // Create an admin user
         $user = new User();
@@ -27,18 +29,18 @@ class UsersTableSeeder extends Seeder
         $user->email = 'freekstraten@gmail.com';
         $user->email_verified_at = now();
         $user->password = Hash::make('12345678');
-        $user->user_type = 'admin';
+        $user->role_id = $roles[1]; // Admin role
         $user->remember_token = null;
         $user->address_id = array_shift($availableAddresses); // Use the first available address
         $user->save();
 
-        // Create an admin user
+        // Create a seller user
         $user = new User();
         $user->name = 'Seller';
-        $user->email = 'freekstratenn@gmail.com';
+        $user->email = 'seller@gmail.com';
         $user->email_verified_at = now();
         $user->password = Hash::make('12345678');
-        $user->user_type = 'admin';
+        $user->role_id = $roles[2]; // Private role
         $user->remember_token = null;
         $user->address_id = array_shift($availableAddresses); // Use the first available address
         $user->save();
@@ -50,7 +52,7 @@ class UsersTableSeeder extends Seeder
             $businessUser->email = $faker->unique()->email;
             $businessUser->email_verified_at = now();
             $businessUser->password = Hash::make($faker->password);
-            $businessUser->user_type = 'business';
+            $businessUser->role_id = $roles[0]; // Company role
             $businessUser->remember_token = null;
             $businessUser->address_id = array_shift($availableAddresses); // Use the next available address
             $businessUser->save();
@@ -63,7 +65,7 @@ class UsersTableSeeder extends Seeder
             $privateUser->email = $faker->unique()->email;
             $privateUser->email_verified_at = now();
             $privateUser->password = Hash::make($faker->password);
-            $privateUser->user_type = 'private';
+            $privateUser->role_id = $roles[2]; // Private Advertiser role
             $privateUser->remember_token = null;
             $privateUser->address_id = array_shift($availableAddresses); // Use the next available address
             $privateUser->save();

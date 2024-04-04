@@ -11,11 +11,13 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('business-accounts-contract.index')" :active="request()->routeIs('business-accounts-contract.index')">
-                        {{ __('contract.BusinessAccounts') }}
-                    </x-nav-link>
-                </div>
+                @can('view_contracts', 'view_contracts')
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('business-accounts-contract.index')" :active="request()->routeIs('business-accounts-contract.index')">
+                            {{ __('contract.BusinessAccounts') }}
+                        </x-nav-link>
+                    </div>
+                @endcan
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('ads.index')" :active="request()->routeIs('ads.index')">
