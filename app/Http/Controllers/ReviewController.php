@@ -16,8 +16,10 @@ class ReviewController extends Controller
         return view('ads.partials.review', compact('user', 'reviews'));
     }
 
-    public function store(Request $request, User $user)
+    public function store(Request $request, $id)
     {
+        $user = User::findOrFail($id);
+
         $request->validate([
             'rating' => 'required|numeric|min:1|max:5',
             'review' => 'required|string',

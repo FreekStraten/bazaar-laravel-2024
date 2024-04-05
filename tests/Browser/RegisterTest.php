@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -10,6 +11,16 @@ use Tests\DuskTestCase;
 
 class RegisterTest extends DuskTestCase
 {
+
+    //check if register page exists
+    public function test_register(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/register')
+                ->assertSee('Register');
+        });
+    }
+
 
     use DatabaseTransactions;
 
@@ -23,7 +34,6 @@ class RegisterTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->visit('/register')
                 ->pause(1000)
-                ->assertSee('Register')
                 ->assertPresent('#name')
                 ->assertPresent('#email')
                 ->assertPresent('#user_type')

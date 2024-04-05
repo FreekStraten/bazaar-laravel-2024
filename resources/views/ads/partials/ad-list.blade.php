@@ -14,8 +14,8 @@
     </thead>
     <tbody>
     @foreach ($ads as $ad)
-        <tr onclick="window.location.href='{{ route('ads.show', $ad) }}'" style="cursor: pointer;">
-            <td class="border px-4 py-2"><a onclick="event.stopPropagation();" href="{{ route('ads.show-qr-code', $ad) }}" class="fa fa-qrcode inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md text-xs dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150" style="font-size:24px"></a></td>
+        <tr onclick="window.location.href='{{ route('ads.show', $ad->id) }}'" style="cursor: pointer;">
+            <td class="border px-4 py-2"><a onclick="event.stopPropagation();" href="{{ route('ads.show-qr-code', $ad->id) }}" class="fa fa-qrcode inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md text-xs dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150" style="font-size:24px"></a></td>
             <td class="border px-4 py-2">{{ $ad->title }}</td>
             <td class="border px-4 py-2">
                 @if ($ad->image)
@@ -48,7 +48,7 @@
                 </td>
             @endif
             <td class="border px-4 py-2">
-                <form action="{{ route('ads.toggle-favorite', $ad) }}" method="POST">
+                <form action="{{ route('ads.toggle-favorite', $ad->id) }}" method="POST">
                     @csrf
                     <button type="submit" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
                         @if (auth()->user()->AdFavorites()->where('ad_id', $ad->id)->exists())
@@ -68,11 +68,9 @@
     </tbody>
 </table>
 
-@if ($ads->count() > 10)
-    <div class="mt-4">
-        {{ $ads->links() }}
-    </div>
-@endif
+<div class="mt-4">
+    {{ $ads->links() }}
+</div>
 
 @include('ads.partials.image-modal')
 

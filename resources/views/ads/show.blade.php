@@ -89,9 +89,10 @@
     </div>
 
 
+    <!-- to do make this part more readable and move more into the controller, also for format date use controller -->
     @if($ad->bids->where('is_accepted', true)->first())
         @if($ad->bids->where('is_accepted', true)->first()->user_id == auth()->id() || $ad->user_id == auth()->id())
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         @if($ad->bids->where('is_accepted', true)->first()->pickup_date && $ad->bids->where('is_accepted', true)->first()->return_date)
@@ -159,7 +160,7 @@
 
     @include('ads.partials.review-partial', [
     'canLeaveReview' => $hasBid,
-    'reviewRoute' => route('ads.reviews.store', $ad),
+    'reviewRoute' => route('ads.reviews.store', $ad->id),
     'cannotLeaveReviewMessage' => __('ads.can_only_review_rented'),
     'reviews' => $reviews
 ])

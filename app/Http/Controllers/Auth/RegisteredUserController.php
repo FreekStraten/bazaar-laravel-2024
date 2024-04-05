@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
-                'user_type' => ['required', 'string', 'in:private,business'],
+                'role_id' => ['required', 'in:1,3'],
                 'street' => ['required', 'string'],
                 'house_number' => ['required', 'string'],
                 'city' => ['required', 'string'],
@@ -59,7 +59,7 @@ class RegisteredUserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'user_type' => $request->user_type,
+                'role_id' => $request->role_id,
                 'address_id' => $address->id,
             ]);
 
@@ -67,7 +67,6 @@ class RegisteredUserController extends Controller
 
             Auth::login($user);
 
-            //if response is json, send success with all user data with address
             if ($request->wantsJson()) {
                 return response()->json(['user' => $user->load('address')], 201);
             }

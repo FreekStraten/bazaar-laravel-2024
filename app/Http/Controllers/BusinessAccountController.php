@@ -26,9 +26,9 @@ class BusinessAccountController extends Controller
     /**
      * Display a listing of business accounts and contracts.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application | \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
         $businessAccounts = User::whereHas('role', function ($query) {
             $query->where('name', 'Company');
@@ -36,6 +36,10 @@ class BusinessAccountController extends Controller
             ->with(['address', 'contracts'])
             ->orderBy('name')
             ->paginate(10);
+
+        if ($request->wantsJson()) {
+            return response()->json($businessAccounts);
+        }
 
         $contracts = Contract::with('user')->paginate(10);
 

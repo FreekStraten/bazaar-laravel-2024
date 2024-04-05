@@ -43,23 +43,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/contracts/{id}/reject', [BusinessAccountController::class, 'rejectContract'])->name('contracts.reject');
     Route::get('/contracts/{id}/download', [BusinessAccountController::class, 'downloadContract'])->name('contracts.download');
 
+
     Route::get('/ads', [AdController::class, 'index'])->name('ads.index');
-    Route::get('/ads/{ad}', [AdController::class, 'show'])->name('ads.show');
-    Route::get('/ads/create', [AdController::class, 'create'])->name('ads.create');
+    Route::get('/ads/{id}', [AdController::class, 'show'])->name('ads.show');
     Route::post('/ads', [AdController::class, 'store'])->name('ads.store');
-    Route::post('/ads/{ad}/toggle-favorite', [AdController::class, 'toggleFavorite'])->name('ads.toggle-favorite');
+    Route::post('/ads/{id}/toggle-favorite', [AdController::class, 'toggleFavorite'])->name('ads.toggle-favorite');
     Route::post('/ads/upload-csv', [AdController::class, 'uploadCsv'])->name('ads.upload-csv');
-    Route::get('/ads/{ad}/qr-code', [AdController::class, 'showQrCode'])->name('ads.show-qr-code');
+    Route::get('/ads/{id}/qr-code', [AdController::class, 'showQrCode'])->name('ads.show-qr-code');
     Route::get('/user-rented-ads', [AdController::class, 'getUserRentedAds'])->name('ads.user-rented-ads');
-    Route::post('/ads/{ad}/set-dates', [AdController::class, 'setDates'])->name('ads.set-dates');
-
-    Route::post('/ads/{ad}/bids', [BidController::class, 'placeBid'])->name('ads.place-bid');
-    Route::post('/ads/{ad}/bids/{bid}/accept', [BidController::class, 'acceptBid'])->name('ads.accept-bid');
-    Route::get('/reviews/{id}', [ReviewController::class, 'show'])->name('user.reviews.show');
-    Route::post('/reviews/{user}', [ReviewController::class, 'store'])->name('user.reviews.store');
-
-    Route::post('/ads/{ad}/reviews', [AdController::class, 'storeReview'])->name('ads.reviews.store');
+    Route::post('/ads/{id}/set-dates', [AdController::class, 'setDates'])->name('ads.set-dates');
+    Route::post('/ads/{id}/reviews', [AdController::class, 'storeReview'])->name('ads.reviews.store');
     Route::post('/ads/{id}/set-return', [AdController::class, 'setReturn'])->name('ads.set-return');
+
+    Route::post('/ads/{id}/bids', [BidController::class, 'placeBid'])->name('ads.place-bid');
+    Route::post('/ads/{ad_id}/bids/{bid_id}/accept', [BidController::class, 'acceptBid'])->name('ads.accept-bid');
+
+    Route::get('/reviews/{id}', [ReviewController::class, 'show'])->name('user.reviews.show');
+    Route::post('/reviews/{id}', [ReviewController::class, 'store'])->name('user.reviews.store');
+
+
 });
 
 

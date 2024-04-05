@@ -47,12 +47,12 @@ class AdController extends Controller
         }
 
         $ads = $query->paginate(10);
-        return view('ads.index', compact('ads'));
-    }
 
-    public function create()
-    {
-        return view('ads.create');
+        if ($request->wantsJson()) {
+            return response()->json($ads);
+        }
+
+        return view('ads.index', compact('ads'));
     }
 
     public function store(Request $request)
@@ -65,13 +65,17 @@ class AdController extends Controller
             'house_number' => 'required|string|max:50',
             'city' => 'required|string|max:255',
             'zip_code' => 'required|string|max:20',
-            'image' => 'image|max:5120',
+            'image' => 'required',
             'is_rental' => 'required|boolean',
         ]);
 
         $userAdCount = auth()->user()->rentalAds()->count();
         if ($userAdCount >= 4) {
-            return redirect()->back()->withErrors(['message' => __('ads.max_ads_reached')]);
+            if ($request->expectsJson()) {
+                return response()->json(['message' => __('ads.max_ads_reached')], 422);
+            } else {
+                return redirect()->back()->withErrors(['message' => __('ads.max_ads_reached')]);
+            }
         }
 
         $address = Address::firstOrCreate([
@@ -90,19 +94,40 @@ class AdController extends Controller
         ]);
         $ad->address()->associate($address);
 
+        $this->handleImage($ad, $request);
+
+        $ad->save();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Rental ad created successfully.',
+                'data' => $ad,
+            ], 201);
+        } else {
+            return redirect()->route('ads.index')->with('success', 'Rental ad created successfully.');
+        }
+    }
+
+    protected function handleImage(Ad $ad, Request $request)
+    {
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
             $image->move(public_path('ads-images'), $imageName);
-            $ad->image = $imageName;
+            $ad->update(['image' => $imageName]);
+        } elseif ($request->has('image')) {
+            $imageData = base64_decode($request->input('image'));
+            $imageName = time() . '_' . uniqid() . '.jpg';
+            $imagePath = public_path('ads-images/' . $imageName);
+            file_put_contents($imagePath, $imageData);
+            $ad->update(['image' => $imageName]);
         }
-
-        $ad->save();
-        return redirect()->route('ads.index')->with('success', 'Rental ad created successfully.');
     }
 
-    public function toggleFavorite(Ad $ad)
+
+    public function toggleFavorite($id)
     {
+        $ad = Ad::findOrFail($id);
         $user = auth()->user();
         $userFavorite = $user->AdFavorites()->where('ad_id', $ad->id)->first();
 
@@ -154,9 +179,11 @@ class AdController extends Controller
     }
 
 
-
-    public function showQrCode(Ad $ad)
+    public function showQrCode($id)
     {
+        //find ad based on id
+        $ad = Ad::findOrFail($id);
+
         $url = route('ads.show', $ad);
         $qrCode = QrCode::size(250)->generate($url);
         $ad->qr_code = $qrCode;
@@ -181,8 +208,10 @@ class AdController extends Controller
         return view('ads.rental', compact('ads', 'AdsIAmRentingOut'));
     }
 
-    public function setDates(Request $request, Ad $ad)
+    public function setDates(Request $request, $id)
     {
+        $ad = Ad::findOrFail($id);
+
         $request->validate([
             'pickup-date' => 'required|date',
             'return-date' => 'required|date',
@@ -196,17 +225,44 @@ class AdController extends Controller
         return redirect()->back()->with('success', 'Dates updated successfully.');
     }
 
-    public function show(Ad $ad)
+    public function show($id, Request $request)
     {
+        $ad = Ad::with('user')->findOrFail($id);
         $reviews = $ad->reviews()->with('user')->get();
         $user = auth()->user();
         $hasBid = $ad->bids()->where('user_id', $user->id)->where('is_accepted', true)->exists();
 
+        if ($request->wantsJson()) {
+
+            $imageData = $this->getEncodedImageData($ad);
+
+            return response()->json([
+                'ad' => $ad,
+                'reviews' => $reviews,
+                'hasBid' => $hasBid,
+                'base64_encoded_image' => $imageData,
+            ]);
+        }
+
+
+
         return view('ads.show', compact('ad', 'reviews', 'hasBid'));
     }
 
-    public function storeReview(Request $request, Ad $ad)
+    private function getEncodedImageData($ad)
     {
+        if ($ad->image) {
+            $imagePath = public_path('ads-images/' . $ad->image);
+            return base64_encode(file_get_contents($imagePath));
+        }
+
+        return null;
+    }
+
+    public function storeReview(Request $request, $id)
+    {
+        $ad = Ad::findOrFail($id);
+
         $request->validate([
             'review' => 'required|string',
             'rating' => 'required|integer|between:1,5',
@@ -219,7 +275,7 @@ class AdController extends Controller
             return redirect()->back()->withErrors(['message' => 'You can only leave a review for an ad you have rented.']);
         }
 
-        $review = AdReview::create([
+        AdReview::create([
             'ad_id' => $ad->id,
             'user_id' => $user->id,
             'review' => $request->input('review'),
@@ -231,7 +287,7 @@ class AdController extends Controller
 
     public function setReturn(Request $request, $id)
     {
-        $bid = Bid::find($id);
+        $bid = Bid::findOrFail($id);
 
         $request->validate([
             'return_image' => 'required|image|max:2048',

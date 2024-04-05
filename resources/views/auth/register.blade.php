@@ -2,6 +2,8 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
+{{--        Register--}}
+
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('auth.Name')" />
@@ -18,8 +20,8 @@
 
         <!-- User Type -->
         <div class="mt-4">
-            <x-input-label for="user_type" :value="__('auth.RegisterAs')"/>
-            <x-select-input name="user_type" id="user_type" class="form-control" :options="['private' => __('user_types.private'), 'business' => __('user_types.business')]" />
+            <x-input-label for="role_id" :value="__('auth.RegisterAs')"/>
+            <x-select-input name="role_id" id="role_id" class="form-control" :options="['3' => __('user_types.private'), '1' => __('user_types.business')]" />
         </div>
 
         <!-- Address Fields -->

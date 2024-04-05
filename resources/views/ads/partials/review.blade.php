@@ -7,7 +7,7 @@
 
     @include('ads.partials.review-partial', [
     'canLeaveReview' => true,
-    'reviewRoute' => route('user.reviews.store', $user),
+    'reviewRoute' => route('user.reviews.store', $user->id),
     'cannotLeaveReviewMessage' => '',
     'reviews' => $reviews
 ])

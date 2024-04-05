@@ -35,8 +35,11 @@ class BidController extends Controller
         return redirect()->route('ads.show', $ad);
     }
 
-    public function acceptBid(Ad $ad, Bid $bid)
+    public function acceptBid($ad_id, $bid_id)
     {
+        $ad = Ad::findOrFail($ad_id);
+        $bid = Bid::findOrFail($bid_id);
+
         if ($ad->user_id != auth()->id()) {
             return redirect()->back()->withErrors(['bid-error' => __('ads.error')]);
         }
