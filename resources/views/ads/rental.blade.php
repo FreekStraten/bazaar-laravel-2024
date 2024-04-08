@@ -11,7 +11,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-medium mb-4">{{__('ads.ads-i-rented')}}</h3>
                     @if($ads->count() > 0)
-                        @include('ads.partials.ad-list', ['ads' => $ads])
+                        @include('ads.partials.ad-list', ['ads' => $ads], ['shouldPaginate' => true])
                     @else
                         <p>{{__('ads.no-ads-rented')}}</p>
                     @endif
@@ -26,7 +26,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-medium mb-4">{{__('ads.ads-i-am-renting')}}</h3>
                     @if($AdsIAmRentingOut->count() > 0)
-                        @include('ads.partials.ad-list', ['ads' => $AdsIAmRentingOut])
+                        @include('ads.partials.ad-list', ['ads' => $AdsIAmRentingOut], ['shouldPaginate' => true])
                     @else
                         <p>{{__('ads.no-ads-i-am-renting')}}</p>
                     @endif

@@ -68,9 +68,11 @@
     </tbody>
 </table>
 
-<div class="mt-4">
-    {{ $ads->links() }}
-</div>
+@if($shouldPaginate)
+    <div class="mt-4">
+        {!! $ads->appends(['filter' => Request::input('filter'), 'sort' => Request::input('sort')])->render() !!}
+    </div>
+@endif
 
 @include('ads.partials.image-modal')
 

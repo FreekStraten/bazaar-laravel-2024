@@ -27,7 +27,7 @@
                         </div>
                     </form>
 
-                    @include('ads.partials.ad-list')
+                    @include('ads.partials.ad-list', ['shouldPaginate' => false])
                 </div>
             </div>
         </div>

@@ -9,10 +9,15 @@ use Illuminate\Support\Facades\Log;
 
 class ReviewController extends Controller
 {
-    public function show($id)
+    public function show($id, Request $request)
     {
         $user = User::findOrFail($id);
         $reviews = UserReview::with('reviewer', 'reviewedUser')->where('reviewed_user_id', $user->id)->get();
+
+        if ($request->wantsJson()) {
+            return $reviews->isEmpty() ? response()->json(['message' => 'No reviews']) : response()->json($reviews);
+        }
+
         return view('ads.partials.review', compact('user', 'reviews'));
     }
 
@@ -33,6 +38,13 @@ class ReviewController extends Controller
         ]);
 
         $review->save();
-        return redirect()->back()->with('success', __('reviews.review_added'))->with('user', $user);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => "Review added successfully",
+            ], 201);
+        } else {
+            return redirect()->back()->with('success', __('reviews.review_added'))->with('user', $user);
+        }
     }
 }

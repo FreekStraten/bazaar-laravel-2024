@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/ads/{id}/toggle-favorite', [AdController::class, 'toggleFavorite'])->name('ads.toggle-favorite');
     Route::post('/ads/upload-csv', [AdController::class, 'uploadCsv'])->name('ads.upload-csv');
     Route::get('/ads/{id}/qr-code', [AdController::class, 'showQrCode'])->name('ads.show-qr-code');
+
+    //TO DO: Api For these methods
     Route::get('/user-rented-ads', [AdController::class, 'getUserRentedAds'])->name('ads.user-rented-ads');
     Route::post('/ads/{id}/set-dates', [AdController::class, 'setDates'])->name('ads.set-dates');
     Route::post('/ads/{id}/reviews', [AdController::class, 'storeReview'])->name('ads.reviews.store');
@@ -57,6 +59,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/ads/{id}/bids', [BidController::class, 'placeBid'])->name('ads.place-bid');
     Route::post('/ads/{ad_id}/bids/{bid_id}/accept', [BidController::class, 'acceptBid'])->name('ads.accept-bid');
+    //Until here
 
     Route::get('/reviews/{id}', [ReviewController::class, 'show'])->name('user.reviews.show');
     Route::post('/reviews/{id}', [ReviewController::class, 'store'])->name('user.reviews.store');

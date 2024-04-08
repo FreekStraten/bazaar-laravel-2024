@@ -19,24 +19,37 @@ class BidController extends Controller
         $ad = Ad::findOrFail($validatedData['ad_id']);
 
         if ($ad->user_id == auth()->id()) {
-            return redirect()->back()->withErrors(['bid-error' => __('ads.cannot_bid_on_own_ad')]);
+            if ($request->wantsJson()) {
+                return response()->json(['error' => __('ads.cannot_bid_on_own_ad')], 400);
+            } else {
+                return redirect()->back()->withErrors(['bid-error' => __('ads.cannot_bid_on_own_ad')]);
+            }
         }
 
         $userBidCount = auth()->user()->bid()->count();
         if ($userBidCount >= 4) {
-            return redirect()->back()->withErrors(['bid-error' => __('ads.max_bid_reached')]);
+            if ($request->wantsJson()) {
+                return response()->json(['error' => __('ads.max_bid_reached')], 400);
+            } else {
+                return redirect()->back()->withErrors(['bid-error' => __('ads.max_bid_reached')]);
+            }
         }
 
-        $ad->bids()->create([
+        $bid = $ad->bids()->create([
             'amount' => $validatedData['bid-amount'],
             'user_id' => auth()->id(),
         ]);
 
-        return redirect()->route('ads.show', $ad);
+        if ($request->wantsJson()) {
+            return response()->json(['bid' => $bid]);
+        } else {
+            return redirect()->route('ads.show', $ad);
+        }
     }
 
     public function acceptBid($ad_id, $bid_id)
     {
+
         $ad = Ad::findOrFail($ad_id);
         $bid = Bid::findOrFail($bid_id);
 

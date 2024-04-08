@@ -115,17 +115,22 @@ class AdController extends Controller
             $imageName = time() . '_' . $image->getClientOriginalName();
             $image->move(public_path('ads-images'), $imageName);
             $ad->update(['image' => $imageName]);
+            $ad->image = $imageName;
+            $ad->save();
+
         } elseif ($request->has('image')) {
             $imageData = base64_decode($request->input('image'));
-            $imageName = time() . '_' . uniqid() . '.jpg';
+            $imageName = time() . '_' . uniqid();
             $imagePath = public_path('ads-images/' . $imageName);
             file_put_contents($imagePath, $imageData);
             $ad->update(['image' => $imageName]);
+            $ad->image = $imageName;
+            $ad->save();
         }
     }
 
 
-    public function toggleFavorite($id)
+    public function toggleFavorite($id, Request $request)
     {
         $ad = Ad::findOrFail($id);
         $user = auth()->user();
@@ -139,7 +144,13 @@ class AdController extends Controller
             ]);
         }
 
-        return redirect()->back();
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Favorite status updated successfully.',
+            ]);
+        } else {
+            return redirect()->back();
+        }
     }
 
     public function uploadCsv(Request $request)
