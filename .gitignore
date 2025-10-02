@@ -38,3 +38,4 @@ pnpm-debug.log*
 # IDE/Tooling caches
 /.idea/
 /.php-cs-fixer.cache
+/composer-cache
