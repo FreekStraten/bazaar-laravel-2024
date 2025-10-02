@@ -5,7 +5,7 @@
 ![Status](https://img.shields.io/badge/status-archived-inactive)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-**Rol:** Solo (coursework) · **Jaar:** 2025
+**Rol:** Solo · **Jaar:** 2025
 
 Whitelabel **marktplaats** met **veilingen** en **verhuur**. Bedoeld voor particulieren én bedrijven, inclusief theming per klant (whitelabel), i18n (NL/EN), CSV‑import en QR‑codes op advertenties.
 
