@@ -2,7 +2,7 @@
 
 ![Laravel](https://img.shields.io/badge/Laravel-11-red?logo=laravel&logoColor=white)
 ![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)
-![Status](https://img.shields.io/badge/status-archived)
+![Status](https://img.shields.io/badge/status-archived-inactive)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
 **Rol:** Solo (coursework) · **Jaar:** 2025
