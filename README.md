@@ -1,66 +1,132 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Whitelabel Marketplace — Auctions & Rentals (Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Laravel](https://img.shields.io/badge/Laravel-11-red?logo=laravel&logoColor=white)
+![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)
+![Status](https://img.shields.io/badge/status-coursework%20%2F%20WIP-inactive)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-## About Laravel
+**Rol:** Solo (coursework) · **Jaar:** 2025
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Whitelabel **marktplaats** met **veilingen** en **verhuur**. Bedoeld voor particulieren én bedrijven, inclusief theming per klant (whitelabel), i18n (NL/EN), CSV‑import en QR‑codes op advertenties.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tech stack
+Laravel 11 · PHP 8.2+ · MySQL/MariaDB · Blade/Tailwind · (optioneel) Laravel Sanctum (API tokens) · PHP‑Spreadsheet (CSV) · QR code package
 
-## Learning Laravel
+## Highlights (scope)
+- **Accounts & rollen** – registratie als gebruiker, particuliere of zakelijke adverteerder.
+- **Whitelabel/theming** – per klant eigen stijl (kleuren/logo) en eigen landingspagina/URL.
+- **Landing page builder** – componenten zoals *uitgelichte advertenties*, tekstblok, afbeelding.
+- **Advertenties** – kopen, **veilingen**, **verhuur** (met agenda’s voor beschikbaarheid/retour).
+- **Favorieten & historie** – gebruikers kunnen favoriete advertenties en aankoop-/huurhistorie zien.
+- **CSV‑import** – in bulk advertenties importeren.
+- **QR‑codes** – elke advertentie krijgt een QR‑code om snel te delen.
+- **API** – beveiligde endpoints (bijv. via **Sanctum**) voor externe apps of klant‑specifieke feeds.
+- **i18n** – minimaal **Nederlands** en **Engels** (Laravel translations).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+> Business rules (selectie): max. 4 biedingen/advertenties/verhuur‑advertenties per gebruiker; bij retourneren slijtage berekenen + verplichte foto‑upload; advertenties kunnen bundelen (bijv. kettingzaag + olie).
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Demo
+*(optioneel)* Plaats hier je screenshots/gif uit `/docs/` en een live demo‑link als je die hebt.
 
-## Laravel Sponsors
+![Screens](docs/demo.gif)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## Snel starten
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Vereisten
+- **PHP 8.2+**, **Composer**, **Node 18+** (of 20+), **npm** of **pnpm**
+- **MySQL 8+** of **MariaDB 10.6+**
 
-## Contributing
+### Installatie
+```bash
+git clone https://github.com/FreekStraten/marketplace-laravel-2025.git
+cd marketplace-laravel-2025
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# 1) Dependencies
+composer install
+npm ci   # of: npm install
 
-## Code of Conduct
+# 2) Env & app key
+cp .env.example .env
+php artisan key:generate
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 3) Database (vul DB_* in .env)
+php artisan migrate --seed
 
-## Security Vulnerabilities
+# 4) Storage symlink (uploads/qr/…)
+php artisan storage:link
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 5) Assets
+npm run dev      # voor ontwikkeling
+# npm run build  # voor productie
+
+# 6) Start
+php artisan serve
+# app draait op http://127.0.0.1:8000
+```
+
+### Optioneel (API‑beveiliging met Sanctum)
+```bash
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate
+```
+Registreer tokens via de UI of een route; bescherm API‑routes met `auth:sanctum` middleware.
+
+### Optioneel (taalbestanden)
+```
+resources/lang/nl/*.php
+resources/lang/en/*.php
+```
+Gebruik `__('messages.key')` in Blade/Controllers. `config/app.php` → `locale` en `fallback_locale`.
+
+---
+
+## Belangrijke routes (indicatief)
+- `/` – homepage met laatste/uitgelichte advertenties
+- `/auth/*` – registratie & login (gebruiker/particulier/zakelijk)
+- `/dashboard` – adverteerder: advertenties, veilingen, verhuur agenda, CSV‑import
+- `/api/*` – beveiligde API‑endpoints (bijv. klant‑specifieke feed)
+
+*(Pas aan naar je daadwerkelijke routes.)*
+
+---
+
+## Architecture at a glance
+- **Domains**: Users, Listings (koop/veiling/verhuur), Orders, Tenants (whitelabel), Pages (builder).
+- **Layers**: Controllers → Services/Actions → Repositories/Eloquent Models.
+- **Security**: policies/guards, Sanctum tokens voor API.
+- **i18n**: Laravel translations (NL/EN).
+- **Files**: uploads in `storage/app/public` → via `storage:link` publiek.
+- **Extensibility**: nieuwe landing‑page component = nieuwe ViewComponent + config; nieuwe feed/API = aparte route/resource.
+
+---
+
+## Configuratie (.env – voorbeeld)
+```env
+APP_NAME="Marketplace"
+APP_URL=http://127.0.0.1:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=marketplace
+DB_USERNAME=root
+DB_PASSWORD=secret
+
+# MAIL_* als je mails/contracten wilt versturen
+# QUEUE_CONNECTION=database  # als je jobs gebruikt
+```
+
+---
 
 ## License
+MIT — zie `LICENSE`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Credits
+Opdrachtcontext: whitelabel marketplace met veilingen & verhuur. Code & documentatie © 2025 Freek Straten.
