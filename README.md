@@ -125,6 +125,14 @@ DB_PASSWORD=secret
 
 ---
 
+## Troubleshooting
+
+- **`vite not recognized`** → run eerst `npm install`.
+- **`Could not open input file: artisan`** → run `composer install` zodat `vendor/autoload.php` bestaat.
+- **`curl_setopt(): Unable to create temporary file` bij composer** → zorg dat `TEMP/TMP` schrijfbaar is of update Composer (`composer self-update --update-keys`).
+- **Database error `Unknown database`** → maak eerst een schema aan in MySQL Workbench (schema = database) en zet de naam in `.env`.
+- **`Vite manifest not found`** → start in aparte terminal `npm run dev` of run `npm run build`.
+
 
 ## Credits
 Opdrachtcontext: whitelabel marketplace met veilingen & verhuur. Code & documentatie © 2025 Freek Straten.
