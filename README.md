@@ -125,8 +125,6 @@ DB_PASSWORD=secret
 
 ---
 
-## License
-MIT — zie `LICENSE`.
 
 ## Credits
 Opdrachtcontext: whitelabel marketplace met veilingen & verhuur. Code & documentatie © 2025 Freek Straten.
