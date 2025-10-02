@@ -7,16 +7,23 @@ desktop.ini
 .vscode/
 *.code-workspace
 
-# Node/Vite
+# Dependencies / Build Artifacts
+/vendor/
 node_modules/
 public/build/
 public/hot
+public/storage
+
+# Vite / Frontend tooling
 .vite/
 .vite-inspect/
 .eslintcache
 *.timestamp-*.mjs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Laravel
+# Laravel / PHP
 .env
 .env.*
 !.env.example
@@ -28,7 +35,6 @@ public/hot
 .phpunit.result.cache
 .php-cs-fixer.cache
 
-# Misc
-npm-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+# IDE/Tooling caches
+/.idea/
+/.php-cs-fixer.cache
