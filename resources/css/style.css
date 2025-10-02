@@ -1,0 +1,16 @@
+:root {
+    --bg: 255 255 255;
+    --surface: 248 250 252; /* slate-50 */
+    --text: 15 23 42;       /* slate-900 */
+    --muted: 100 116 139;   /* slate-500 */
+    --border: 226 232 240;  /* slate-200 */
+    --accent: 16 185 129;   /* emerald-500 */
+}
+:root.dark {
+    --bg: 2 6 23;           /* slate-950 */
+    --surface: 15 23 42;     /* slate-900 */
+    --text: 241 245 249;     /* slate-100 */
+    --muted: 148 163 184;    /* slate-400/500 */
+    --border: 255 255 255;   /* use /10 later */
+    --accent: 110 231 183;   /* emerald-300 */
+}

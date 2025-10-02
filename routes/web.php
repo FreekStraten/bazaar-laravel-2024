@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\BusinessAccountController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdController;
@@ -49,7 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/ads', [AdController::class, 'store'])->name('ads.store');
     Route::post('/ads/{id}/toggle-favorite', [AdController::class, 'toggleFavorite'])->name('ads.toggle-favorite');
     Route::post('/ads/upload-csv', [AdController::class, 'uploadCsv'])->name('ads.upload-csv');
-    Route::get('/ads/{id}/qr-code', [AdController::class, 'showQrCode'])->name('ads.show-qr-code');
+    Route::get('/ads/{id}/qr-code', [AdController::class, 'showQrCode'])->name('ads.qr');
 
     //TO DO: Api For these methods
     Route::get('/user-rented-ads', [AdController::class, 'getUserRentedAds'])->name('ads.user-rented-ads');
@@ -64,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reviews/{id}', [ReviewController::class, 'show'])->name('user.reviews.show');
     Route::post('/reviews/{id}', [ReviewController::class, 'store'])->name('user.reviews.store');
 
+    Route::post('/ads/{ad}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
 });
 
