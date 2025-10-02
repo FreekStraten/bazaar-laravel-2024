@@ -190,16 +190,17 @@ class AdController extends Controller
     }
 
 
-    public function showQrCode($id)
+    public function showQrCode(int $id)
     {
-        //find ad based on id
-        $ad = Ad::findOrFail($id);
+        $url = route('ads.show', $id);
 
-        $url = route('ads.show', $ad);
-        $qrCode = QrCode::size(250)->generate($url);
-        $ad->qr_code = $qrCode;
+        // Geef raw SVG terug, zonder Blade/layout
+        $svg = QrCode::format('svg')
+            ->size(320)      // pixel
+            ->margin(1)      // witte rand
+            ->generate($url);
 
-        return view('ads.qr-code', compact('ad'));
+        return response($svg)->header('Content-Type', 'image/svg+xml');
     }
 
     public function getUserRentedAds()

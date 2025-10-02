@@ -6,18 +6,23 @@
     $adUrl   = route('ads.show', $ad->id);
     $imgPath = !empty($ad->image) ? asset('ads-images/' . $ad->image) : asset('images/placeholder.webp');
 
+    // Pas aan naar jouw eigen favorite-check indien aanwezig
     $isFavorite = method_exists($ad, 'isFavoritedBy')
         ? $ad->isFavoritedBy(auth()->user())
         : ($ad->favorite ?? false);
 @endphp
 
-<div class="card">
+    <!-- Card wrapper: RELATIVE zodat absolute children (chips) zich binnen de kaart positioneren -->
+<div class="card relative">
+    {{-- IMAGE --}}
     <a href="{{ $adUrl }}" class="block relative">
         <img src="{{ $imgPath }}" alt="{{ $ad->title }}"
              class="w-full object-cover" style="aspect-ratio: 4/3;" loading="lazy" />
     </a>
 
+    {{-- TOP-RIGHT ACTIONS (chips blijven nu netjes binnen de kaart) --}}
     <div class="absolute right-2 top-2 flex items-center gap-1">
+        {{-- Favorite --}}
         <form method="POST" action="{{ route('favorites.toggle', $ad->id) }}"
               onsubmit="event.stopPropagation();" class="inline-block">
             @csrf
@@ -38,16 +43,20 @@
             </button>
         </form>
 
+        {{-- QR --}}
         <button type="button" title="Deel / QR" class="chip"
                 onclick="event.stopPropagation(); document.getElementById('{{ $modalId }}').classList.remove('hidden')">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                  fill="none" stroke="currentColor" stroke-width="1.5" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round"
                       d="M3.75 4.5h4.5v4.5h-4.5V4.5zM15.75 4.5h4.5v4.5h-4.5V4.5zM3.75 15h4.5v4.5h-4.5V15zM15.75 15H18M19.5 15H21M15.75 18v1.5M18 19.5H21"/>
+
+
             </svg>
         </button>
     </div>
 
+    {{-- CONTENT --}}
     <a href="{{ $adUrl }}" class="block">
         <div class="p-4">
             <h3 class="text-slate-900 font-semibold text-[1.05rem] mb-1 leading-snug line-clamp-2">
@@ -56,10 +65,10 @@
             <div class="font-semibold mb-2" style="color: rgb(var(--accent));">
                 €{{ number_format((float)$ad->price, 2, ',', '.') }}
             </div>
-            <p class="text-muted text-sm line-clamp-2">
+            <p class="text-slate-600 text-sm line-clamp-2">
                 {{ $ad->description }}
             </p>
-            <div class="mt-3 text-xs text-subtle flex items-center gap-2">
+            <div class="mt-3 text-xs text-slate-500 flex items-center gap-2">
                 <span>{{ $ad->address->city ?? '' }}</span>
                 @if(!empty($ad->address?->city) && !empty($ad->user?->name))
                     <span>•</span>
@@ -69,13 +78,12 @@
         </div>
     </a>
 
-    {{-- QR MODAL --}}
+    {{-- QR MODAL (met <img>, geen iframe) --}}
     <div id="{{ $modalId }}" class="hidden fixed inset-0 z-50">
-        <div class="absolute inset-0 bg-black/40"
-             onclick="this.parentElement.classList.add('hidden')"></div>
+        <div class="absolute inset-0 bg-black/40" onclick="this.parentElement.classList.add('hidden')"></div>
 
         <div class="relative mx-auto mt-24 w-full max-w-md modal-panel">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-token">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-slate-300">
                 <h3 class="text-sm font-semibold text-slate-900">Deel advertentie</h3>
                 <button class="p-1 rounded hover:bg-slate-100"
                         onclick="document.getElementById('{{ $modalId }}').classList.add('hidden')">
@@ -88,17 +96,20 @@
             </div>
 
             <div class="px-5 py-4 space-y-4">
-                <div class="w-full aspect-square rounded-lg overflow-hidden ring-1 ring-slate-200 bg-white">
-                    <iframe src="{{ route('ads.qr', $ad->id) }}" class="w-full h-full" title="QR" loading="lazy"></iframe>
+                <div class="w-full aspect-square rounded-lg overflow-hidden ring-1 ring-slate-200 bg-white p-4">
+                    <img src="{{ route('ads.qr', $ad->id) }}"
+                         alt="QR"
+                         class="w-full h-full object-contain"
+                         style="image-rendering: pixelated;">
                 </div>
 
                 <div>
-                    <label class="block text-xs mb-1 text-subtle">Link</label>
+                    <label class="block text-xs mb-1 text-slate-500">Link</label>
                     <div class="flex gap-2">
                         <input type="text" value="{{ $adUrl }}" readonly
                                class="flex-1 rounded-md border border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 text-sm px-3 py-2">
                         <button type="button"
-                                class="px-3 py-2 text-sm rounded-md bg-accent focus-accent"
+                                class="px-3 py-2 text-sm rounded-md bg-accent text-white focus:ring-2 focus:ring-emerald-500/40"
                                 onclick="navigator.clipboard.writeText('{{ $adUrl }}')">
                             Kopieer
                         </button>
@@ -107,7 +118,7 @@
 
                 <div class="flex justify-end">
                     <button type="button"
-                            class="px-3 py-2 text-sm rounded-md border border-slate-300 hover:bg-slate-100 focus-accent"
+                            class="px-3 py-2 text-sm rounded-md border border-slate-300 hover:bg-slate-100 focus:ring-2 focus:ring-emerald-500/40"
                             onclick="if(navigator.share){navigator.share({title: '{{ addslashes($ad->title) }}', url: '{{ $adUrl }}'})}">
                         Delen…
                     </button>
