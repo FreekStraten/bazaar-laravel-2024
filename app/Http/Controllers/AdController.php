@@ -13,47 +13,38 @@ use Illuminate\Support\Facades\Log;
 
 class AdController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $query = Ad::with('user');
+        $query = \App\Models\Ad::query()->with(['address','user']);
 
-        // Filter ads based on the 'filter' parameter
-        if ($request->has('filter')) {
-            $filter = $request->input('filter');
-            if ($filter == '0') {
-                $query->where('is_rental', false);
-            } elseif ($filter == '1') {
-                $query->where('is_rental', true);
-            }
+        // Filter
+        $filter = request('filter');
+        if ($filter === 'rentals') {
+            $query->where('type', 'is_rental');
+        } elseif ($filter === 'sales') {
+            $query->where('type', 'sale');
         }
 
-        // Sort ads based on the 'sort' parameter
-        if ($request->has('sort')) {
-            $sort = $request->input('sort');
-            switch ($sort) {
-                case 'price_asc':
-                    $query->orderBy('price', 'asc');
-                    break;
-                case 'price_desc':
-                    $query->orderBy('price', 'desc');
-                    break;
-                case 'date_desc':
-                    $query->orderBy('created_at', 'desc');
-                    break;
-                case 'date_asc':
-                    $query->orderBy('created_at', 'asc');
-                    break;
-            }
+        // Sort
+        $sort = request('sort');
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'date_desc':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
         }
 
-        $ads = $query->paginate(10);
-
-        if ($request->wantsJson()) {
-            return response()->json($ads);
-        }
+        $ads = $query->paginate(24)->withQueryString();
 
         return view('ads.index', compact('ads'));
     }
+
 
     public function store(Request $request)
     {

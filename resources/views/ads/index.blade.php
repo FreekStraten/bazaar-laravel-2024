@@ -1,101 +1,76 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-slate-900 leading-tight">
-            {{ __('ads.ads') }}
-        </h2>
+        <h1 class="text-xl font-semibold text-slate-900">{{ __('ads.ads') }}</h1>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- Toolbar: CSV upload + Create Ad --}}
-            <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {{-- Actions --}}
+            <div class="mb-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <form action="{{ route('ads.upload-csv') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2">
+                            @csrf
+                            <label class="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12L12 16.5m0 0L16.5 12M12 16.5V3"/>
+                                </svg>
+                                <span>{{ __('ads.upload_csv') }}</span>
+                                <input type="file" name="csv" class="hidden" accept=".csv" />
+                            </label>
 
-                        {{-- Upload CSV --}}
-                        <div class="flex items-center gap-3">
-                            <form method="POST" action="{{ route('ads.upload-csv') }}" enctype="multipart/form-data" id="csv-upload-form">
-                                @csrf
-                                <input type="file" name="csv_file" class="hidden" id="csv-file-input" onchange="submitCsvForm()">
-                                <label for="csv-file-input"
-                                       class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300 cursor-pointer">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                    </svg>
-                                    {{ __('ads.upload_csv') }}
-                                </label>
-                            </form>
-                        </div>
-
-                        {{-- Create Ad --}}
-                        <button
-                            class="create-button inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300"
-                            type="button"
-                            onclick="openCreateModal()">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                            {{ __('ads.create_ad') }}
-                        </button>
+                            @if (Route::has('ads.create'))
+                                <a href="{{ route('ads.create') }}"
+                                   class="inline-flex items-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+                                    {{ __('ads.create_ad') }}
+                                </a>
+                            @endif
+                        </form>
                     </div>
+
+                    <p class="text-sm text-slate-500">
+                        {{ __('ads.upload_csv_help') }}
+                    </p>
                 </div>
             </div>
 
-            {{-- Filters & Sort --}}
-            <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
-                    <form id="filter-sort-form" action="{{ route('ads.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3 sm:items-center">
-                        <div class="flex items-center gap-3">
-                            <label for="filter" class="text-sm text-slate-700">{{ __('ads.filter') }}</label>
-                            <select
-                                name="filter" id="filter"
-                                class="rounded-lg border-slate-300 bg-white text-slate-900 text-sm focus:border-slate-400 focus:ring-slate-400">
-                                <option value="2" {{ request('filter') == '2' ? 'selected' : '' }}>{{ __('ads.all_ads') }}</option>
-                                <option value="0" {{ request('filter') == '0' ? 'selected' : '' }}>{{ __('ads.normal_ads') }}</option>
-                                <option value="1" {{ request('filter') == '1' ? 'selected' : '' }}>{{ __('ads.rental_ads') }}</option>
-                            </select>
-                        </div>
+            {{-- Filter / Sort / Apply --}}
+            <div class="mb-6">
+                <div class="rounded-xl border border-slate-200 bg-white p-3 sm:p-4">
+                    <form method="GET" action="{{ route('ads.index') }}" class="flex flex-wrap items-center gap-3">
+                        <label class="text-sm text-slate-600">{{ __('ads.filter') }}</label>
+                        <select name="filter" class="rounded-md border-slate-300 text-sm">
+                            <option value="all" @selected(request('filter')==='all' || request('filter')===null)>{{ __('ads.all_ads') }}</option>
+                            <option value="rentals" @selected(request('filter')==='rentals')>{{ __('ads.rental_ads') }}</option>
+                            <option value="sales" @selected(request('filter')==='sales')>{{ __('ads.normal_ads') }}</option>
+                        </select>
 
-                        <div class="flex items-center gap-3">
-                            <label for="sort" class="text-sm text-slate-700">{{ __('ads.sort') }}</label>
-                            <select
-                                name="sort" id="sort"
-                                class="rounded-lg border-slate-300 bg-white text-slate-900 text-sm focus:border-slate-400 focus:ring-slate-400">
-                                <option value="price_asc"  {{ request('sort') == 'price_asc'  ? 'selected' : '' }}>{{ __('ads.sort_by_price_asc') }}</option>
-                                <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>{{ __('ads.sort_by_price_desc') }}</option>
-                                <option value="date_desc"  {{ request('sort') == 'date_desc'  ? 'selected' : '' }}>{{ __('ads.sort_by_date_desc') }}</option>
-                                <option value="date_asc"   {{ request('sort') == 'date_asc'   ? 'selected' : '' }}>{{ __('ads.sort_by_date_asc') }}</option>
-                            </select>
-                        </div>
+                        <label class="ml-2 text-sm text-slate-600">{{ __('ads.sort') }}</label>
+                        <select name="sort" class="rounded-md border-slate-300 text-sm">
+                            <option value="date_desc"  @selected(request('sort')==='date_desc' || request('sort')===null)>{{ __('ads.sort_by_date_desc') }}</option>
+                            <option value="date_asc"   @selected(request('sort')==='date_asc')>{{ __('ads.sort_by_date_asc') }}</option>
+                            <option value="price_asc"  @selected(request('sort')==='price_asc')>{{ __('ads.sort_by_price_asc') }}</option>
+                            <option value="price_desc" @selected(request('sort')==='price_desc')>{{ __('ads.sort_by_price_desc') }}</option>
+                        </select>
 
-                        <button type="submit"
-                                class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300">
+                        <button class="ml-auto inline-flex items-center rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800">
                             {{ __('ads.apply') }}
                         </button>
                     </form>
                 </div>
             </div>
 
-            {{-- Ad list --}}
+            {{-- Grid met cards --}}
             <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    @include('ads.partials.ad-list', ['ads' => $ads, 'shouldPaginate' => true])
+                <div class="p-4 sm:p-6">
+                    @include('ads.partials.ad-list', [
+                        'ads' => $ads,
+                        'shouldPaginate' => true
+                    ])
                 </div>
             </div>
+
         </div>
     </div>
-
-    @include('ads.partials.create-modal')
-
-    <script>
-        function submitCsvForm() {
-            document.getElementById('csv-upload-form').submit();
-        }
-        document.querySelector('.create-button')?.addEventListener('click', openCreateModal);
-    </script>
 </x-app-layout>

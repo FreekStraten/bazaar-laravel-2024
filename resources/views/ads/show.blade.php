@@ -1,178 +1,122 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-xl text-slate-900 leading-tight">
             {{ $ad->title }}
         </h2>
     </x-slot>
 
+    @php
+        $candidate = $ad->cover_url ?? ($ad->image ? asset('ads-images/'.$ad->image) : null);
+        $localPlaceholder = asset('images/placeholder-ad.svg');
+        $hero = $candidate ?: $localPlaceholder;
+    @endphp
+
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="mb-4 w-full md:w-3/4">
-                            <div class="mt-2">
-                                <p>{{ __('ads.price') }}: €{{ $ad->price }}</p>
-                                <p>{{ __('ads.address') }} : {{ $ad->address->street }} {{ $ad->address->house_number }}, {{ $ad->address->city }} {{ $ad->address->zip_code }}</p>
-                                <p>{{ __('ads.posted_by') }}: {{ $ad->user->name }}</p>
-                                <p class="mb-4">{{__('ads.description') }} {{ $ad->description }}</p>
-                            </div>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-                            <h3 class="text-lg font-bold mb-2">{{ __('ads.bids') }}</h3>
-                            @if ($ad->bids->count() > 0)
-                                <table class="table-auto w-full mb-6 rounded-lg overflow-hidden">
-                                    <thead>
-                                    <tr class="bg-gray-200 dark:bg-gray-700 rounded-t-lg">
-                                        <th class="border px-4 py-2">{{ __('ads.bidder') }}</th>
-                                        <th class="border px-4 py-2">{{ __('ads.amount') }}</th>
-                                        @if(auth()->id() == $ad->user_id)
-                                            <th class="border px-4 py-2">{{ __('action.Action') }}</th>
-                                        @endif
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach ($ad->bids as $bid)
-                                        <tr class="odd:bg-gray-100 dark:odd:bg-gray-600 even:bg-white dark:even:bg-gray-800 rounded-b-lg">
-                                            <td class="@if($bid->is_accepted) underline @endif border px-4 py-2">{{ $bid->user->name }}</td>
-                                            <td class="@if($bid->is_accepted) underline @endif border px-4 py-2">€{{ $bid->amount }}</td>
-                                            @if(auth()->id() == $ad->user_id)
-                                                <th class="border px-4 py-2">
-                                                    @if ($bid->is_accepted)
-                                                        <x-secondary-button disabled>{{ __('ads.accept_bid') }}</x-secondary-button>
-                                                    @else
-                                                        <form action="{{ route('ads.accept-bid', [$ad->id, $bid->id]) }}" method="POST">
-                                                            @csrf
-                                                            <x-primary-button type="submit">{{ __('ads.accept_bid') }}</x-primary-button>
-                                                        </form>
-                                                    @endif
-                                                </th>
-                                            @endif
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <p>{{ __('ads.no_bids') }}</p>
-                            @endif
+            {{-- Hero image --}}
+            <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg overflow-hidden">
+                <div class="aspect-[16/9] bg-slate-100">
+                    <img
+                        src="{{ $hero }}"
+                        alt="{{ $ad->title }}"
+                        class="w-full h-full object-cover"
+                        onerror="this.onerror=null;this.src='https://placehold.co/1280x720?text=No+Image';"
+                    >
+                </div>
+            </div>
 
-                            <div>
-                                @if(auth()->id() != $ad->user_id && !$ad->bids->where('is_accepted', true)->first())
-                                    <form action="{{ route('ads.place-bid', $ad->id) }}" method="POST" class="mt-2">
-                                        @csrf
-                                        <div class="mb-4">
-                                            <label for="bid-amount" class="block font-medium text-gray-700 dark:text-gray-300">{{ __('ads.bid_amount') }}</label>
-                                            <input type="number" id="bid-amount" name="bid-amount" min="1" step="0.01" class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-indigo-500 dark:focus:ring-indigo-500 rounded-md shadow-sm block w-full" required>
-                                        </div>
-                                        <input type="hidden" name="ad_id" value="{{ $ad->id }}">
-                                        <x-primary-button type="submit">
-                                            {{ __('ads.place_bid') }}
-                                        </x-primary-button>
-                                    </form>
-                                @endif
-                                @if ($errors->has('bid-error'))
-                                    @foreach ($errors->get('bid-error') as $error)
-                                        <p class="text-red-500 mt-2">{{ $error }}</p>
-                                    @endforeach
-                                @endif
+            {{-- Info + Actions --}}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                {{-- Left: details --}}
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
+                        <div class="p-6 text-slate-900 space-y-3">
+                            <div class="text-2xl font-semibold">€{{ number_format((float)$ad->price, 2, ',', '.') }}</div>
+                            <p class="text-slate-700">{{ $ad->description }}</p>
+
+                            <div class="grid sm:grid-cols-2 gap-4 pt-4">
+                                <div class="rounded-lg border border-slate-200 p-4">
+                                    <div class="text-xs text-slate-500 mb-1">{{ __('ads.address') }}</div>
+                                    <div class="text-sm text-slate-900">
+                                        {{ $ad->address->street ?? '' }} {{ $ad->address->house_number ?? '' }}<br>
+                                        {{ $ad->address->postal_code ?? '' }} {{ $ad->address->city ?? '' }}
+                                    </div>
+                                </div>
+                                <div class="rounded-lg border border-slate-200 p-4">
+                                    <div class="text-xs text-slate-500 mb-1">{{ __('ads.seller') ?? 'Seller' }}</div>
+                                    <div class="text-sm text-slate-900">{{ $ad->user->name ?? '-' }}</div>
+                                </div>
                             </div>
                         </div>
-                        @if ($ad->image)
-                            <div class="mb-4 w-full md:w-1/2 mx-5 my-5">
-                                <img src="{{ asset('ads-images/' . $ad->image) }}" alt="{{ $ad->title }}"
-                                     class="max-w-full h-auto border rounded">
-                            </div>
-                        @endif
+                    </div>
+
+                    {{-- Reviews (bestaande partial behouden) --}}
+                    <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
+                        <div class="p-6">
+                            @include('ads.partials.review')
+                        </div>
                     </div>
                 </div>
+
+                {{-- Right: acties --}}
+                <aside class="space-y-6">
+                    {{-- Huren / Contact / QR --}}
+                    <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
+                        <div class="p-6 space-y-4">
+                            @auth
+                                <a href="{{ route('ads.rent', $ad->id) }}"
+                                   class="w-full inline-flex justify-center items-center rounded-md bg-emerald-600 px-4 py-2 text-white font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+                                    {{ __('ads.rent_now') ?? 'Rent now' }}
+                                </a>
+                            @else
+                                <a href="{{ route('login') }}"
+                                   class="w-full inline-flex justify-center items-center rounded-md bg-emerald-600 px-4 py-2 text-white font-medium hover:bg-emerald-700">
+                                    {{ __('auth.Login') }}
+                                </a>
+                            @endauth
+
+                            <div class="flex gap-2">
+                                <a href="{{ route('ads.qr', $ad->id) }}"
+                                   class="flex-1 inline-flex justify-center items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-slate-700 hover:bg-slate-50"
+                                   title="QR / Share">
+                                    QR
+                                </a>
+                                <button type="button"
+                                        class="flex-1 inline-flex justify-center items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-slate-700 hover:bg-slate-50"
+                                        onclick="if(navigator.share){navigator.share({title: '{{ addslashes($ad->title) }}', url: '{{ route('ads.show',$ad->id) }}'})}">
+                                    {{ __('ads.share') ?? 'Share' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Kalender (indien gebruikt) --}}
+                    @if(isset($events))
+                        <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
+                            <div class="p-6">
+                                <div id="calendar" class="w-full"></div>
+                            </div>
+                        </div>
+
+                        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js"></script>
+                        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css" rel="stylesheet"/>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                var calendarEl = document.getElementById('calendar');
+                                if (calendarEl) {
+                                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                                        initialView: 'dayGridMonth',
+                                        events: @json($events ?? []),
+                                    });
+                                    calendar.render();
+                                }
+                            });
+                        </script>
+                    @endif
+                </aside>
             </div>
         </div>
     </div>
-
-
-    <!-- to do make this part more readable and move more into the controller, also for format date use controller -->
-    @if($ad->bids->where('is_accepted', true)->first())
-        @if($ad->bids->where('is_accepted', true)->first()->user_id == auth()->id() || $ad->user_id == auth()->id())
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        @if($ad->bids->where('is_accepted', true)->first()->pickup_date && $ad->bids->where('is_accepted', true)->first()->return_date)
-                            <h3 class="text-lg font-medium mb-4">{{ __('ads.pickup-return-dates') }}</h3>
-                            @if(app()->getLocale() == 'nl')
-                                <p>{{ __('ads.pickup_date') }} : {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->pickup_date)->format('d-m-Y') }}</p>
-                                <p>{{ __('ads.return_date') }} : {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->return_date)->format('d-m-Y') }}</p>
-                            @else
-                                <p>{{ __('ads.pickup_date') }} : {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->pickup_date)->format('d-m-Y') }}</p>
-                                <p>{{ __('ads.return_date') }} : {{ \Carbon\Carbon::parse($ad->bids->where('is_accepted', true)->first()->return_date)->format('d-m-Y') }}</p>
-                            @endif
-
-                        @elseif($ad->user_id == auth()->id())
-                            <h3 class="text-lg font-medium mb-4">{{ __('ads.set-dates') }}</h3>
-                            <form action="{{ route('ads.set-dates', $ad->id) }}" method="POST">
-                                @csrf
-                                <div class="mb-4">
-                                    <label for="pickup-date" class="block font-medium text-gray-700 dark:text-gray-300">{{ __('ads.pickup_date') }}</label>
-                                    <input type="date" id="pickup-date" name="pickup-date" class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-indigo-500 dark:focus:ring-indigo-500 rounded-md shadow-sm block w-full" required>
-                                </div>
-                                <div class="mb-4">
-                                    <label for="return-date" class="block font-medium text-gray-700 dark:text-gray-300">{{ __('ads.return_date') }}</label>
-                                    <input type="date" id="return-date" name="return-date" class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-indigo-500 dark:focus:ring-indigo-500 rounded-md shadow-sm block w-full" required>
-                                </div>
-                                <x-primary-button type="submit">{{ __('ads.save_dates') }}</x-primary-button>
-                            </form>
-                        @endif
-                        @if($ad->bids->where('is_accepted', true)->first()->user_id == auth()->id())
-                            <h3 class="text-lg font-medium my-4">{{ __('ads.set-return-image') }}</h3>
-                            <form action="{{ route('ads.set-return', $ad->bids->where('is_accepted', true)->first()->id) }}" method="POST" enctype="multipart/form-data" id="return-form">
-                                @csrf
-                                <div class="mt-4">
-                                    <label for="image" class="block font-medium text-sm text-gray-700 dark:text-gray-300">{{ __('ads.image') }}</label>
-                                    <div class="relative">
-                                        <x-secondary-button type="button" onclick="document.getElementById('return_image').click()">
-                                            <span id="file-name">{{ __('Action.ChooseFile') }}</span>
-                                        </x-secondary-button>
-                                        <input type="file" id="return_image" name="return_image" class="sr-only" onchange="updateFileName(this)">
-                                    </div>
-                                    @error('return_image')
-                                    <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mt-4">
-                                    <label for="damage" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('ads.damage') }}</label>
-                                    <div class="mt-1">
-                                        <select name="is_rental" id="damage" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-md @error('is_rental') border-red-500 @enderror">
-                                            <option value="0">{{ __('ads.no-damage') }}</option>
-                                            <option value="1">{{ __('ads.slight-damage') }}</option>
-                                            <option value="1">{{ __('ads.heavy-damage') }}</option>
-                                        </select>
-                                    </div>
-                                    @error('is_rental')
-                                    <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <x-primary-button type="submit" class="mt-4">{{ __('ads.save-return-file') }}</x-primary-button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @endif
-    @endif
-
-    @include('ads.partials.review-partial', [
-    'canLeaveReview' => $hasBid,
-    'reviewRoute' => route('ads.reviews.store', $ad->id),
-    'cannotLeaveReviewMessage' => __('ads.can_only_review_rented'),
-    'reviews' => $reviews
-])
-
-    <script>
-        function updateFileName(input) {
-            document.getElementById('file-name').innerText = input.files[0].name;
-        }
-    </script>
-
 </x-app-layout>
-
-
-
-

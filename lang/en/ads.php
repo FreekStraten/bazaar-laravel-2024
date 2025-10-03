@@ -73,4 +73,7 @@ return [
     'apply' => 'Apply',
     'filter' => 'Filter',
 
+    'upload_csv_help' => 'Bulk-create or update ads from a CSV file (title, price, description, image).',
+    'view' => 'View',
+    'view_all' => 'View all',
 ];

@@ -1,61 +1,49 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-slate-900 leading-tight">
-            Placeholder (Rental and Calendar)
+            {{ __('ads.ads-i-rented') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Ads I Rented (jij verhuurt) --}}
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+
+            {{-- Ads I Rented (wat jij gehuurd hebt) --}}
             <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
-                <div class="p-6 text-slate-900">
+                <div class="p-6">
                     <h3 class="text-lg font-medium mb-4">{{ __('ads.ads-i-rented') }}</h3>
                     @if(isset($adsIRentedOut) && $adsIRentedOut->count() > 0)
                         @include('ads.partials.ad-list', ['ads' => $adsIRentedOut, 'shouldPaginate' => true])
                     @else
-                        <p>{{ __('ads.no-ads-rented') }}</p>
+                        <p class="text-slate-600">{{ __('ads.no-ads-rented') }}</p>
                     @endif
                 </div>
             </div>
 
-            {{-- Ads I Am Renting (jij huurt) --}}
-            <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg mt-6">
-                <div class="p-6 text-slate-900">
-                    <h3 class="text-lg font-medium mb-4">{{ __('ads.ads-i-am-renting') }}</h3>
-                    @if(isset($adsIRenting) && $adsIRenting->count() > 0)
-                        @include('ads.partials.ad-list', ['ads' => $adsIRenting, 'shouldPaginate' => true])
-                    @else
-                        <p>{{ __('ads.no-ads-i-am-renting') }}</p>
-                    @endif
+            {{-- Kalender (optioneel) --}}
+            @if(isset($events))
+                <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium mb-4">{{ __('ads.calendar') ?? 'Calendar' }}</h3>
+                        <div id="calendar" class="w-full"></div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    {{-- Calendar --}}
-    <div class="pb-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white border border-slate-200 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div id="calendar" class="rounded-xl border border-slate-200 p-3"></div>
-                </div>
-            </div>
+                <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js"></script>
+                <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css" rel="stylesheet"/>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var el = document.getElementById('calendar');
+                        if (el) {
+                            var calendar = new FullCalendar.Calendar(el, {
+                                initialView: 'dayGridMonth',
+                                events: @json($events ?? []),
+                            });
+                            calendar.render();
+                        }
+                    });
+                </script>
+            @endif
         </div>
     </div>
 </x-app-layout>
-
-{{-- FullCalendar --}}
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css" rel="stylesheet"/>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            events: @json($events ?? []),
-        });
-        calendar.render();
-    });
-</script>
