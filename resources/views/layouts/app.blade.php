@@ -29,12 +29,6 @@
         {{ $slot ?? '' }}
         @yield('content')
     </main>
-
-    <footer class="border-t border-slate-200 py-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-sm text-subtle">
-            © {{ date('Y') }} {{ config('app.name') }}
-        </div>
-    </footer>
 </div>
 
 @stack('scripts')
