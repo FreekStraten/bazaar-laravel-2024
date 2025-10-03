@@ -71,5 +71,6 @@ return [
     'sort_by_date_desc' => 'Sort by Date Descending',
     'sort' => 'Sort',
     'apply' => 'Apply',
+    'filter' => 'Filter',
 
 ];

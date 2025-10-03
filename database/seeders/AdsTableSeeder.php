@@ -5,78 +5,73 @@ namespace Database\Seeders;
 use App\Models\Ad;
 use App\Models\User;
 use App\Models\Address;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
-use Illuminate\Support\Facades\File;
 
 class AdsTableSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         $faker = Faker::create();
-        $images = File::files(public_path('ads-images'));
-        $usedImages = [];
 
-        $this->DemoAd();
-
-        $this->createRentalAds($faker, $images, $usedImages);
-        $this->createNormalAds($faker, $images, $usedImages);
+        // 10 rental + 10 normal ads
+        $this->createRentalAds($faker, 10);
+        $this->createNormalAds($faker, 10);
     }
 
-    private function createRentalAds($faker, $images, &$usedImages)
+    private function createRentalAds($faker, int $count): void
     {
-        for ($i = 1; $i <= 5; $i++) {
-            $this->createAd($faker, $images, $usedImages, true);
+        for ($i = 0; $i < $count; $i++) {
+            $this->createAd($faker, true);
         }
     }
 
-    private function createNormalAds($faker, $images, &$usedImages)
+    private function createNormalAds($faker, int $count): void
     {
-        for ($i = 1; $i <= 5; $i++) {
-            $this->createAd($faker, $images, $usedImages, false);
+        for ($i = 0; $i < $count; $i++) {
+            $this->createAd($faker, false);
         }
     }
 
-    private function createAd($faker, $images, &$usedImages, $isRental)
+    private function createAd($faker, bool $isRental): void
     {
         $address = Address::inRandomOrder()->first();
+        $user    = User::inRandomOrder()->first();
+
+        if (!$user || !$address) return;
+
+        $title = $this->simpleTitle($isRental);
+
         $ad = new Ad([
-            'title' => $faker->sentence(3, true),
-            'description' => $faker->paragraph(3),
-            'price' => $faker->randomFloat(2, 500, 2000),
-            'is_rental' => $isRental,
-            'user_id' => User::inRandomOrder()->first()->id,
+            'title'       => $title,
+            'description' => $this->simpleDescription($title), // kort & clean
+            'price'       => $faker->randomFloat(2, 10, 200),  // compact bereik
+            'is_rental'   => $isRental,
+            'user_id'     => $user->id,
+            // 'image' => null, // leeg laten → placeholder pakt het op
         ]);
+
         $ad->address()->associate($address);
-
-        do {
-            $image = $images[array_rand($images)];
-        } while (in_array(basename($image), $usedImages));
-
-        $ad->image = basename($image);
-        $usedImages[] = basename($image);
         $ad->save();
     }
 
-    /**
-     * @return void
-     */
-    public function DemoAd(): void
+
+    private function simpleTitle(bool $isRental): string
     {
-        $user = User::where('name', 'Seller')->first();
-        $image = public_path('ads-images/ad_11.png');
+        $items = [
+            'Fiets', 'Boormachine', 'Camera', 'Projector',
+            'Laptop', 'Smartphone', 'Nintendo Switch',
+            'PlayStation 5', 'Xbox Series S', 'Bureaustoel',
+            'Scooter', 'Dakkoffer',
+        ];
 
-        $ad = new Ad([
-            'title' => 'Camera',
-            'description' => 'A camera for rent',
-            'price' => 500,
-            'is_rental' => true,
-            'user_id' => $user->id,
-        ]);
-        $ad->address()->associate($user->address);
+        $item = $items[array_rand($items)];
+        return $isRental ? "Te huur: {$item}" : $item;
+    }
 
-        $ad->image = basename($image);
-        $ad->save();
+    private function simpleDescription(string $title): string
+    {
+        // Heel kort en veilig; geen lorem
+        return "{$title} in nette staat.";
     }
 }

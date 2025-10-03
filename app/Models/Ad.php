@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Support\AdImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Ad extends Model
 {
@@ -45,5 +47,9 @@ class Ad extends Model
     public function reviews()
     {
         return $this->hasMany(AdReview::class);
+    }
+
+    public function getCoverUrlAttribute(): string {
+        return AdImage::coverUrlFor($this);
     }
 }

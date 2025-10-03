@@ -13,35 +13,29 @@ class PermissionsTableSeeder extends Seeder
      */
     public function run()
     {
-        $permissions = [
-            [
-                'name' => 'view_contracts',
-                'description' => 'View contracts',
-            ],
-            [
-                'name' => 'approve_contracts',
-                'description' => 'Approve contracts',
-            ],
-            [
-                'name' => 'reject_contracts',
-                'description' => 'Reject contracts',
-            ],
-            [
-                'name' => 'export_contracts',
-                'description' => 'Export contracts',
-            ],
-            [
-                'name' => 'download_contracts',
-                'description' => 'Download contracts',
-            ],
-            [
-                'name' => 'store_contracts',
-                'description' => 'Store contracts',
-            ],
+        $actions = [
+            'view'     => 'View',
+            'approve'  => 'Approve',
+            'reject'   => 'Reject',
+            'export'   => 'Export',
+            'download' => 'Download',
+            'store'    => 'Store',
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::create($permission);
+        $permissions = collect($actions)
+            ->map(fn ($label, $key) => [
+                'name'        => "{$key}_contracts",
+                'description' => "{$label} contracts",
+            ])
+            ->values()
+            ->all();
+
+
+        foreach ($permissions as $p) {
+            Permission::updateOrCreate(
+                ['name' => $p['name']],
+                ['description' => $p['description']]
+            );
         }
     }
 }

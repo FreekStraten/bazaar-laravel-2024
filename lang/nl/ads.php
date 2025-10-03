@@ -71,6 +71,7 @@ return [
     'sort_by_date_desc' => 'Sorteer op datum aflopend',
     'sort' => 'Sorteren',
     'apply' => 'Toepassen',
+    'filter' => 'Filter',
 
 
 

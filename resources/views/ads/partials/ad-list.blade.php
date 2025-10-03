@@ -23,14 +23,7 @@
                         $img = $ad->image ? asset('ads-images/'.$ad->image) : null;
                     @endphp
                     <div class="aspect-[4/3] bg-slate-100">
-                        @if($img)
-                            <img src="{{ $img }}" alt="{{ $ad->title }}"
-                                 class="h-full w-full object-cover">
-                        @else
-                            <div class="h-full w-full flex items-center justify-center text-slate-400 text-sm">
-                                {{ __('ads.no_image') }}
-                            </div>
-                        @endif
+                        <img src="{{ $ad->cover_url }}" alt="{{ $ad->title }}" class="h-full w-full object-cover" loading="lazy">
                     </div>
 
                     {{-- Quick actions: QR + Favorite --}}

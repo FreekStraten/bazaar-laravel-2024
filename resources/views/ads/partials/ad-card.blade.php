@@ -3,7 +3,6 @@
 @php
     $modalId = 'qr-modal-'.$ad->id;
     $adUrl   = route('ads.show', $ad->id);
-    $imgPath = !empty($ad->image) ? asset('ads-images/' . $ad->image) : asset('images/placeholder.webp');
 
     $isFavorite = method_exists($ad, 'isFavoritedBy')
         ? $ad->isFavoritedBy(auth()->user())
@@ -11,14 +10,9 @@
 @endphp
 
 <div class="relative overflow-hidden rounded-2xl border border-slate-300 bg-white transition shadow-sm hover:shadow-md">
-    {{-- IMAGE --}}
-    <a href="{{ $adUrl }}" class="block">
-        <img src="{{ $imgPath }}" alt="{{ $ad->title }}"
-             class="w-full object-cover" style="aspect-ratio: 4/3;" loading="lazy" />
-    </a>
 
     {{-- TOP-RIGHT ACTIONS --}}
-    <div class="absolute right-2 top-2 flex items-center gap-1">
+    <div class="absolute right-2 top-2 z-10 flex items-center gap-1">
         {{-- Favorite --}}
         <form method="POST" action="{{ route('favorites.toggle', $ad->id) }}"
               onsubmit="event.stopPropagation();" class="inline-block">
@@ -54,8 +48,11 @@
         </button>
     </div>
 
-    {{-- CONTENT --}}
+    {{-- CONTENT (klikbaar) --}}
     <a href="{{ $adUrl }}" class="block">
+        {{-- Optionele headerband voor visuele balans i.p.v. foto --}}
+        <div class="h-24 w-full bg-slate-100"></div>
+
         <div class="p-4">
             <h3 class="mb-1 line-clamp-2 text-[1.05rem] font-semibold leading-snug text-slate-900">
                 {{ $ad->title }}
@@ -76,7 +73,7 @@
         </div>
     </a>
 
-    {{-- QR MODAL (img, geen iframe) --}}
+    {{-- QR MODAL --}}
     <div id="{{ $modalId }}" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/40" onclick="this.parentElement.classList.add('hidden')"></div>
 
@@ -94,11 +91,20 @@
             </div>
 
             <div class="space-y-4 px-5 py-4">
-                <div class="aspect-square w-full rounded-lg bg-white p-4 ring-1 ring-slate-200">
-                    <img src="{{ route('ads.qr', $ad->id) }}"
-                         alt="QR"
-                         class="h-full w-full object-contain"
-                         style="image-rendering: pixelated;">
+                {{-- In plaats van QR-afbeelding: knop om QR in nieuw tabblad te openen --}}
+                <div class="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                    {{ __('Open de QR-code in een nieuw tabblad of kopieer de link hieronder.') }}
+                </div>
+                <div class="flex gap-2">
+                    <a href="{{ route('ads.qr', $ad->id) }}" target="_blank" rel="noopener"
+                       class="rounded-md bg-emerald-600 px-3 py-2 text-sm text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+                        Open QR
+                    </a>
+                    <button type="button"
+                            class="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                            onclick="if(navigator.share){navigator.share({title: '{{ addslashes($ad->title) }}', url: '{{ $adUrl }}'})}">
+                        Delen…
+                    </button>
                 </div>
 
                 <div>
@@ -112,14 +118,6 @@
                             Kopieer
                         </button>
                     </div>
-                </div>
-
-                <div class="flex justify-end">
-                    <button type="button"
-                            class="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
-                            onclick="if(navigator.share){navigator.share({title: '{{ addslashes($ad->title) }}', url: '{{ $adUrl }}'})}">
-                        Delen…
-                    </button>
                 </div>
             </div>
         </div>

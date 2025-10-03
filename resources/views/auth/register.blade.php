@@ -1,86 +1,102 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
 
-{{--        Register--}}
-
-        <!-- Name -->
+        {{-- Naam --}}
         <div>
             <x-input-label for="name" :value="__('auth.Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-text-input id="name" name="name" type="text"
+                          class="block mt-1 w-full"
+                          :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
+        {{-- E-mail --}}
+        <div>
             <x-input-label for="email" :value="__('auth.Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            <x-text-input id="email" name="email" type="email"
+                          class="block mt-1 w-full"
+                          :value="old('email')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <!-- User Type -->
-        <div class="mt-4">
-            <x-input-label for="role_id" :value="__('auth.RegisterAs')"/>
-            <x-select-input name="role_id" id="role_id" class="form-control" :options="['3' => __('user_types.private'), '1' => __('user_types.business')]" />
+        {{-- Gebruikerstype --}}
+        <div>
+            <x-input-label for="role_id" :value="__('auth.RegisterAs')" />
+            <x-select-input id="role_id" name="role_id"
+                            :options="[
+                                '3' => __('user_types.private'),
+                                '1' => __('user_types.business')
+                            ]"
+                            :selected="old('role_id')"
+                            placeholder="{{ __('auth.RegisterAs') }}"
+                            class="block mt-1 w-full" />
+            <x-input-error :messages="$errors->get('role_id')" class="mt-2" />
         </div>
 
-        <!-- Address Fields -->
-        <div class="mt-4">
+        {{-- Adres: straat --}}
+        <div>
             <x-input-label for="street" :value="__('auth.Street')" />
-            <x-text-input id="street" class="block mt-1 w-full" type="text" name="street" :value="old('street')" required autofocus />
+            <x-text-input id="street" name="street" type="text"
+                          class="block mt-1 w-full"
+                          :value="old('street')" required />
             <x-input-error :messages="$errors->get('street')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
+        {{-- Huisnummer --}}
+        <div>
             <x-input-label for="house_number" :value="__('auth.HouseNumber')" />
-            <x-text-input id="house_number" class="block mt-1 w-full" type="text" name="house_number" :value="old('house_number')" required autofocus />
+            <x-text-input id="house_number" name="house_number" type="text"
+                          class="block mt-1 w-full"
+                          :value="old('house_number')" required />
             <x-input-error :messages="$errors->get('house_number')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
+        {{-- Stad --}}
+        <div>
             <x-input-label for="city" :value="__('auth.City')" />
-            <x-text-input id="city" class="block mt-1 w-full" type="text" name="city" :value="old('city')" required autofocus />
+            <x-text-input id="city" name="city" type="text"
+                          class="block mt-1 w-full"
+                          :value="old('city')" required />
             <x-input-error :messages="$errors->get('city')" class="mt-2" />
         </div>
 
-        <p>Register</p>
-
-        <div class="mt-4">
+        {{-- Postcode --}}
+        <div>
             <x-input-label for="zip_code" :value="__('auth.ZipCode')" />
-            <x-text-input id="zip_code" class="block mt-1 w-full" type="text" name="zip_code" :value="old('zip_code')" required autofocus />
+            <x-text-input id="zip_code" name="zip_code" type="text"
+                          class="block mt-1 w-full"
+                          :value="old('zip_code')" required />
             <x-input-error :messages="$errors->get('zip_code')" class="mt-2" />
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
+        {{-- Wachtwoord --}}
+        <div>
             <x-input-label for="password" :value="__('auth.Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
+            <x-text-input id="password" name="password" type="password"
+                          class="block mt-1 w-full"
+                          required autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
+        {{-- Bevestig wachtwoord --}}
+        <div>
+            <x-input-label for="password_confirmation" :value="__('auth.ConfirmPassword')" />
+            <x-text-input id="password_confirmation" name="password_confirmation" type="password"
+                          class="block mt-1 w-full"
+                          required autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
+        {{-- Acties --}}
+        <div class="flex items-center justify-between pt-2">
+            <a href="{{ route('login') }}"
+               class="underline text-sm text-slate-600 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300">
                 {{ __('auth.AlreadyRegistered') }}
             </a>
 
-            <x-primary-button class="ms-4" id="register-as-button">
-                {{ __('auth.RegisterAs') }}
+            <x-primary-button id="register-as-button">
+                {{ __('auth.Register') }}
             </x-primary-button>
         </div>
     </form>

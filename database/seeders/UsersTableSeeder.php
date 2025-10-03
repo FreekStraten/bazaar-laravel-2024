@@ -5,70 +5,83 @@ namespace Database\Seeders;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Address;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Faker\Factory as Faker;
 
 class UsersTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
         $faker = Faker::create();
-        $availableAddresses = Address::pluck('id')->toArray();
-        $roles = Role::pluck('id')->toArray();
 
-        // Create an admin user
-        $user = new User();
-        $user->name = 'Freek';
-        $user->email = 'freekstraten@gmail.com';
-        $user->email_verified_at = now();
-        $user->password = Hash::make('12345678');
-        $user->role_id = $roles[1]; // Admin role
-        $user->remember_token = null;
-        $user->address_id = array_shift($availableAddresses); // Use the first available address
-        $user->save();
+        // Haal rol-ids op een robuuste manier op
+        $adminRoleId   = Role::where('name', 'Admin')->value('id');
+        $companyRoleId = Role::where('name', 'Company')->value('id');
+        $privateRoleId = Role::where('name', 'Private Advertiser')->value('id');
 
-        // Create a seller user
-        $user = new User();
-        $user->name = 'Seller';
-        $user->email = 'seller@gmail.com';
-        $user->email_verified_at = now();
-        $user->password = Hash::make('12345678');
-        $user->role_id = $roles[2]; // Private role
-        $user->remember_token = null;
-        $user->address_id = array_shift($availableAddresses); // Use the first available address
-        $user->save();
+        // Adres helper: pak volgende uit lijst, anders random
+        $availableAddresses = Address::pluck('id')->all();
+        $nextAddressId = function () use (&$availableAddresses) {
+            if (empty($availableAddresses)) {
+                return Address::inRandomOrder()->value('id');
+            }
+            return array_shift($availableAddresses);
+        };
 
-        // Create 5 business users
+        // --- Fixed accounts (idempotent) ---
+        User::updateOrCreate(
+            ['email' => 'freekstraten@gmail.com'],
+            [
+                'name' => 'Freek',
+                'email_verified_at' => now(),
+                'password' => Hash::make('12345678'),
+                'role_id' => $adminRoleId,
+                'address_id' => $nextAddressId(),
+                'remember_token' => null,
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'seller@gmail.com'],
+            [
+                'name' => 'Seller',
+                'email_verified_at' => now(),
+                'password' => Hash::make('12345678'),
+                'role_id' => $privateRoleId,
+                'address_id' => $nextAddressId(),
+                'remember_token' => null,
+            ]
+        );
+
+        // --- Business users (deterministisch, idempotent) ---
         for ($i = 1; $i <= 5; $i++) {
-            $businessUser = new User();
-            $businessUser->name = $faker->name;
-            $businessUser->email = $faker->unique()->email;
-            $businessUser->email_verified_at = now();
-            $businessUser->password = Hash::make($faker->password);
-            $businessUser->role_id = $roles[0]; // Company role
-            $businessUser->remember_token = null;
-            $businessUser->address_id = array_shift($availableAddresses); // Use the next available address
-            $businessUser->save();
+            User::updateOrCreate(
+                ['email' => "company{$i}@example.test"],
+                [
+                    'name' => $faker->company . ' User',
+                    'email_verified_at' => now(),
+                    'password' => Hash::make('password'),
+                    'role_id' => $companyRoleId,
+                    'address_id' => $nextAddressId(),
+                    'remember_token' => null,
+                ]
+            );
         }
 
-        // Create 5 private users
+        // --- Private users (deterministisch, idempotent) ---
         for ($i = 1; $i <= 5; $i++) {
-            $privateUser = new User();
-            $privateUser->name = $faker->name;
-            $privateUser->email = $faker->unique()->email;
-            $privateUser->email_verified_at = now();
-            $privateUser->password = Hash::make($faker->password);
-            $privateUser->role_id = $roles[2]; // Private Advertiser role
-            $privateUser->remember_token = null;
-            $privateUser->address_id = array_shift($availableAddresses); // Use the next available address
-            $privateUser->save();
+            User::updateOrCreate(
+                ['email' => "private{$i}@example.test"],
+                [
+                    'name' => $faker->name,
+                    'email_verified_at' => now(),
+                    'password' => Hash::make('password'),
+                    'role_id' => $privateRoleId,
+                    'address_id' => $nextAddressId(),
+                    'remember_token' => null,
+                ]
+            );
         }
     }
 }
