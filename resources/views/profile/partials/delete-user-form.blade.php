@@ -1,10 +1,10 @@
 <section class="space-y-6">
     <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <h2 class="text-lg font-medium text-slate-900">
             {{ __('auth.DeleteAccount') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        <p class="mt-1 text-sm text-slate-600">
             {{ __('auth.DeleteAccountInformation') }}
         </p>
     </header>
@@ -19,21 +19,19 @@
             @csrf
             @method('delete')
 
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ __('auth.DeleteAccountConfirmation') }}
+            <h2 class="text-lg font-medium text-slate-900">
+                {{ __('auth.AreYouSureDelete') }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {{ __('auth.ExtraDeleteAccountConfirmation') }}
+            <p class="mt-1 text-sm text-slate-600">
+                {{ __('auth.DeleteConsequences') }}
             </p>
 
             <div class="mt-6">
                 <x-input-label for="password" value="{{ __('auth.Password') }}" class="sr-only" />
 
                 <x-text-input
-                    id="password"
-                    name="password"
-                    type="password"
+                    id="password" name="password" type="password"
                     class="mt-1 block w-3/4"
                     placeholder="{{ __('auth.Password') }}"
                 />

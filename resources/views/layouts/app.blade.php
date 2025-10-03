@@ -25,7 +25,7 @@
         </header>
     @endisset
 
-    <main class="flex-1">
+    <main class="pt-16">
         {{ $slot ?? '' }}
         @yield('content')
     </main>

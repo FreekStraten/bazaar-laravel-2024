@@ -3,8 +3,8 @@
 return [
 
     'Profile' => 'Profiel',
-    'ProfileInformation' => 'Profiel informatie',
-    'UpdateProfile' => 'Werk uw accountprofiel en e-mailadres bij.',
+    'ProfileInformation' => 'Profielinformatie',
+    'UpdateProfile' => 'Werk je profiel en e-mailadres bij.',
 
     'Login' => 'Inloggen',
     'Name' => 'Naam',
@@ -12,11 +12,11 @@ return [
     'UserType' => 'Gebruikerstype',
     'Street' => 'Straat',
     'HouseNumber' => 'Huisnummer',
-    'City' => 'Stad',
+    'City' => 'Plaats',
     'ZipCode' => 'Postcode',
     'Password' => 'Wachtwoord',
     'ConfirmPassword' => 'Bevestig wachtwoord',
-    'RememberMe' => 'Remember Me',
+    'RememberMe' => 'Ingelogd blijven',
     'ForgotPassword' => 'Wachtwoord vergeten?',
 
     'AlreadyRegistered' => 'Al geregistreerd?',
@@ -29,18 +29,20 @@ return [
     'Saved' => 'Opgeslagen',
 
     'UpdatePassword' => 'Wachtwoord bijwerken',
-    'UpdatePasswordInformation' => 'Zorg ervoor dat uw account een lang, willekeurig wachtwoord gebruikt om veilig te blijven.',
+    'UpdatePasswordInformation' => 'Zorg dat je account een lang, willekeurig wachtwoord gebruikt voor extra veiligheid.',
     'CurrentPassword' => 'Huidig wachtwoord',
     'NewPassword' => 'Nieuw wachtwoord',
     'ConfirmNewPassword' => 'Bevestig nieuw wachtwoord',
+    'EnsureLongRandomPassword' => 'Zorg dat je account een lang, willekeurig wachtwoord gebruikt.',
+
 
     'DeleteAccount' => 'Account verwijderen',
-    'DeleteAccountInformation' => 'Zodra uw account is verwijderd, worden al zijn bronnen en gegevens permanent verwijderd. Voordat u uw account verwijdert, downloadt u alle gegevens of informatie die u wilt behouden.',
-    'DeleteAccountConfirmation' => 'Weet u zeker dat u uw account wilt verwijderen?',
-    'ExtraDeleteAccountConfirmation' => 'Zodra uw account is verwijderd, worden al zijn bronnen en gegevens permanent verwijderd. Voer uw wachtwoord in om te bevestigen dat u uw account permanent wilt verwijderen.',
+    'DeleteAccountInformation' => 'Na verwijdering van je account worden alle gegevens permanent verwijderd. Download eerst alles wat je wilt bewaren.',
+    'DeleteAccountConfirmation' => 'Weet je zeker dat je je account wilt verwijderen?',
+    'ExtraDeleteAccountConfirmation' => 'Na verwijdering worden alle gegevens permanent verwijderd. Vul je wachtwoord in om permanent te verwijderen.',
 
-    'EmailUnverified' => 'Uw e-mailadres is niet geverifieerd.',
+    'EmailUnverified' => 'Je e-mailadres is niet geverifieerd.',
     'Re-sendVerificationEmail' => 'Klik hier om de verificatie-e-mail opnieuw te verzenden.',
-    'VerificationEmailSent' => 'Er is een nieuwe verificatielink naar uw e-mailadres gestuurd.',
+    'VerificationEmailSent' => 'Er is een nieuwe verificatielink naar je e-mailadres verzonden.',
 
 ];

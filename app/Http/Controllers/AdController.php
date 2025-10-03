@@ -205,20 +205,43 @@ class AdController extends Controller
 
     public function getUserRentedAds()
     {
-        $user_id = auth()->id();
+        $userId = auth()->id();
 
-        $ads = Ad::whereHas('bids', function ($query) use ($user_id) {
-            $query->where('user_id', $user_id)
-                ->where('is_accepted', true);
-        })->with('bids')->paginate(10);
+        $adsIRenting = Ad::whereHas('bids', fn($q) => $q->where('user_id', $userId)->where('is_accepted', true))
+            ->with('bids')
+            ->paginate(10);
 
-        $AdsIAmRentingOut = Ad::where('user_id', $user_id)
-            ->whereHas('bids', function ($query) {
-                $query->where('is_accepted', true);
-            })->with('bids')->paginate(10);
+        $adsIRentedOut = Ad::where('user_id', $userId)
+            ->whereHas('bids', fn($q) => $q->where('is_accepted', true))
+            ->with('bids')
+            ->paginate(10);
 
-        return view('ads.rental', compact('ads', 'AdsIAmRentingOut'));
+        // Bouw events hier
+        $events = [];
+        foreach ($adsIRenting as $ad) {
+            foreach ($ad->bids as $bid) {
+                $events[] = [
+                    'title' => $ad->title,
+                    'start' => $bid->pickup_date,
+                    'end'   => $bid->return_date,
+                    'color' => $bid->user_id == $userId ? '#4CAF50' : '#F44336',
+                ];
+            }
+        }
+        foreach ($adsIRentedOut as $ad) {
+            foreach ($ad->bids as $bid) {
+                $events[] = [
+                    'title' => $ad->title,
+                    'start' => $bid->pickup_date,
+                    'end'   => $bid->return_date,
+                    'color' => $bid->user_id == $userId ? '#4CAF50' : '#F44336',
+                ];
+            }
+        }
+
+        return view('ads.rental', compact('adsIRenting', 'adsIRentedOut', 'events'));
     }
+
 
     public function setDates(Request $request, $id)
     {

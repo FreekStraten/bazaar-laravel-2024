@@ -1,81 +1,124 @@
+{{-- resources/views/ads/partials/ad-list.blade.php --}}
+@php
+    $isFavorited = fn($ad) => auth()->user()
+        ? auth()->user()->AdFavorites()->where('ad_id', $ad->id)->exists()
+        : false;
+@endphp
 
-<table class="table-auto w-full">
-    <thead>
-    <tr>
-        <th class="border px-4 py-2">{{ __('ads.qr') }}</th>
-        <th class="border px-4 py-2">{{ __('ads.title') }}</th>
-        <th class="border px-4 py-2">{{ __('ads.image') }}</th>
-        <th class="border px-4 py-2">{{ __('ads.description') }}</th>
-        <th class="border px-4 py-2">{{ __('ads.price') }}</th>
-        <th class="border px-4 py-2">{{ __('ads.address') }}</th>
-        <th class="border px-4 py-2">{{ __('ads.posted_by') }}</th>
-        <th class="border px-4 py-2">{{ __('ads.favorite') }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach ($ads as $ad)
-        <tr onclick="window.location.href='{{ route('ads.show', $ad->id) }}'" style="cursor: pointer;">
-            <td class="border px-4 py-2"><a onclick="event.stopPropagation();" href="{{ route('ads.show-qr-code', $ad->id) }}" class="fa fa-qrcode inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md text-xs dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150" style="font-size:24px"></a></td>
-            <td class="border px-4 py-2">{{ $ad->title }}</td>
-            <td class="border px-4 py-2">
-                @if ($ad->image)
-                    <button class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
-                            onclick="event.stopPropagation(); openImageModal('{{ asset('ads-images/' . $ad->image) }}')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                    </button>
-                @else
-                    <span class="text-gray-500">{{ __('ads.no_image') }}</span>
-                @endif
-            </td>
-            <td class="border px-4 py-2">{{ $ad->description }}</td>
-            <td class="border px-4 py-2">€{{ $ad->price }}</td>
-            <td class="border px-4 py-2">
-                {{ $ad->address->street }} {{ $ad->address->house_number }}
-                , {{ $ad->address->city }} {{ $ad->address->zip_code }}
-            </td>
-
-            @if($ad->user->id == auth()->id())
-                <td class="border px-4 py-2 underline">{{ __('ads.me') }}</td>
-            @else
-                <td class="border px-4 py-2">
-                    <form action="{{ route('user.reviews.show', $ad->id) }}" method="GET">
-                        @csrf
-                        <button type="submit" onclick="event.stopPropagation();">{{ $ad->user->name }}</button>
-                    </form>
-                </td>
-            @endif
-            <td class="border px-4 py-2">
-                <form action="{{ route('ads.toggle-favorite', $ad->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
-                        @if (auth()->user()->AdFavorites()->where('ad_id', $ad->id)->exists())
-                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                        @else
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        @endif
-                        {{ __('ads.favorite') }}
-                    </button>
-                </form>
-            </td>
-    @endforeach
-    </tbody>
-</table>
-
-@if($shouldPaginate)
-    <div class="mt-4">
-        {!! $ads->appends(['filter' => Request::input('filter'), 'sort' => Request::input('sort')])->render() !!}
+@if ($ads->count() === 0)
+    <div class="rounded-xl border border-slate-200 bg-slate-50 p-6 text-slate-700">
+        {{ __('ads.no_results') ?? 'No ads found.' }}
     </div>
+@else
+    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @foreach ($ads as $ad)
+            <li
+                class="group relative bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition"
+                onclick="window.location.href='{{ route('ads.show', $ad->id) }}'"
+                style="cursor: pointer"
+            >
+                {{-- Image --}}
+                <div class="relative">
+                    @php
+                        $img = $ad->image ? asset('ads-images/'.$ad->image) : null;
+                    @endphp
+                    <div class="aspect-[4/3] bg-slate-100">
+                        @if($img)
+                            <img src="{{ $img }}" alt="{{ $ad->title }}"
+                                 class="h-full w-full object-cover">
+                        @else
+                            <div class="h-full w-full flex items-center justify-center text-slate-400 text-sm">
+                                {{ __('ads.no_image') }}
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Quick actions: QR + Favorite --}}
+                    <div class="absolute top-2 right-2 flex gap-2">
+                        {{-- QR link --}}
+                        <a
+                            href="{{ route('ads.qr', $ad->id) }}"
+                            onclick="event.stopPropagation();"
+                            class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white/90 border border-slate-200 shadow-sm hover:bg-white"
+                            title="QR"
+                            aria-label="QR"
+                        >
+                            {{-- QR icon (inline SVG) --}}
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                <path d="M4 4h6v6H4V4zM14 4h6v6h-6V4zM4 14h6v6H4v-6zM14 14h2v2h-2v-2zM18 14h2v2h-2v-2zM16 18h2v2h-2v-2zM20 18h2v2h-2v-2z" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </a>
+
+                        {{-- Favorite toggle --}}
+                        <form action="{{ route('ads.toggle-favorite', $ad->id) }}" method="POST" onclick="event.stopPropagation();">
+                            @csrf
+                            <button type="submit"
+                                    class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white/90 border border-slate-200 shadow-sm hover:bg-white"
+                                    title="{{ __('ads.favorite') }}"
+                                    aria-label="{{ __('ads.favorite') }}">
+                                @if ($isFavorited($ad))
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 21s-6.716-4.43-9.193-7.233C.64 11.371 1.21 8.4 3.514 6.91c1.92-1.27 4.38-.86 5.99.69L12 9.06l2.496-1.46c1.61-1.55 4.07-1.96 5.99-.69 2.304 1.49 2.874 4.46.707 6.857C18.716 16.57 12 21 12 21z"/>
+                                    </svg>
+                                @else
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 20.727S3.273 14.182 3.273 9.818A4.545 4.545 0 0 1 12 8.091a4.545 4.545 0 0 1 8.727 1.727c0 4.364-8.727 10.909-8.727 10.909Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                @endif
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Body --}}
+                <div class="p-4 space-y-2">
+                    <h3 class="font-semibold text-slate-900 line-clamp-1">
+                        {{ $ad->title }}
+                    </h3>
+
+                    {{-- Price --}}
+                    <div class="text-sm">
+                        <span class="font-medium text-slate-900">€{{ number_format((float)$ad->price, 2) }}</span>
+                    </div>
+
+                    {{-- Description --}}
+                    <p class="text-sm text-slate-600 line-clamp-2">
+                        {{ $ad->description }}
+                    </p>
+
+                    {{-- Address --}}
+                    <p class="text-xs text-slate-500 line-clamp-1">
+                        @php $addr = $ad->address; @endphp
+                        @if($addr)
+                            {{ $addr->street }} {{ $addr->house_number }}, {{ $addr->city }} {{ $addr->zip_code }}
+                        @endif
+                    </p>
+                </div>
+
+                {{-- Footer --}}
+                <div class="px-4 pb-4">
+                    @if($ad->user && $ad->user->id === auth()->id())
+                        <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-800">
+                            {{ __('ads.me') }}
+                        </span>
+                    @else
+                        <a
+                            href="{{ route('user.reviews.show', $ad->id) }}"
+                            onclick="event.stopPropagation();"
+                            class="inline-flex items-center rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-800 hover:bg-slate-50"
+                        >
+                            {{ $ad->user->name ?? 'User' }}
+                        </a>
+                    @endif
+                </div>
+            </li>
+        @endforeach
+    </ul>
+
+    {{-- Pagination --}}
+    @if(!empty($shouldPaginate))
+        <div class="mt-6">
+            {!! $ads->appends(['filter'=>request('filter'), 'sort'=>request('sort')])->render() !!}
+        </div>
+    @endif
 @endif
-
-@include('ads.partials.image-modal')
-
-
-
-
