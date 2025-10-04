@@ -76,4 +76,6 @@ return [
     'upload_csv_help' => 'Maak of update advertenties in bulk via een CSV (titel, prijs, omschrijving, afbeelding).',
     'view' => 'Bekijken',
     'view_all' => 'Alles bekijken',
+
+    'seller' => 'Verkoper',
 ];

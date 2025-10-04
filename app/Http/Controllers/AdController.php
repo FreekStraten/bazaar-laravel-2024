@@ -15,17 +15,15 @@ class AdController extends Controller
 {
     public function index()
     {
-        $query = \App\Models\Ad::query()->with(['address','user']);
+        $query = Ad::query()->with(['address','user']);
 
-        // Filter
         $filter = request('filter');
         if ($filter === 'rentals') {
-            $query->where('type', 'is_rental');
+            $query->where('is_rental', 1);
         } elseif ($filter === 'sales') {
-            $query->where('type', 'sale');
+            $query->where('is_rental', 0);
         }
 
-        // Sort
         $sort = request('sort');
         switch ($sort) {
             case 'price_asc':
@@ -33,6 +31,9 @@ class AdController extends Controller
                 break;
             case 'price_desc':
                 $query->orderBy('price', 'desc');
+                break;
+            case 'date_asc':
+                $query->orderBy('created_at', 'asc');
                 break;
             case 'date_desc':
             default:
@@ -44,6 +45,7 @@ class AdController extends Controller
 
         return view('ads.index', compact('ads'));
     }
+
 
 
     public function store(Request $request)
@@ -147,11 +149,18 @@ class AdController extends Controller
     public function uploadCsv(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt',
+            'csv_file' => 'nullable|file|mimes:csv,txt',
+            'csv'      => 'nullable|file|mimes:csv,txt',
         ]);
 
-        $this->processCsvFile($request->file('csv_file'));
-        return redirect()->back();
+        $file = $request->file('csv_file') ?? $request->file('csv');
+        if (!$file) {
+            return back()->withErrors(['csv' => 'No CSV file uploaded.']);
+        }
+
+        $this->processCsvFile($file);
+
+        return redirect()->back()->with('success', 'CSV processed.');
     }
 
     protected function processCsvFile($csvFile)
@@ -253,26 +262,34 @@ class AdController extends Controller
 
     public function show($id, Request $request)
     {
-        $ad = Ad::with('user')->findOrFail($id);
-        $reviews = $ad->reviews()->with('user')->get();
-        $user = auth()->user();
-        $hasBid = $ad->bids()->where('user_id', $user->id)->where('is_accepted', true)->exists();
+        $ad = Ad::with([
+            'user',
+            'address',
+            'bids.user',
+            'reviews.user',
+        ])->findOrFail($id);
+
+        $reviews = $ad->reviews;
+        $bids    = $ad->bids->sortByDesc('amount');
+
+        $user    = auth()->user();
+        $hasBid  = $user
+            ? $ad->bids()->where('user_id', $user->id)->where('is_accepted', true)->exists()
+            : false;
 
         if ($request->wantsJson()) {
-
             $imageData = $this->getEncodedImageData($ad);
 
             return response()->json([
-                'ad' => $ad,
-                'reviews' => $reviews,
-                'hasBid' => $hasBid,
+                'ad'                 => $ad,
+                'reviews'            => $reviews,
+                'bids'               => $bids->values(),
+                'hasBid'             => $hasBid,
                 'base64_encoded_image' => $imageData,
             ]);
         }
 
-
-
-        return view('ads.show', compact('ad', 'reviews', 'hasBid'));
+        return view('ads.show', compact('ad', 'reviews', 'hasBid', 'bids'));
     }
 
     private function getEncodedImageData($ad)
