@@ -6,6 +6,8 @@ use App\Models\Ad;
 use App\Models\User;
 use App\Models\Address;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Faker\Factory as Faker;
 
 class AdsTableSeeder extends Seeder
@@ -13,65 +15,66 @@ class AdsTableSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create();
+        $images = $this->loadProductImages(); // MUST exist
 
-        // 10 rental + 10 normal ads
-        $this->createRentalAds($faker, 10);
-        $this->createNormalAds($faker, 10);
+        // Fail fast if no images
+        if (count($images) === 0) {
+            throw new \RuntimeException('Put images in storage/app/public/products first.');
+        }
+
+        $this->createAds($faker, $images, 10, true);   // rentals
+        $this->createAds($faker, $images, 10, false);  // normal
     }
 
-    private function createRentalAds($faker, int $count): void
+    private function createAds($faker, array $images, int $count, bool $isRental): void
     {
+        $n = count($images);
         for ($i = 0; $i < $count; $i++) {
-            $this->createAd($faker, true);
+            $img = $images[$i % $n]; // cycle images
+            $this->createAd($faker, $isRental, $img);
         }
     }
 
-    private function createNormalAds($faker, int $count): void
-    {
-        for ($i = 0; $i < $count; $i++) {
-            $this->createAd($faker, false);
-        }
-    }
-
-    private function createAd($faker, bool $isRental): void
+    private function createAd($faker, bool $isRental, array $image): void
     {
         $address = Address::inRandomOrder()->first();
-        $user    = User::inRandomOrder()->first();
-
+        $user = User::inRandomOrder()->first();
         if (!$user || !$address) return;
 
-        $title = $this->simpleTitle($isRental);
+        $baseTitle = $image['name'];                 // derived from filename
+        $title = $isRental ? "Te huur: {$baseTitle}" : $baseTitle;
 
         $ad = new Ad([
-            'title'       => $title,
-            'description' => $this->simpleDescription($title), // kort & clean
-            'price'       => $faker->randomFloat(2, 10, 200),  // compact bereik
-            'is_rental'   => $isRental,
-            'user_id'     => $user->id,
-            // 'image' => null, // leeg laten → placeholder pakt het op
+            'title' => $title,
+            'description' => "{$baseTitle} in nette staat.",
+            'price' => $faker->randomFloat(2, 10, 200),
+            'is_rental' => $isRental,
+            'user_id' => $user->id,
+            'image_path' => $image['path'],        // e.g. products/bike.jpg
         ]);
 
         $ad->address()->associate($address);
         $ad->save();
     }
 
-
-    private function simpleTitle(bool $isRental): string
+    private function loadProductImages(): array
     {
-        $items = [
-            'Fiets', 'Boormachine', 'Camera', 'Projector',
-            'Laptop', 'Smartphone', 'Nintendo Switch',
-            'PlayStation 5', 'Xbox Series S', 'Bureaustoel',
-            'Scooter', 'Dakkoffer',
-        ];
+        $files = Storage::disk('public')->files('products'); // storage/app/public/products
+        $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+        $out = [];
 
-        $item = $items[array_rand($items)];
-        return $isRental ? "Te huur: {$item}" : $item;
-    }
+        foreach ($files as $relPath) {
+            $ext = strtolower(pathinfo($relPath, PATHINFO_EXTENSION));
+            if (!in_array($ext, $allowed, true)) continue;
 
-    private function simpleDescription(string $title): string
-    {
-        // Heel kort en veilig; geen lorem
-        return "{$title} in nette staat.";
+            $filename = pathinfo($relPath, PATHINFO_FILENAME);           // coffee-maker_pro-2
+            $name = Str::title(preg_replace('/[_\-]+/', ' ', $filename)); // Coffee Maker Pro 2
+
+            $out[] = ['path' => $relPath, 'name' => $name];
+        }
+
+        shuffle($out);
+
+        return $out;
     }
 }

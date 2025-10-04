@@ -25,13 +25,13 @@
                 {{-- Image --}}
                 <div class="relative">
                     @php $img = $cover($ad); @endphp
-                    <div class="aspect-[4/3] bg-slate-100">
+                    <div class="aspect-[4/3] bg-slate-100 rounded-xl overflow-hidden">
                         <img
-                            src="{{ $img }}"
+                            src="{{ $ad->image_url }}"
                             alt="{{ $ad->title }}"
                             class="h-full w-full object-cover"
                             loading="lazy"
-                            onerror="this.onerror=null;this.src='https://placehold.co/640x480?text=No+Image';"
+                            decoding="async"
                         >
                     </div>
 

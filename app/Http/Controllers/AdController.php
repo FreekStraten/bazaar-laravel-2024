@@ -6,6 +6,7 @@ use App\Models\Address;
 use App\Models\Ad;
 use App\Models\AdReview;
 use App\Models\Bid;
+use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -42,6 +43,13 @@ class AdController extends Controller
         }
 
         $ads = $query->paginate(24)->withQueryString();
+
+        $ads->setCollection(
+            $ads->getCollection()->map(function ($ad) {
+                $ad->image_url = $this->resolveImageUrl($ad);
+                return $ad;
+            })
+        );
 
         return view('ads.index', compact('ads'));
     }
@@ -101,25 +109,31 @@ class AdController extends Controller
         }
     }
 
-    protected function handleImage(Ad $ad, Request $request)
+    protected function handleImage(Ad $ad, Request $request): void
     {
+        // multipart upload
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('ads-images'), $imageName);
-            $ad->update(['image' => $imageName]);
-            $ad->image = $imageName;
-            $ad->save();
-
-        } elseif ($request->has('image')) {
-            $imageData = base64_decode($request->input('image'));
-            $imageName = time() . '_' . uniqid();
-            $imagePath = public_path('ads-images/' . $imageName);
-            file_put_contents($imagePath, $imageData);
-            $ad->update(['image' => $imageName]);
-            $ad->image = $imageName;
-            $ad->save();
+            $ad->image_path = $request->file('image')->store('products', 'public');
+            return;
         }
+
+        // base64 upload
+        if ($request->filled('image')) {
+            $name = 'products/'.uniqid('ad_').'.jpg';
+            Storage::disk('public')->put($name, base64_decode($request->input('image')));
+            $ad->image_path = $name;
+            return;
+        }
+    }
+
+    private function resolveImageUrl(Ad $ad): string
+    {
+        if (!empty($ad->image_path)) {
+            if (Storage::disk('public')->exists($ad->image_path)) {
+                return Storage::url($ad->image_path); // -> "/storage/products/bike.jpg"
+            }
+        }
+        return 'https://placehold.co/640x480?text=No+Image';
     }
 
 

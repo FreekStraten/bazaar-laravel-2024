@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use App\Support\AdImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+
 
 class Ad extends Model
 {
@@ -17,7 +18,7 @@ class Ad extends Model
         'title',
         'description',
         'price',
-        'image',
+        'image_path',
         'is_rental',
         'created_at',
         'updated_at',
@@ -49,7 +50,11 @@ class Ad extends Model
         return $this->hasMany(AdReview::class);
     }
 
-    public function getCoverUrlAttribute(): string {
-        return AdImage::coverUrlFor($this);
+    public function getCoverUrlAttribute(): string
+    {
+        if ($this->image_path && Storage::disk('public')->exists($this->image_path)) {
+            return Storage::url($this->image_path); // /storage/products/xxx.jpg
+        }
+        return asset('images/product-placeholder.png');
     }
 }
