@@ -6,7 +6,6 @@
     </x-slot>
 
     @php
-        // Gebruik direct de accessor; geen lokale fallback meer nodig
         $hero = $ad->cover_url;
 
         $bids          = $bids    ?? collect();
@@ -21,7 +20,6 @@
 
                 {{-- LEFT: media + details (8/12) --}}
                 <div class="col-span-12 lg:col-span-8 space-y-6">
-
                     {{-- Media --}}
                     <section class="relative bg-white border border-slate-200 shadow-sm sm:rounded-lg overflow-hidden">
                         <div class="w-full bg-slate-100 flex items-center justify-center">
@@ -92,7 +90,6 @@
                             </div>
                         </div>
                     </section>
-
                 </div>
 
                 {{-- RIGHT: bids -> bid form -> reviews (4/12) --}}
@@ -126,32 +123,53 @@
                     <section class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
                         <div class="p-6 space-y-4">
                             @auth
-                                @if (Route::has('ads.place-bid'))
-                                    <form method="POST" action="{{ route('ads.place-bid', $ad->id) }}" class="space-y-3">
-                                        @csrf
-                                        <div>
-                                            <label for="amount" class="block text-sm text-slate-700 mb-1">
-                                                {{ __('ads.bid_amount') ?? 'Bid Amount' }}
-                                            </label>
-                                            <input
-                                                id="amount"
-                                                name="amount"
-                                                type="number"
-                                                step="0.01"
-                                                min="0"
-                                                value="{{ old('amount', number_format($suggestedBid, 2, '.', '')) }}"
-                                                class="w-full rounded-md border-slate-300"
-                                                required
-                                            >
-                                            @error('amount') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
-                                        </div>
-
-                                        <button
-                                            class="w-full inline-flex justify-center items-center rounded-md bg-emerald-600 px-4 py-2 text-white font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
-                                            {{ __('ads.place_bid') }}
-                                        </button>
-                                    </form>
+                                {{-- FEEDBACK BLOKKEN --}}
+                                @if (session('status'))
+                                    <div class="mb-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                                        {{ session('status') }}
+                                    </div>
                                 @endif
+
+                                @if ($errors->any())
+                                    @if ($errors->has('bid-error'))
+                                        <div class="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+                                            {{ $errors->first('bid-error') }}
+                                        </div>
+                                    @else
+                                        <div class="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+                                            {{ $errors->first() }}
+                                        </div>
+                                    @endif
+                                @endif
+
+                                <form method="POST" action="{{ route('ads.place-bid', $ad->id) }}" class="space-y-3">
+                                    @csrf
+                                    @php
+                                        $min = max(0.01, ($highestBid ? $highestBid + 0.01 : (float)$ad->price));
+                                    @endphp
+                                    <div>
+                                        <label for="amount" class="block text-sm text-slate-700 mb-1">
+                                            {{ __('ads.bid_amount') ?? 'Bid Amount' }}
+                                        </label>
+                                        <input
+                                            id="amount"
+                                            name="amount"
+                                            type="number"
+                                            step="0.01"
+                                            min="{{ number_format($min, 2, '.', '') }}"
+                                            value="{{ old('amount', number_format($suggestedBid, 2, '.', '')) }}"
+                                            class="w-full rounded-md border-slate-300"
+                                            required
+                                        >
+                                        @error('amount') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        class="w-full inline-flex justify-center items-center rounded-md bg-emerald-600 px-4 py-2 text-white font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+                                        {{ __('ads.place_bid') }}
+                                    </button>
+                                </form>
                             @else
                                 <a href="{{ route('login') }}"
                                    class="w-full inline-flex justify-center items-center rounded-md bg-emerald-600 px-4 py-2 text-white font-medium hover:bg-emerald-700">
@@ -187,7 +205,6 @@
                             </div>
                         </section>
                     @endif
-
                 </aside>
             </div>
         </div>

@@ -37,6 +37,12 @@
 
             <div class="flex items-center gap-2">
                 @auth
+
+                    <a href="{{ route('favorites.index') }}"
+                       class="px-2 py-1 rounded-md text-sm text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+                        {{ __('Favorites') }}
+                    </a>
+
                     <div class="relative">
                         <button type="button"
                                 class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-slate-800 bg-slate-100 hover:bg-slate-200 transition"

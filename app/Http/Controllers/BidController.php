@@ -1,6 +1,5 @@
 <?php
 
-// app/Http/Controllers/BidController.php
 namespace App\Http\Controllers;
 
 use App\Models\Ad;
@@ -9,57 +8,51 @@ use Illuminate\Http\Request;
 
 class BidController extends Controller
 {
-    public function placeBid(Request $request)
+    public function placeBid(Request $request, $id)
     {
-        $validatedData = $request->validate([
-            'bid-amount' => 'required|numeric|min:1',
-            'ad_id' => 'required|exists:ads,id',
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:1',
         ]);
 
-        $ad = Ad::findOrFail($validatedData['ad_id']);
+        $ad = Ad::findOrFail($id);
 
+        // Niet op eigen advertentie bieden
         if ($ad->user_id == auth()->id()) {
-            if ($request->wantsJson()) {
-                return response()->json(['error' => __('ads.cannot_bid_on_own_ad')], 400);
-            } else {
-                return redirect()->back()->withErrors(['bid-error' => __('ads.cannot_bid_on_own_ad')]);
-            }
+            return back()->withErrors(['bid-error' => __('ads.cannot_bid_on_own_ad')]);
         }
 
-        $userBidCount = auth()->user()->bid()->count();
+        // Max 4 biedingen per gebruiker
+        $userBidCount = auth()->user()->bids()->count();
         if ($userBidCount >= 4) {
-            if ($request->wantsJson()) {
-                return response()->json(['error' => __('ads.max_bid_reached')], 400);
-            } else {
-                return redirect()->back()->withErrors(['bid-error' => __('ads.max_bid_reached')]);
-            }
+            return back()->withErrors(['bid-error' => __('ads.max_bid_reached')]);
         }
 
-        $bid = $ad->bids()->create([
-            'amount' => $validatedData['bid-amount'],
+        // Bieding opslaan via relatie
+        $ad->bids()->create([
+            'amount'  => $validated['amount'],
             'user_id' => auth()->id(),
         ]);
 
-        if ($request->wantsJson()) {
-            return response()->json(['bid' => $bid]);
-        } else {
-            return redirect()->route('ads.show', $ad);
-        }
+        // Succes: terug naar de ad met status
+        return redirect()
+            ->route('ads.show', $ad->id)
+            ->with('status', __('ads.bid_placed') ?? 'Bid placed');
     }
 
     public function acceptBid($ad_id, $bid_id)
     {
-
         $ad = Ad::findOrFail($ad_id);
         $bid = Bid::findOrFail($bid_id);
 
+        // Alleen eigenaar van de advertentie mag accepteren
         if ($ad->user_id != auth()->id()) {
             return redirect()->back()->withErrors(['bid-error' => __('ads.error')]);
         }
 
+        // Eerst alles resetten, dan 1 accepteren
         $ad->bids()->update(['is_accepted' => false]);
         $bid->update(['is_accepted' => true]);
 
-        return redirect()->route('ads.show', $ad);
+        return redirect()->route('ads.show', $ad->id)->with('status', __('ads.bid_accepted') ?? 'Bid accepted');
     }
 }

@@ -84,4 +84,7 @@ return [
     'zip_code' => 'Postcode',
     'choose_file' => 'Kies bestand',
     'cancel' => 'Annuleren',
+    'bid_placed' => 'Bod geplaatst',
+
+    'calendar' => 'Calendar',
 ];

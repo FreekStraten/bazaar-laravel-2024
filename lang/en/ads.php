@@ -84,4 +84,7 @@ return [
     'zip_code' => 'Zip Code',
     'choose_file' => 'Choose File',
     'cancel' => 'Cancel',
+    'bid_placed' => 'Bid Placed',
+
+    'calendar' => 'Calendar',
 ];

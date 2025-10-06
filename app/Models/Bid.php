@@ -9,7 +9,8 @@ class Bid extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
+    // Laat Eloquent created_at/updated_at automatisch beheren
+    public $timestamps = true;
 
     protected $fillable = [
         'user_id',
@@ -20,6 +21,13 @@ class Bid extends Model
         'return_date',
         'return_image',
         'damage',
+    ];
+
+    protected $casts = [
+        'amount'       => 'decimal:2',
+        'is_accepted'  => 'boolean',
+        'pickup_date'  => 'datetime',
+        'return_date'  => 'datetime',
     ];
 
     public function user()

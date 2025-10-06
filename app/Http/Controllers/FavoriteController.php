@@ -2,38 +2,39 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ad;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class FavoriteController extends Controller
 {
-    public function toggle(Request $request, int $adId)
+    /**
+     * Toon de favorietenlijst van de ingelogde gebruiker.
+     */
+    public function index(Request $request)
     {
-        $userId = $request->user()->id;
+        $user = $request->user();
 
-        // bestaat er al een favorite?
-        $exists = DB::table('favorites')
-            ->where('user_id', $userId)
-            ->where('ad_id', $adId)
-            ->exists();
+        // via belongsToMany('ads') op User model (pivot: user_ad_favorites)
+        $ads = $user->favorites()
+            ->with(['user','address'])
+            ->latest('ads.created_at')
+            ->paginate(12);
 
-        if ($exists) {
-            DB::table('favorites')
-                ->where('user_id', $userId)
-                ->where('ad_id', $adId)
-                ->delete();
-            $state = 'removed';
-        } else {
-            DB::table('favorites')->insert([
-                'user_id' => $userId,
-                'ad_id'   => $adId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-            $state = 'added';
-        }
+        return view('favorites.index', compact('ads'));
+    }
 
-        // terug naar vorige pagina (preserve querystring) met een kleine flash
-        return back()->with('favorite_state', $state)->with('favorite_ad_id', $adId);
+    /**
+     * Toggle favorite voor een ad via route-model binding.
+     * POST /ads/{ad}/favorite
+     */
+    public function toggle(Request $request, Ad $ad)
+    {
+        $user = $request->user();
+
+        // toggle() werkt op belongsToMany pivot
+        $user->favorites()->toggle($ad->id);
+
+        // klein flash-signaal terug
+        return back()->with('favorite_state', 'toggled')->with('favorite_ad_id', $ad->id);
     }
 }
