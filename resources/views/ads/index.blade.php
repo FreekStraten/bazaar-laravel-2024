@@ -20,12 +20,11 @@
                                 <input type="file" name="csv" class="hidden" accept=".csv" />
                             </label>
 
-                            @if (Route::has('ads.create'))
-                                <a href="{{ route('ads.create') }}"
-                                   class="inline-flex items-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">
-                                    {{ __('ads.create_ad') }}
-                                </a>
-                            @endif
+                            <button type="button"
+                                    onclick="openCreateModal()"
+                                    class="inline-flex items-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+                                {{ __('ads.create_ad') }}
+                            </button>
                         </form>
                     </div>
 
