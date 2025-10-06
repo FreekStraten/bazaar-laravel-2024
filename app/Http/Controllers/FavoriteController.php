@@ -30,11 +30,15 @@ class FavoriteController extends Controller
     public function toggle(Request $request, Ad $ad)
     {
         $user = $request->user();
-
-        // toggle() werkt op belongsToMany pivot
         $user->favorites()->toggle($ad->id);
 
-        // klein flash-signaal terug
-        return back()->with('favorite_state', 'toggled')->with('favorite_ad_id', $ad->id);
+        if ($request->expectsJson()) {
+            $isNowFavorite = $user->favorites()->whereKey($ad->id)->exists();
+            return response()->json(['success' => true, 'favorite' => $isNowFavorite]);
+        }
+
+        return back();
     }
+
+
 }
