@@ -30,15 +30,25 @@ class FavoriteController extends Controller
     public function toggle(Request $request, Ad $ad)
     {
         $user = $request->user();
+
+        // Toggle met unieke pivot is nu veilig
         $user->favorites()->toggle($ad->id);
 
+        // Status en teller ALTIJD opnieuw uit DB halen (geen cache/race)
+        $isNowFavorite = $user->favorites()->whereKey($ad->id)->exists();
+        $newCount      = $user->favorites()->count();
+
         if ($request->expectsJson()) {
-            $isNowFavorite = $user->favorites()->whereKey($ad->id)->exists();
-            return response()->json(['success' => true, 'favorite' => $isNowFavorite]);
+            return response()->json([
+                'success'  => true,
+                'favorite' => $isNowFavorite,
+                'count'    => $newCount,
+            ]);
         }
 
         return back();
     }
+
 
 
 }

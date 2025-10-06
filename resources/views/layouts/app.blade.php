@@ -12,7 +12,8 @@
     @vite(['resources/css/app.css','resources/js/app.js'])
     @stack('head')
 </head>
-<body class="font-sans antialiased bg-app text-primary">
+<body class="font-sans antialiased bg-app text-primary" data-fav-count="{{ auth()->check() ? auth()->user()->favorites()->count() : 0 }}">
+
 <div class="min-h-screen flex flex-col">
 
     @include('layouts.navigation')
