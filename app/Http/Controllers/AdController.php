@@ -7,6 +7,7 @@ use App\Models\Ad;
 use App\Models\AdReview;
 use App\Models\Bid;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Image;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -109,19 +110,46 @@ class AdController extends Controller
         }
     }
 
-    protected function handleImage(Ad $ad, Request $request): void
+    protected function handleImage(\App\Models\Ad $ad, \Illuminate\Http\Request $request): void
     {
-        // multipart upload
+        // 1) multipart upload
         if ($request->hasFile('image')) {
-            $ad->image_path = $request->file('image')->store('products', 'public');
+            // Sla origineel op
+            $origRel = $request->file('image')->store('products/orig', 'public'); // bv. products/orig/abc.jpg
+            $origAbs = storage_path('app/public/' . $origRel);
+
+            // Maak thumb pad
+            $thumbRel = 'products/thumbs/' . pathinfo($origRel, PATHINFO_FILENAME) . '.jpg';
+            $thumbAbs = storage_path('app/public/' . $thumbRel);
+
+            // Genereer thumb (800px langste zijde)
+            if ($this->makeThumb($origAbs, $thumbAbs, 800, 80)) {
+                // Gebruik thumb in lijstweergaven
+                $ad->image_path = $thumbRel; // => /storage/products/thumbs/abc.jpg via Storage::url()
+            } else {
+                // fallback: gebruik origineel als het echt moet
+                $ad->image_path = $origRel;
+            }
             return;
         }
 
-        // base64 upload
+        // 2) base64 upload
         if ($request->filled('image')) {
-            $name = 'products/'.uniqid('ad_').'.jpg';
-            Storage::disk('public')->put($name, base64_decode($request->input('image')));
-            $ad->image_path = $name;
+            $raw = base64_decode($request->input('image'));
+
+            // paden bepalen
+            $name = 'products/orig/' . uniqid('ad_') . '.jpg';
+            Storage::disk('public')->put($name, $raw);
+            $origAbs  = storage_path('app/public/' . $name);
+
+            $thumbRel = 'products/thumbs/' . pathinfo($name, PATHINFO_FILENAME) . '.jpg';
+            $thumbAbs = storage_path('app/public/' . $thumbRel);
+
+            if ($this->makeThumb($origAbs, $thumbAbs, 800, 80)) {
+                $ad->image_path = $thumbRel;
+            } else {
+                $ad->image_path = $name;
+            }
             return;
         }
     }
@@ -320,6 +348,13 @@ class AdController extends Controller
     {
         $ad = Ad::findOrFail($id);
 
+        // ✅ Alleen voor verhuur
+        if (!$ad->is_rental) {
+            return redirect()
+                ->back()
+                ->withErrors(['message' => 'Reviews zijn alleen beschikbaar voor huuradvertenties.']);
+        }
+
         $request->validate([
             'review' => 'required|string',
             'rating' => 'required|integer|between:1,5',
@@ -327,20 +362,28 @@ class AdController extends Controller
 
         $user = auth()->user();
 
-        $hasBid = $ad->bids()->where('user_id', $user->id)->where('is_accepted', true)->exists();
+        // Alleen als deze gebruiker een geaccepteerde huur heeft
+        $hasBid = $ad->bids()
+            ->where('user_id', $user->id)
+            ->where('is_accepted', true)
+            ->exists();
+
         if (!$hasBid) {
-            return redirect()->back()->withErrors(['message' => 'You can only leave a review for an ad you have rented.']);
+            return redirect()
+                ->back()
+                ->withErrors(['message' => 'Je kunt alleen een review achterlaten voor een advertentie die je gehuurd hebt.']);
         }
 
         AdReview::create([
-            'ad_id' => $ad->id,
+            'ad_id'   => $ad->id,
             'user_id' => $user->id,
-            'review' => $request->input('review'),
-            'rating' => $request->input('rating'),
+            'review'  => $request->input('review'),
+            'rating'  => $request->input('rating'),
         ]);
 
-        return redirect()->back()->with('success', 'Review created successfully.');
+        return redirect()->back()->with('success', 'Review geplaatst.');
     }
+
 
     public function setReturn(Request $request, $id)
     {
@@ -364,5 +407,26 @@ class AdController extends Controller
         $ad = Ad::find($bid->ad_id);
 
         return redirect()->route('ads.show', $ad->id)->with('success', 'Dates and return photo updated successfully.');
+    }
+
+    private function makeThumb(string $srcAbs, string $dstAbs, int $max = 800): void
+    {
+        [$w, $h, $type] = getimagesize($srcAbs);
+        $fn = [
+            IMAGETYPE_JPEG => 'imagecreatefromjpeg',
+            IMAGETYPE_PNG  => 'imagecreatefrompng',
+            IMAGETYPE_WEBP => 'imagecreatefromwebp',
+        ][$type] ?? null;
+        if (!$fn || !function_exists($fn)) return;
+
+        $src = $fn($srcAbs);
+        $scale = min($max / $w, $max / $h, 1);
+        $nw = (int)($w * $scale);
+        $nh = (int)($h * $scale);
+        $dst = imagecreatetruecolor($nw, $nh);
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $nw, $nh, $w, $h);
+        imagejpeg($dst, $dstAbs, 80);
+        imagedestroy($src);
+        imagedestroy($dst);
     }
 }

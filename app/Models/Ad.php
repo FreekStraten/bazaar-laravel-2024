@@ -52,9 +52,10 @@ class Ad extends Model
 
     public function getCoverUrlAttribute(): string
     {
-        if ($this->image_path && Storage::disk('public')->exists($this->image_path)) {
-            return Storage::url($this->image_path); // /storage/products/xxx.jpg
+        if ($this->image_path && \Storage::disk('public')->exists($this->image_path)) {
+            return Storage::url($this->image_path); // bv. /storage/products/thumbs/abc.jpg
         }
         return asset('images/product-placeholder.png');
     }
+
 }

@@ -1,4 +1,3 @@
-{{-- resources/views/ads/show.blade.php --}}
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-slate-900 leading-tight">
@@ -7,14 +6,13 @@
     </x-slot>
 
     @php
-        $candidate = $ad->cover_url ?? ($ad->image ? asset('ads-images/'.$ad->image) : null);
-        $localPlaceholder = asset('images/placeholder-ad.svg');
-        $hero = $candidate ?: $localPlaceholder;
+        // Gebruik direct de accessor; geen lokale fallback meer nodig
+        $hero = $ad->cover_url;
 
-        $bids        = $bids    ?? collect();
-        $reviews     = $reviews ?? collect();
-        $highestBid  = $bids->max('amount');
-        $suggestedBid = $highestBid ? round($highestBid + 1, 2) : round((float)$ad->price, 2);
+        $bids          = $bids    ?? collect();
+        $reviews       = $reviews ?? collect();
+        $highestBid    = $bids->max('amount');
+        $suggestedBid  = $highestBid ? round($highestBid + 1, 2) : round((float)$ad->price, 2);
     @endphp
 
     <div class="py-8">
@@ -24,20 +22,20 @@
                 {{-- LEFT: media + details (8/12) --}}
                 <div class="col-span-12 lg:col-span-8 space-y-6">
 
-                    {{-- Media: compact, contain + overlay icons --}}
+                    {{-- Media --}}
                     <section class="relative bg-white border border-slate-200 shadow-sm sm:rounded-lg overflow-hidden">
                         <div class="w-full bg-slate-100 flex items-center justify-center">
                             <img
                                 src="{{ $hero }}"
                                 alt="{{ $ad->title }}"
                                 class="block w-auto max-w-full max-h-[280px] sm:max-h-[320px] lg:max-h-[380px] object-contain"
-                                onerror="this.onerror=null;this.src='https://placehold.co/800x600?text=No+Image';"
+                                width="800" height="600"
+                                loading="eager" fetchpriority="high" decoding="async"
                             >
                         </div>
 
                         {{-- Overlay action icons --}}
                         <div class="absolute top-2 right-2 flex gap-2">
-                            {{-- QR --}}
                             <a href="{{ route('ads.qr', $ad->id) }}"
                                class="inline-flex items-center justify-center rounded-full bg-white/95 border border-slate-300 p-2 text-slate-700 hover:bg-slate-50"
                                title="{{ __('ads.qr') }}">
@@ -47,7 +45,7 @@
                                 </svg>
                                 <span class="sr-only">{{ __('ads.qr') }}</span>
                             </a>
-                            {{-- Share --}}
+
                             <button type="button"
                                     class="inline-flex items-center justify-center rounded-full bg-white/95 border border-slate-300 p-2 text-slate-700 hover:bg-slate-50"
                                     title="{{ __('ads.share') ?? 'Share' }}"
@@ -100,7 +98,7 @@
                 {{-- RIGHT: bids -> bid form -> reviews (4/12) --}}
                 <aside class="col-span-12 lg:col-span-4 space-y-6">
 
-                    {{-- Bids boven het formulier --}}
+                    {{-- Bids --}}
                     <section class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-slate-900 mb-4">{{ __('ads.bids') ?? 'Bids' }}</h3>
@@ -163,30 +161,32 @@
                         </div>
                     </section>
 
-                    {{-- Reviews onder place bid + duidelijke “chevron” --}}
-                    <section class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
-                        <div class="p-2 sm:p-4">
-                            <details class="group">
-                                <summary class="cursor-pointer list-none flex items-center justify-between px-4 py-2 rounded-md hover:bg-slate-50">
-                                    <span class="text-sm font-medium text-slate-900">
-                                        {{ __('ads.reviews') }} / {{ __('ads.leave_review') }}
-                                    </span>
-                                    <svg class="h-4 w-4 text-slate-500 transition-transform duration-200 group-open:rotate-180"
-                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
-                                    </svg>
-                                </summary>
-                                <div class="px-4 pb-4 pt-2">
-                                    @include('ads.partials.review-partial', [
-                                        'canLeaveReview' => auth()->check(),
-                                        'reviewRoute' => route('ads.reviews.store', $ad->id),
-                                        'cannotLeaveReviewMessage' => __('auth.Login') . ' ' . (__('to continue') ?? ''),
-                                        'reviews' => $reviews,
-                                    ])
-                                </div>
-                            </details>
-                        </div>
-                    </section>
+                    {{-- Reviews: alleen tonen bij huuradvertenties --}}
+                    @if($ad->is_rental)
+                        <section class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
+                            <div class="p-2 sm:p-4">
+                                <details class="group" open>
+                                    <summary class="cursor-pointer list-none flex items-center justify-between px-4 py-2 rounded-md hover:bg-slate-50">
+                                        <span class="text-sm font-medium text-slate-900">
+                                            {{ __('ads.reviews') }} / {{ __('ads.leave_review') }}
+                                        </span>
+                                        <svg class="h-4 w-4 text-slate-500 transition-transform duration-200 group-open:rotate-180"
+                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+                                        </svg>
+                                    </summary>
+                                    <div class="px-4 pb-4 pt-2">
+                                        @include('ads.partials.review-partial', [
+                                            'canLeaveReview' => auth()->check(),
+                                            'reviewRoute' => route('ads.reviews.store', $ad->id),
+                                            'cannotLeaveReviewMessage' => __('auth.Login') . ' ' . (__('to continue') ?? ''),
+                                            'reviews' => $reviews,
+                                        ])
+                                    </div>
+                                </details>
+                            </div>
+                        </section>
+                    @endif
 
                 </aside>
             </div>
