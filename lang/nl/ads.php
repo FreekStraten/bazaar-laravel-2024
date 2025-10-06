@@ -86,5 +86,6 @@ return [
     'cancel' => 'Annuleren',
     'bid_placed' => 'Bod geplaatst',
 
+    'titles' => 'Advertenties',
     'calendar' => 'Calendar',
 ];

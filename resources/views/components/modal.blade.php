@@ -1,78 +1,65 @@
 @props([
-    'name',
-    'show' => false,
-    'maxWidth' => '2xl'
+    'id' => null,            // verplicht als je via events wilt openen/sluiten
+    'show' => false,         // initiale open state (meestal false)
+    'title' => null,         // optionele titel
+    'maxWidth' => 'md',      // sm|md|lg|xl
+    'z' => 'z-[90]',         // overlay z-index (navbar is z-[60], dus dit moet hoger zijn)
+    'closeOnBackdrop' => true, // klik op achtergrond sluit modal
 ])
 
 @php
-$maxWidth = [
-    'sm' => 'sm:max-w-sm',
-    'md' => 'sm:max-w-md',
-    'lg' => 'sm:max-w-lg',
-    'xl' => 'sm:max-w-xl',
-    '2xl' => 'sm:max-w-2xl',
-][$maxWidth];
+    $maxMap = [
+        'sm' => 'max-w-sm',
+        'md' => 'max-w-md',
+        'lg' => 'max-w-lg',
+        'xl' => 'max-w-xl',
+    ];
+    $maxClass = $maxMap[$maxWidth] ?? $maxMap['md'];
 @endphp
 
 <div
-    x-data="{
-        show: @js($show),
-        focusables() {
-            // All focusable element types...
-            let selector = 'a, button, input:not([type=\'hidden\']), textarea, select, details, [tabindex]:not([tabindex=\'-1\'])'
-            return [...$el.querySelectorAll(selector)]
-                // All non-disabled elements...
-                .filter(el => ! el.hasAttribute('disabled'))
-        },
-        firstFocusable() { return this.focusables()[0] },
-        lastFocusable() { return this.focusables().slice(-1)[0] },
-        nextFocusable() { return this.focusables()[this.nextFocusableIndex()] || this.firstFocusable() },
-        prevFocusable() { return this.focusables()[this.prevFocusableIndex()] || this.lastFocusable() },
-        nextFocusableIndex() { return (this.focusables().indexOf(document.activeElement) + 1) % (this.focusables().length + 1) },
-        prevFocusableIndex() { return Math.max(0, this.focusables().indexOf(document.activeElement)) -1 },
-    }"
-    x-init="$watch('show', value => {
-        if (value) {
-            document.body.classList.add('overflow-y-hidden');
-            {{ $attributes->has('focusable') ? 'setTimeout(() => firstFocusable().focus(), 100)' : '' }}
-        } else {
-            document.body.classList.remove('overflow-y-hidden');
-        }
-    })"
-    x-on:open-modal.window="$event.detail == '{{ $name }}' ? show = true : null"
-    x-on:close-modal.window="$event.detail == '{{ $name }}' ? show = false : null"
-    x-on:close.stop="show = false"
-    x-on:keydown.escape.window="show = false"
-    x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
-    x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
-    x-show="show"
-    class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
-    style="display: {{ $show ? 'block' : 'none' }};"
+    x-data="{ open: @js($show) }"
+    {{-- open/close via window events met id --}}
+    x-on:open-modal.window="if ($event.detail === '{{ $id }}') open = true"
+    x-on:close-modal.window="if ($event.detail === '{{ $id }}') open = false"
 >
     <div
-        x-show="show"
-        class="fixed inset-0 transform transition-all"
-        x-on:click="show = false"
-        x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
+        x-show="open"
+        x-transition
+        class="fixed inset-0 {{ $z }} flex items-center justify-center bg-black/40 backdrop-blur-sm"
+        @keydown.escape.window="open = false"
+        @click.self="{{ $closeOnBackdrop ? 'open = false' : '' }}"
+        style="display: none;"
     >
-        <div class="absolute inset-0 bg-gray-500 dark:bg-gray-900 opacity-75"></div>
-    </div>
+        <div class="bg-white rounded-2xl p-6 shadow-xl w-[92%] {{ $maxClass }} relative border border-slate-200">
+            {{-- Close --}}
+            <button
+                type="button"
+                class="absolute top-3 right-3 p-1 rounded hover:bg-slate-100"
+                @click="open = false"
+                aria-label="Close"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
 
-    <div
-        x-show="show"
-        class="mb-6 bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full {{ $maxWidth }} sm:mx-auto"
-        x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-    >
-        {{ $slot }}
+            @if($title)
+                <h3 class="text-sm font-semibold text-slate-900 mb-3">{{ $title }}</h3>
+            @endif
+
+            {{-- Body --}}
+            <div>
+                {{ $slot }}
+            </div>
+
+            {{-- Footer slot (optioneel) --}}
+            @isset($footer)
+                <div class="mt-4">
+                    {{ $footer }}
+                </div>
+            @endisset
+        </div>
     </div>
 </div>

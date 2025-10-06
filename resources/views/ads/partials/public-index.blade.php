@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-xl text-slate-900 leading-tight">
             {{ __('ads.recent_ads') }}
         </h2>
     </x-slot>
@@ -8,14 +8,14 @@
     <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-4 flex items-center justify-between">
-                <div class="text-sm text-gray-500 dark:text-gray-400">
+                <div class="text-sm text-slate-500">
                     {{ __('ads.results') }}: {{ $ads->total() ?? count($ads) }}
                 </div>
 
-                <form action="{{ route('ads.index') }}" method="GET">
+                <form action="{{ route('ads.index') }}" method="GET" class="flex items-center gap-2">
                     <label for="sort" class="sr-only">{{ __('ads.sort') }}</label>
                     <select id="sort" name="sort"
-                            class="rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 text-sm"
+                            class="rounded-md border border-slate-300 bg-white text-slate-800 text-sm px-2 py-1"
                             onchange="this.form.submit()">
                         <option value="date_desc" {{ request('sort')==='date_desc' ? 'selected' : '' }}>
                             {{ __('ads.sort_by_date_desc') }}
@@ -33,21 +33,7 @@
                 </form>
             </div>
 
-            <div class="grid gap-6
-                        grid-cols-1
-                        sm:grid-cols-2
-                        lg:grid-cols-3
-                        xl:grid-cols-4">
-                @foreach ($ads as $ad)
-                    <x-ads.ad-card :ad="$ad" />
-                @endforeach
-            </div>
-
-            @if(method_exists($ads, 'links'))
-                <div class="mt-8">
-                    {{ $ads->links() }}
-                </div>
-            @endif
+            @include('ads.partials.ad-list', ['ads' => $ads, 'shouldPaginate' => true])
         </div>
     </div>
 </x-app-layout>

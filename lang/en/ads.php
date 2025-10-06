@@ -87,4 +87,5 @@ return [
     'bid_placed' => 'Bid Placed',
 
     'calendar' => 'Calendar',
+    'titles' => 'Ads',
 ];

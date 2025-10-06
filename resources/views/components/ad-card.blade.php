@@ -1,7 +1,6 @@
 @props(['ad'])
 
 @php
-    $modalId = 'qr-modal-'.$ad->id;
     $adUrl   = route('ads.show', $ad->id);
     $isFavorite = auth()->check()
         ? auth()->user()->favorites()->whereKey($ad->id)->exists()
@@ -13,38 +12,31 @@
 @endphp
 
 <div
-    x-data="{ active: {{ $isFavorite ? 'true' : 'false' }}, showQr: false }"
+    x-data="{ active: {{ $isFavorite ? 'true' : 'false' }} }"
     class="relative overflow-hidden rounded-2xl border border-slate-300 bg-white transition shadow-sm hover:shadow-md"
 >
-    {{-- ACTIEKNOPPEN RECHTSBOVEN --}}
+    {{-- ACTIES RECHTSBOVEN --}}
     <div class="absolute right-2 top-2 z-10 flex items-center gap-1">
-        {{-- FAVORIET --}}
         @auth
+            {{-- FAVORIET --}}
             <button
                 type="button"
-                @click.stop.prevent="
-    fetch('{{ route('favorites.toggle', $ad) }}', {
-        method: 'POST',
-        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data?.success) {
-            active = !!data.favorite;                  // rood ↔ grijs
-            if ($store.fav) $store.fav.count = +data.count; // navbar direct goed
-        }
-    })
-    .catch(console.error);
-
-            "
                 class="p-2 rounded-full bg-white border border-slate-300 hover:bg-rose-50 transition"
                 :title="active ? 'Verwijder uit favorieten' : 'Voeg toe aan favorieten'"
-            >
+                @click.stop.prevent="
+                fetch('{{ route('favorites.toggle', $ad) }}', {
+                    method:'POST',
+                    headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}
+                })
+                .then(r=>r.json())
+                .then(d=>{
+                    if(d?.success){ active = !!d.favorite; if($store.fav) $store.fav.count = +d.count; }
+                })
+            ">
                 <template x-if="active">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                          class="h-5 w-5 text-rose-500 fill-rose-500">
-                        <path
-                            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.13 2.44h.74C13.09 5.01 14.76 4 16.5 4 19 4 21 6 21 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.13 2.44h.74C13.09 5.01 14.76 4 16.5 4 19 4 21 6 21 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
                 </template>
                 <template x-if="!active">
@@ -57,11 +49,11 @@
             </button>
         @endauth
 
-        {{-- QR --}}
+        {{-- QR (1 plek) --}}
         <button type="button"
-                @click.stop="showQr = true"
                 class="p-2 rounded-full bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition"
-                title="Toon QR-code">
+                title="Toon QR-code"
+                @click.stop="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'qr-{{ $ad->id }}' }))">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                  fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -73,17 +65,12 @@
     {{-- MEDIA + BADGE --}}
     <div class="relative">
         <div class="aspect-[4/3] bg-slate-100 overflow-hidden">
-            <img
-                src="{{ $ad->cover_url }}"
-                alt="{{ $ad->title }}"
-                class="h-full w-full object-cover"
-                width="640" height="480"
-                loading="lazy" decoding="async"
-            >
+            <img src="{{ $ad->cover_url }}" alt="{{ $ad->title }}"
+                 class="h-full w-full object-cover" width="640" height="480"
+                 loading="lazy" decoding="async">
         </div>
         <div class="absolute left-2 top-2">
-            <span
-                class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium shadow-sm {{ $badgeClasses }}">
+            <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium shadow-sm {{ $badgeClasses }}">
                 {{ $badgeText }}
             </span>
         </div>
@@ -109,23 +96,11 @@
         </div>
     </a>
 
-    {{-- QR MODAL --}}
-    <div x-show="showQr"
-         x-transition
-         class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-         @click.self="showQr = false">
-        <div class="bg-white rounded-2xl p-6 shadow-xl w-[90%] max-w-md relative">
-            <button @click="showQr = false" class="absolute top-3 right-3 p-1 rounded hover:bg-slate-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-            <h3 class="text-sm font-semibold text-slate-900 mb-3">QR-code</h3>
-            <div class="flex flex-col items-center gap-3">
-                <img src="{{ route('ads.qr', $ad->id) }}" alt="QR code" class="w-48 h-48 object-contain">
-                <p class="text-xs text-slate-600 text-center break-all">{{ $adUrl }}</p>
-            </div>
+    {{-- QR MODAL via gedeelde component --}}
+    <x-modal id="qr-{{ $ad->id }}" :title="__('QR-code')" maxWidth="md" z="z-[90]">
+        <div class="flex flex-col items-center gap-3">
+            <img src="{{ route('ads.qr', $ad->id) }}" alt="QR code" class="w-48 h-48 object-contain">
+            <p class="text-xs text-slate-600 text-center break-all">{{ route('ads.show', $ad->id) }}</p>
         </div>
-    </div>
+    </x-modal>
 </div>

@@ -1,3 +1,7 @@
+@php
+    $displayTitle = fn($title) => preg_replace('/^\s*Te\s*huur:\s*/i', '', $title);
+@endphp
+
 @if ($ads->isEmpty())
     <div class="rounded-xl border border-slate-200 bg-slate-50 p-6 text-slate-700">
         {{ __('ads.no_ads_found') }}

@@ -33,27 +33,40 @@
                         </div>
 
                         {{-- Overlay action icons --}}
-                        <div class="absolute top-2 right-2 flex gap-2">
-                            <a href="{{ route('ads.qr', $ad->id) }}"
-                               class="inline-flex items-center justify-center rounded-full bg-white/95 border border-slate-300 p-2 text-slate-700 hover:bg-slate-50"
-                               title="{{ __('ads.qr') }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <div x-data="{ qr:false }" class="absolute top-2 right-2 flex gap-2">
+
+                            {{-- QR trigger --}}
+                            <button type="button"
+                                    class="inline-flex items-center justify-center rounded-full bg-white/95 border border-slate-300 p-2 text-slate-700 hover:bg-slate-50"
+                                    title="{{ __('ads.qr') }}"
+                                    @click.stop="qr = true">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                           d="M3.75 4.5h4.5v4.5h-4.5V4.5zM15.75 4.5h4.5v4.5h-4.5V4.5zM3.75 15h4.5v4.5h-4.5V15zM15.75 15H18M19.5 15H21M15.75 18v1.5M18 19.5H21"/>
                                 </svg>
                                 <span class="sr-only">{{ __('ads.qr') }}</span>
-                            </a>
-
-                            <button type="button"
-                                    class="inline-flex items-center justify-center rounded-full bg-white/95 border border-slate-300 p-2 text-slate-700 hover:bg-slate-50"
-                                    title="{{ __('ads.share') ?? 'Share' }}"
-                                    onclick="if(navigator.share){navigator.share({title: '{{ addslashes($ad->title) }}', url: '{{ route('ads.show',$ad->id) }}'})}else{navigator.clipboard.writeText('{{ route('ads.show',$ad->id) }}'); alert('Link copied');}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-                                    <path d="M7 12v7a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                    <path d="M12 3v13M12 3l-3 3M12 3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <span class="sr-only">{{ __('ads.share') ?? 'Share' }}</span>
                             </button>
+
+                            {{-- QR modal --}}
+                            <div x-show="qr"
+                                 x-transition
+                                 class="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+                                 @click.self="qr=false">
+                                <div class="bg-white rounded-2xl p-6 shadow-xl w-[90%] max-w-md relative">
+                                    <button @click="qr=false" class="absolute top-3 right-3 p-1 rounded hover:bg-slate-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                    <h3 class="text-sm font-semibold text-slate-900 mb-3">{{ __('ads.qr') }}</h3>
+                                    <div class="flex flex-col items-center gap-3">
+                                        <img src="{{ route('ads.qr', $ad->id) }}" alt="QR code" class="w-48 h-48 object-contain">
+                                        <p class="text-xs text-slate-600 text-center break-all">{{ route('ads.show',$ad->id) }}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
