@@ -12,6 +12,8 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 class AdController extends Controller
 {
@@ -59,99 +61,86 @@ class AdController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'street' => 'required|string|max:255',
-            'house_number' => 'required|string|max:50',
-            'city' => 'required|string|max:255',
-            'zip_code' => 'required|string|max:20',
-            'image' => 'required',
-            'is_rental' => 'required|boolean',
-        ]);
+    $request->validate([
+        'title'         => 'required|string|max:255',
+        'description'   => 'required|string',
+        'price'         => 'required|numeric',
+        'street'        => 'required|string|max:255',
+        'house_number'  => 'required|string|max:50',
+        'city'          => 'required|string|max:255',
+        'zip_code'      => 'required|string|max:20',
+        'image'         => 'required|image|mimes:jpg,jpeg,png,webp|max:8192',
+        'is_rental'     => 'required|boolean',
+    ]);
 
-        $userAdCount = auth()->user()->rentalAds()->count();
-        if ($userAdCount >= 4) {
-            if ($request->expectsJson()) {
-                return response()->json(['message' => __('ads.max_ads_reached')], 422);
-            } else {
-                return redirect()->back()->withErrors(['message' => __('ads.max_ads_reached')]);
-            }
-        }
-
-        $address = Address::firstOrCreate([
-            'street' => $request->input('street'),
-            'house_number' => $request->input('house_number'),
-            'city' => $request->input('city'),
-            'zip_code' => $request->input('zip_code'),
-        ]);
-
-        $ad = new Ad([
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'price' => $request->input('price'),
-            'user_id' => auth()->id(),
-            'is_rental' => $request->input('is_rental'),
-        ]);
-        $ad->address()->associate($address);
-
-        $this->handleImage($ad, $request);
-
-        $ad->save();
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'message' => 'Rental ad created successfully.',
-                'data' => $ad,
-            ], 201);
-        } else {
-            return redirect()->route('ads.index')->with('success', 'Rental ad created successfully.');
-        }
+    // Max 4 rentals (jouw bestaande check)
+    $userAdCount = auth()->user()->rentalAds()->count();
+    if ($userAdCount >= 4 && (int)$request->input('is_rental') === 1) {
+        return $request->expectsJson()
+            ? response()->json(['message' => __('ads.max_ads_reached')], 422)
+            : back()->withErrors(['message' => __('ads.max_ads_reached')]);
     }
 
-    protected function handleImage(\App\Models\Ad $ad, \Illuminate\Http\Request $request): void
+    // Adres aanmaken/zoeken
+    $address = Address::firstOrCreate([
+        'street'        => $request->input('street'),
+        'house_number'  => $request->input('house_number'),
+        'city'          => $request->input('city'),
+        'zip_code'      => $request->input('zip_code'),
+    ]);
+
+    // Ad opbouwen (nog zonder image_path)
+    $ad = new Ad([
+        'title'       => $request->input('title'),
+        'description' => $request->input('description'),
+        'price'       => $request->input('price'),
+        'user_id'     => auth()->id(),
+        'is_rental'   => (int) $request->input('is_rental') === 1,
+    ]);
+    $ad->address()->associate($address);
+
+    // Belangrijk: juiste volgorde file/ad meegeven
+    if ($request->hasFile('image')) {
+        $this->handleImage($request->file('image'), $ad);
+    }
+
+    $ad->save();
+
+    return $request->expectsJson()
+        ? response()->json(['message' => 'Ad created successfully.', 'data' => $ad], 201)
+        : redirect()->route('ads.index')->with('success', 'Advertentie geplaatst.');
+}
+
+
+    private function handleImage(UploadedFile $file, Ad $ad): void
     {
-        // 1) multipart upload
-        if ($request->hasFile('image')) {
-            // Sla origineel op
-            $origRel = $request->file('image')->store('products/orig', 'public'); // bv. products/orig/abc.jpg
-            $origAbs = storage_path('app/public/' . $origRel);
+        // Zorg dat de mappen bestaan
+        Storage::disk('public')->makeDirectory('products/orig');
+        Storage::disk('public')->makeDirectory('products/thumbs');
 
-            // Maak thumb pad
-            $thumbRel = 'products/thumbs/' . pathinfo($origRel, PATHINFO_FILENAME) . '.jpg';
-            $thumbAbs = storage_path('app/public/' . $thumbRel);
-
-            // Genereer thumb (800px langste zijde)
-            if ($this->makeThumb($origAbs, $thumbAbs, 800, 80)) {
-                // Gebruik thumb in lijstweergaven
-                $ad->image_path = $thumbRel; // => /storage/products/thumbs/abc.jpg via Storage::url()
-            } else {
-                // fallback: gebruik origineel als het echt moet
-                $ad->image_path = $origRel;
-            }
-            return;
+        // Bestandsnaam
+        $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+        if (!in_array($ext, ['jpg','jpeg','png','webp'], true)) {
+            $ext = 'jpg';
         }
+        $name = Str::random(40) . '.' . $ext;
 
-        // 2) base64 upload
-        if ($request->filled('image')) {
-            $raw = base64_decode($request->input('image'));
+        // Relatieve paden
+        $relOriginal = "products/orig/{$name}";
+        $relThumb    = "products/thumbs/{$name}";
 
-            // paden bepalen
-            $name = 'products/orig/' . uniqid('ad_') . '.jpg';
-            Storage::disk('public')->put($name, $raw);
-            $origAbs  = storage_path('app/public/' . $name);
+        // Opslaan origineel op public disk
+        Storage::disk('public')->putFileAs('products/orig', $file, $name);
 
-            $thumbRel = 'products/thumbs/' . pathinfo($name, PATHINFO_FILENAME) . '.jpg';
-            $thumbAbs = storage_path('app/public/' . $thumbRel);
+        // Absolute paden
+        $absOriginal = Storage::disk('public')->path($relOriginal);
+        $absThumb    = Storage::disk('public')->path($relThumb);
 
-            if ($this->makeThumb($origAbs, $thumbAbs, 800, 80)) {
-                $ad->image_path = $thumbRel;
-            } else {
-                $ad->image_path = $name;
-            }
-            return;
-        }
+        // Thumb maken
+        $this->makeThumb($absOriginal, $absThumb, 800);
+
+        // In het model bewaren (ORIG-pad)
+        $ad->image_path = $relOriginal;
     }
 
     private function resolveImageUrl(Ad $ad): string
@@ -411,22 +400,42 @@ class AdController extends Controller
 
     private function makeThumb(string $srcAbs, string $dstAbs, int $max = 800): void
     {
-        [$w, $h, $type] = getimagesize($srcAbs);
-        $fn = [
+        @mkdir(dirname($dstAbs), 0755, true);
+
+        [$w, $h, $type] = @getimagesize($srcAbs);
+        if (!$w || !$h) return;
+
+        $create = [
             IMAGETYPE_JPEG => 'imagecreatefromjpeg',
             IMAGETYPE_PNG  => 'imagecreatefrompng',
             IMAGETYPE_WEBP => 'imagecreatefromwebp',
         ][$type] ?? null;
-        if (!$fn || !function_exists($fn)) return;
+        if (!$create || !function_exists($create)) return;
 
-        $src = $fn($srcAbs);
+        $src = @$create($srcAbs);
+        if (!$src) return;
+
         $scale = min($max / $w, $max / $h, 1);
-        $nw = (int)($w * $scale);
-        $nh = (int)($h * $scale);
+        $nw = (int) round($w * $scale);
+        $nh = (int) round($h * $scale);
         $dst = imagecreatetruecolor($nw, $nh);
+
+        if (in_array($type, [IMAGETYPE_PNG, IMAGETYPE_WEBP], true)) {
+            imagealphablending($dst, false);
+            imagesavealpha($dst, true);
+            $transparent = imagecolorallocatealpha($dst, 0, 0, 0, 127);
+            imagefilledrectangle($dst, 0, 0, $nw, $nh, $transparent);
+        }
+
         imagecopyresampled($dst, $src, 0, 0, 0, 0, $nw, $nh, $w, $h);
-        imagejpeg($dst, $dstAbs, 80);
+
+        if ($type === IMAGETYPE_PNG)      imagepng($dst, $dstAbs, 6);
+        elseif ($type === IMAGETYPE_WEBP) imagewebp($dst, $dstAbs, 80);
+        else                              imagejpeg($dst, $dstAbs, 80);
+
         imagedestroy($src);
         imagedestroy($dst);
     }
+
+
 }

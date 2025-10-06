@@ -78,4 +78,10 @@ return [
     'view_all' => 'View all',
 
     'seller' => 'Seller',
+    'street' => 'Street',
+    'house_number' => 'House Number',
+    'city' => 'City',
+    'zip_code' => 'Zip Code',
+    'choose_file' => 'Choose File',
+    'cancel' => 'Cancel',
 ];

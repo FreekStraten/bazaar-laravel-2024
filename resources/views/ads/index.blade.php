@@ -72,4 +72,5 @@
 
         </div>
     </div>
+    @include('ads.partials.create-modal')
 </x-app-layout>

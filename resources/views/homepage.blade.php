@@ -1,6 +1,5 @@
 <x-app-layout>
 
-
     {{-- HERO (clean, no grid) --}}
     <section class="relative overflow-hidden -mt-6"> {{-- cancels <main class="pt-6"> --}}
         {{-- green wash that starts right under header and fades down --}}

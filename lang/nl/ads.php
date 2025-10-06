@@ -78,4 +78,10 @@ return [
     'view_all' => 'Alles bekijken',
 
     'seller' => 'Verkoper',
+    'street' => 'Straat',
+    'house_number' => 'Huisnummer',
+    'city' => 'Plaats',
+    'zip_code' => 'Postcode',
+    'choose_file' => 'Kies bestand',
+    'cancel' => 'Annuleren',
 ];
