@@ -18,7 +18,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 16V8m0 0l-3 3m3-3l3 3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
                             </svg>
-                            <span>Upload CSV</span>
+                            <span>{{ __('ads.upload_csv') }}</span>
                             <input type="file" name="csv" accept=".csv" class="hidden" onchange="this.form.submit()">
                         </label>
                     </form>
@@ -27,12 +27,12 @@
                     <button type="button" x-data="{}"
                             class="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm text-white hover:bg-emerald-700"
                             @click="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'create-ad' }))">
-                        {{ __('Create Ad') }}
+                        {{ __('ads.create_ad') }}
                     </button>
                 </div>
 
                 <div class="hidden sm:block text-xs text-slate-500">
-                    Bulk-create or update ads from a CSV file (title, price, description, image).
+                    {{ __('ads.upload_csv_help') }}
                 </div>
             </div>
 
@@ -43,7 +43,7 @@
 
                     {{-- Links: Filter + Sort met consistente dropdown-styling --}}
                     <div class="flex flex-wrap items-center gap-3">
-                        <label class="text-sm text-slate-600">Filter</label>
+                        <label class="text-sm text-slate-600">{{ __('ads.filter') }}</label>
 
                         {{-- FILTER select --}}
                         <div class="relative">
@@ -51,9 +51,9 @@
                                     class="appearance-none bg-white bg-none [background-image:none]
                                            rounded-md border border-slate-300 text-sm px-3 pr-8 py-1.5
                                            focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500">
-                                <option value="all"    {{ request('filter','all')==='all' ? 'selected' : '' }}>All Ads</option>
-                                <option value="rental" {{ request('filter')==='rental'    ? 'selected' : '' }}>Rental Ads</option>
-                                <option value="sale"   {{ request('filter')==='sale'      ? 'selected' : '' }}>Sale Ads</option>
+                                <option value="all"    {{ request('filter','all')==='all' ? 'selected' : '' }}>{{ __('ads.all_ads') }}</option>
+                                <option value="rental" {{ request('filter')==='rental'    ? 'selected' : '' }}>{{ __('ads.rental_ads') }}</option>
+                                <option value="sale"   {{ request('filter')==='sale'      ? 'selected' : '' }}>{{ __('ads.sale_ads') }}</option>
                             </select>
                             {{-- Custom chevron --}}
                             <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500">
@@ -69,10 +69,10 @@
                                     class="appearance-none bg-white bg-none [background-image:none]
                                            rounded-md border border-slate-300 text-sm px-3 pr-8 py-1.5
                                            focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500">
-                                <option value="date_desc" {{ request('sort','date_desc')==='date_desc' ? 'selected' : '' }}>Sort by Date Descending</option>
-                                <option value="date_asc"  {{ request('sort')==='date_asc'              ? 'selected' : '' }}>Sort by Date Ascending</option>
-                                <option value="price_asc" {{ request('sort')==='price_asc'             ? 'selected' : '' }}>Sort by Price Ascending</option>
-                                <option value="price_desc"{{ request('sort')==='price_desc'            ? 'selected' : '' }}>Sort by Price Descending</option>
+                                <option value="date_desc" {{ request('sort','date_desc')==='date_desc' ? 'selected' : '' }}>{{ __('ads.sort_by_date_desc') }}</option>
+                                <option value="date_asc"  {{ request('sort')==='date_asc'              ? 'selected' : '' }}>{{ __('ads.sort_by_date_asc') }}</option>
+                                <option value="price_asc" {{ request('sort')==='price_asc'             ? 'selected' : '' }}>{{ __('ads.sort_by_price_asc') }}</option>
+                                <option value="price_desc"{{ request('sort')==='price_desc'            ? 'selected' : '' }}>{{ __('ads.sort_by_price_desc') }}</option>
                             </select>
                             {{-- Custom chevron --}}
                             <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500">
@@ -87,7 +87,7 @@
                     <button type="submit"
                             class="inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-1.5
                                    text-sm font-medium text-slate-700 hover:bg-slate-50">
-                        Apply
+                        {{ __('ads.apply') }}
                     </button>
                 </div>
             </form>
@@ -102,6 +102,14 @@
         </div>
     </div>
 
-    {{-- Create Ad Modal (gedeelde modal) --}}
-    @include('ads.partials.create-modal')
+            {{-- Create Ad Modal (gedeelde modal) --}}
+            @include('ads.partials.create-modal')
+
+            @if(request('open') === 'create-ad')
+                <script>
+                    window.addEventListener('DOMContentLoaded', function(){
+                        window.dispatchEvent(new CustomEvent('open-modal', { detail: 'create-ad' }));
+                    });
+                </script>
+            @endif
 </x-app-layout>

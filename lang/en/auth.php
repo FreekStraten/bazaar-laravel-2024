@@ -9,6 +9,8 @@ return [
     'Login' => 'Login',
     'Name' => 'Name',
     'Email' => 'Email',
+    'name' => 'Name',
+    'email' => 'Email',
     'UserType' => 'User Type',
     'Street' => 'Street',
     'HouseNumber' => 'House Number',

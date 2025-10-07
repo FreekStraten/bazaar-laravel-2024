@@ -3,7 +3,7 @@
 return [
     'rental_ads' => 'Verhuur Advertenties',
     'rental_ad' => 'Verhuur Advertentie',
-    'title' => 'Titel',
+    'title' => 'Advertentie lijst',
     'description' => 'Omschrijving',
     'price' => 'Prijs',
     'location' => 'Locatie',
@@ -87,6 +87,8 @@ return [
     'filter' => 'Filter',
 
     'upload_csv_help' => 'Maak of update advertenties in bulk via een CSV (titel, prijs, omschrijving, afbeelding).',
+    'sale_ads' => 'Koop Advertenties',
+    'create_your_own_ad' => 'Maak je eigen advertentie',
     'view' => 'Bekijken',
     'view_all' => 'Alles bekijken',
 
@@ -101,7 +103,7 @@ return [
     'bid_accepted' => 'Bod geaccepteerd',
 
     'titles' => 'Advertenties',
-    'calendar' => 'Calendar',
+    'calendar' => 'Kalender',
     'rental' => 'Verhuur',
     'sale' => 'Koop',
     'sold' => 'Verkocht',

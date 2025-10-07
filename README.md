@@ -12,7 +12,7 @@ Volledige **marktplaats** met zowel **koop** als **verhuur**. Ondersteunt bieden
 ---
 
 ## Tech stack
-Laravel 11 · PHP 8.2+ · MySQL/MariaDB · Blade/Tailwind · Alpine.js · (optioneel) Laravel Sanctum (API tokens) · PHP‑Spreadsheet (CSV) · simplesoftwareio/simple‑qrcode
+Laravel 11 · PHP 8.2+ · MySQL/MariaDB · Blade/Tailwind · Alpine.js · Auth scaffold: **Laravel Breeze** · (optioneel) Laravel Sanctum (API tokens) · PHP‑Spreadsheet (CSV) · simplesoftwareio/simple‑qrcode
 
 ## Highlights
 - **Ads (koop & verhuur)** – koop met één geaccepteerd bod (verkoop), of **verhuur** met datumvoorstel.

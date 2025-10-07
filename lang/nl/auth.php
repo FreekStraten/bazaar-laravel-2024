@@ -9,6 +9,8 @@ return [
     'Login' => 'Inloggen',
     'Name' => 'Naam',
     'Email' => 'E-mail',
+    'name' => 'Naam',
+    'email' => 'E-mail',
     'UserType' => 'Gebruikerstype',
     'Street' => 'Straat',
     'HouseNumber' => 'Huisnummer',

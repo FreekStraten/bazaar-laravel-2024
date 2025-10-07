@@ -3,7 +3,7 @@
 return [
     'rental_ads' => 'Rental Ads',
     'rental_ad' => 'Rental Ad',
-    'title' => 'Title',
+    'title' => 'Ad List',
     'description' => 'Description',
     'price' => 'Price',
     'location' => 'Location',
@@ -87,6 +87,8 @@ return [
     'filter' => 'Filter',
 
     'upload_csv_help' => 'Bulk-create or update ads from a CSV file (title, price, description, image).',
+    'sale_ads' => 'Sale Ads',
+    'create_your_own_ad' => 'Create your own ad',
     'view' => 'View',
     'view_all' => 'View all',
 

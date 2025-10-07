@@ -10,11 +10,11 @@
                 <div class="hidden sm:flex items-center gap-2">
                     <a href="{{ route('ads.index') }}"
                        class="px-2 py-1 rounded-md text-sm text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        All Ads
+                        {{ __('ads.all_ads') }}
                     </a>
                     <a href="{{ route('ads.user-rented-ads') }}"
                        class="px-2 py-1 rounded-md text-sm text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
-                        Rented Ads
+                        {{ __('ads.rented_ads') }}
                     </a>
 
                     <div class="relative">
@@ -69,10 +69,10 @@
                             </svg>
                         </button>
                         <div class="hidden absolute right-0 mt-2 w-48 rounded-lg border border-slate-200 bg-white shadow-xl p-1 z-[80]">
-                            <a href="{{ route('profile.edit') }}" class="block px-3 py-2 text-sm rounded-md text-slate-700 hover:bg-slate-100">Profile</a>
+                            <a href="{{ route('profile.edit') }}" class="block px-3 py-2 text-sm rounded-md text-slate-700 hover:bg-slate-100">{{ __('auth.Profile') }}</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button class="w-full text-left px-3 py-2 text-sm rounded-md text-slate-700 hover:bg-slate-100">Log out</button>
+                                <button class="w-full text-left px-3 py-2 text-sm rounded-md text-slate-700 hover:bg-slate-100">{{ __('auth.Logout') }}</button>
                             </form>
                         </div>
                     </div>

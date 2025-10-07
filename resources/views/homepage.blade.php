@@ -49,7 +49,11 @@
     <div class="pb-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <section class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
-                <div class="p-4 sm:p-6">
+                <div class="relative p-4 sm:p-6">
+                    <a href="{{ route('ads.index', ['open' => 'create-ad']) }}"
+                       class="absolute right-4 sm:right-6 -top-3 inline-flex items-center rounded-lg bg-emerald-600 px-3 py-1.5 text-white text-sm font-medium shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+                        {{ __('ads.create_your_own_ad') }}
+                    </a>
 
                     {{-- Header met "Just in" pill + klok-icoon --}}
                     <div class="flex items-center justify-between mb-3">

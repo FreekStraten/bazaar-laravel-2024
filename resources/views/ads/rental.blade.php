@@ -30,6 +30,7 @@
                 </div>
 
                 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/locales-all.min.js"></script>
                 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css" rel="stylesheet"/>
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
@@ -37,6 +38,7 @@
                         if (el) {
                             var calendar = new FullCalendar.Calendar(el, {
                                 initialView: 'dayGridMonth',
+                                locale: '{{ app()->getLocale() }}',
                                 events: @json($events ?? []),
                             });
                             calendar.render();
