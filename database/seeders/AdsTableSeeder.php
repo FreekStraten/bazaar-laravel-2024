@@ -88,7 +88,7 @@ class AdsTableSeeder extends Seeder
             }
         };
 
-        foreach (['123@gmail.com', 'freekstraten@gmail.com'] as $fixedEmail) {
+        foreach (['123@gmail.com', 'owner@example.test'] as $fixedEmail) {
             $ensureFor($fixedEmail);
         }
     }

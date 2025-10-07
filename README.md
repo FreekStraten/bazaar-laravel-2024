@@ -1,4 +1,4 @@
-# Whitelabel Marketplace — Auctions & Rentals (Laravel)
+# Bazaar — Auctions & Rentals (Laravel)
 
 ![Laravel](https://img.shields.io/badge/Laravel-11-red?logo=laravel&logoColor=white)
 ![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)
@@ -7,31 +7,28 @@
 
 **Rol:** Solo · **Jaar:** 2025
 
-Whitelabel **marktplaats** met **veilingen** en **verhuur**. Bedoeld voor particulieren én bedrijven, inclusief theming per klant (whitelabel), i18n (NL/EN), CSV‑import en QR‑codes op advertenties.
+Volledige **marktplaats** met zowel **koop** als **verhuur**. Ondersteunt bieden en accepteren, huurperiodes met voorstel‑/bevestigflow, favorieten, CSV‑import en QR‑codes. Inclusief meertaligheid (NL/EN) en nette, toegankelijke Blade/Tailwind UI.
 
 ---
 
 ## Tech stack
-Laravel 11 · PHP 8.2+ · MySQL/MariaDB · Blade/Tailwind · (optioneel) Laravel Sanctum (API tokens) · PHP‑Spreadsheet (CSV) · QR code package
+Laravel 11 · PHP 8.2+ · MySQL/MariaDB · Blade/Tailwind · Alpine.js · (optioneel) Laravel Sanctum (API tokens) · PHP‑Spreadsheet (CSV) · simplesoftwareio/simple‑qrcode
 
-## Highlights (scope)
-- **Accounts & rollen** – registratie als gebruiker, particuliere of zakelijke adverteerder.
-- **Whitelabel/theming** – per klant eigen stijl (kleuren/logo) en eigen landingspagina/URL.
-- **Landing page builder** – componenten zoals *uitgelichte advertenties*, tekstblok, afbeelding.
-- **Advertenties** – kopen, **veilingen**, **verhuur** (met agenda’s voor beschikbaarheid/retour).
-- **Favorieten & historie** – gebruikers kunnen favoriete advertenties en aankoop-/huurhistorie zien.
-- **CSV‑import** – in bulk advertenties importeren.
-- **QR‑codes** – elke advertentie krijgt een QR‑code om snel te delen.
-- **API** – beveiligde endpoints (bijv. via **Sanctum**) voor externe apps of klant‑specifieke feeds.
-- **i18n** – minimaal **Nederlands** en **Engels** (Laravel translations).
+## Highlights
+- **Ads (koop & verhuur)** – koop met één geaccepteerd bod (verkoop), of **verhuur** met datumvoorstel.
+- **Biedingen** – plaatsen/acceptatie, UI‑flow voor eigenaar (accept) en huurder (bevestigen).
+- **Huurdatums** – eigenaar stelt ophaal/retour voor; huurder bevestigt. Pas na bevestiging zichtbaar in agenda.
+- **Agenda “Rented Ads”** – toont alleen geaccepteerde én bevestigde huurperiodes.
+- **Favorieten** – “hartje” op kaarten; eigen overzichtspagina.
+- **CSV‑import** – snel demo‑/testdata aanmaken via upload.
+- **QR‑codes** – per ad (modal + aparte route).
+- **i18n** – Nederlands/Engels; taalwisselknop toont actieve taal.
 
 > Business rules (selectie): max. 4 biedingen/advertenties/verhuur‑advertenties per gebruiker; bij retourneren slijtage berekenen + verplichte foto‑upload; advertenties kunnen bundelen (bijv. kettingzaag + olie).
 
 ---
 
 ## Demo
-*(optioneel)* Plaats hier je screenshots/gif uit `/docs/` en een live demo‑link als je die hebt.
-
 ![Screens](docs/demo.gif)
 
 ---
@@ -70,6 +67,13 @@ php artisan serve
 # app draait op http://127.0.0.1:8000
 ```
 
+### Seed logins (demo)
+- owner@example.test / `12345678`
+- 123@gmail.com / `123456789`
+- seller@gmail.com / `12345678`
+
+Elke van de eerste twee accounts heeft minimaal 1 huur‑ en 1 verkoopadvertentie. Seeders vermijden dubbele producten (hergebruiken bestaande items).
+
 ### Optioneel (API‑beveiliging met Sanctum)
 ```bash
 composer require laravel/sanctum
@@ -87,23 +91,21 @@ Gebruik `__('messages.key')` in Blade/Controllers. `config/app.php` → `locale`
 
 ---
 
-## Belangrijke routes (indicatief)
-- `/` – homepage met laatste/uitgelichte advertenties
-- `/auth/*` – registratie & login (gebruiker/particulier/zakelijk)
-- `/dashboard` – adverteerder: advertenties, veilingen, verhuur agenda, CSV‑import
-- `/api/*` – beveiligde API‑endpoints (bijv. klant‑specifieke feed)
-
-*(Pas aan naar je daadwerkelijke routes.)*
+## Belangrijke schermen/routes
+- `/` – homepage met laatste/uitgelichte ads
+- `/ads` – overzicht met filter/sort; eigen ads bovenaan (indien ingelogd)
+- `/ads/{id}` – detail met biedingen, QR‑code, reviews (voor verhuur)
+- `/user-rented-ads` – agenda met bevestigde huurperiodes
+- `/favorites` – favorietenoverzicht
 
 ---
 
-## Architecture at a glance
-- **Domains**: Users, Listings (koop/veiling/verhuur), Orders, Tenants (whitelabel), Pages (builder).
-- **Layers**: Controllers → Services/Actions → Repositories/Eloquent Models.
-- **Security**: policies/guards, Sanctum tokens voor API.
-- **i18n**: Laravel translations (NL/EN).
-- **Files**: uploads in `storage/app/public` → via `storage:link` publiek.
-- **Extensibility**: nieuwe landing‑page component = nieuwe ViewComponent + config; nieuwe feed/API = aparte route/resource.
+## Functional notes
+- Max. 4 bids per gebruiker (rule in controller).
+- Op eigen ad kun je geen bod plaatsen; UI verbergt formulier en toont melding.
+- Bij verkoop: geen nieuwe bids na geaccepteerd bod (UI + backend‑check).
+- Bij verhuur: datumvoorstel door eigenaar → bevestigen door huurder (`dates_confirmed`).
+- Reviews: alleen voor verhuur en pas ná de ophaaldatum.
 
 ---
 
@@ -132,6 +134,17 @@ DB_PASSWORD=secret
 - **`curl_setopt(): Unable to create temporary file` bij composer** → zorg dat `TEMP/TMP` schrijfbaar is of update Composer (`composer self-update --update-keys`).
 - **Database error `Unknown database`** → maak eerst een schema aan in MySQL Workbench (schema = database) en zet de naam in `.env`.
 - **`Vite manifest not found`** → start in aparte terminal `npm run dev` of run `npm run build`.
+
+## Projectstructuur (kort)
+```
+app/Http/Controllers
+app/Models
+database/migrations
+database/seeders
+resources/views
+resources/js, resources/css
+storage/app/public/products/{orig,thumbs}
+```
 
 
 ## Credits

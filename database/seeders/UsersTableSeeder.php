@@ -31,9 +31,9 @@ class UsersTableSeeder extends Seeder
 
         // --- Fixed accounts (idempotent) ---
         User::updateOrCreate(
-            ['email' => 'freekstraten@gmail.com'],
+            ['email' => 'owner@example.test'],
             [
-                'name' => 'Freek',
+                'name' => 'Owner',
                 'email_verified_at' => now(),
                 'password' => Hash::make('12345678'),
                 'role_id' => $adminRoleId,
@@ -48,7 +48,7 @@ class UsersTableSeeder extends Seeder
             [
                 'name' => 'User 123',
                 'email_verified_at' => now(),
-                'password' => Hash::make('123456789'),
+                'password' => Hash::make('12345678'),
                 'role_id' => $privateRoleId,
                 'address_id' => $nextAddressId(),
                 'remember_token' => null,
