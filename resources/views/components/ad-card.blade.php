@@ -51,6 +51,34 @@
                     </svg>
                 </template>
             </button>
+
+            @if(auth()->id() === ($ad->user_id ?? null))
+            {{-- VERWIJDEREN (alleen eigenaar) --}}
+            <button
+                type="button"
+                class="p-2 rounded-full bg-white border border-slate-300 text-slate-700 hover:bg-red-50 transition"
+                title="Verwijder advertentie"
+                @click.stop.prevent="
+                    if(confirm('{{ __('Weet je zeker dat je deze advertentie wilt verwijderen?') }}')){
+                        fetch('{{ route('ads.destroy', $ad->id) }}', {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN':'{{ csrf_token() }}',
+                                'X-Requested-With':'XMLHttpRequest',
+                                'Accept':'application/json'
+                            }
+                        })
+                        .then(r => r.ok ? r.json() : Promise.reject(r))
+                        .then(() => { window.location.reload(); })
+                        .catch(() => { alert('{{ __('Verwijderen is mislukt.') }}'); });
+                    }
+                "
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-8 0l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M10 11v6M14 11v6"/>
+                </svg>
+            </button>
+            @endif
         @endauth
 
         {{-- QR (1 plek) --}}

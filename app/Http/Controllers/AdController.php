@@ -177,6 +177,35 @@ class AdController extends Controller
         }
     }
 
+    public function destroy($id, Request $request)
+    {
+        $ad = Ad::findOrFail($id);
+
+        // Alleen eigenaar mag verwijderen
+        if (!$request->user() || $request->user()->id !== $ad->user_id) {
+            abort(403);
+        }
+
+        // Probeer gekoppelde afbeeldingen op te ruimen
+        try {
+            $orig = $ad->image_path;
+            if ($orig) {
+                $thumb = str_replace('products/orig/', 'products/thumbs/', $orig);
+                Storage::disk('public')->delete([$orig, $thumb]);
+            }
+        } catch (\Throwable $e) {
+            // stil: media opruimen mag niet blokkeren
+        }
+
+        $ad->delete();
+
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+        return redirect()->route('ads.index')->with('success', 'Advertentie verwijderd.');
+    }
+
     public function uploadCsv(Request $request)
     {
         $request->validate([
