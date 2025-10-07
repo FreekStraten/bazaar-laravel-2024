@@ -154,28 +154,7 @@ class AdController extends Controller
     }
 
 
-    public function toggleFavorite($id, Request $request)
-    {
-        $ad = Ad::findOrFail($id);
-        $user = auth()->user();
-        $userFavorite = $user->AdFavorites()->where('ad_id', $ad->id)->first();
-
-        if ($userFavorite) {
-            $userFavorite->toggleFavorite();
-        } else {
-            $user->AdFavorites()->create([
-                'ad_id' => $ad->id,
-            ]);
-        }
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'message' => 'Favorite status updated successfully.',
-            ]);
-        } else {
-            return redirect()->back();
-        }
-    }
+    // Favorite toggling is centralized in FavoriteController via the pivot relation.
 
     public function destroy($id, Request $request)
     {
@@ -378,9 +357,19 @@ class AdController extends Controller
 
     private function getEncodedImageData($ad)
     {
-        if ($ad->image) {
-            $imagePath = public_path('ads-images/' . $ad->image);
-            return base64_encode(file_get_contents($imagePath));
+        $path = $ad->image_path ?? null;
+        if (!$path) {
+            return null;
+        }
+
+        try {
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+                $abs = \Illuminate\Support\Facades\Storage::disk('public')->path($path);
+                $data = @file_get_contents($abs);
+                return $data !== false ? base64_encode($data) : null;
+            }
+        } catch (\Throwable $e) {
+            // ignore and return null
         }
 
         return null;

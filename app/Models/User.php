@@ -82,11 +82,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Ad::class, 'user_ad_favorites', 'user_id', 'ad_id');
     }
 
-    /** Als je je bestaande hasMany model wilt houden voor extra data op de pivot */
-    public function AdFavorites()
-    {
-        return $this->hasMany(UserAdFavorite::class);
-    }
+    // Favorieten worden centraal beheerd via de pivot-relatie `favorites()`.
 
     public function address()
     {
