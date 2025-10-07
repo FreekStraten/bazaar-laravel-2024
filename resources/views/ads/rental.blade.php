@@ -12,8 +12,8 @@
             <div class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <h3 class="text-lg font-medium mb-4">{{ __('ads.ads-i-rented') }}</h3>
-                    @if(isset($adsIRentedOut) && $adsIRentedOut->count() > 0)
-                        @include('ads.partials.ad-list', ['ads' => $adsIRentedOut, 'shouldPaginate' => true])
+                    @if(isset($adsIRenting) && $adsIRenting->count() > 0)
+                        @include('ads.partials.ad-list', ['ads' => $adsIRenting, 'shouldPaginate' => true])
                     @else
                         <p class="text-slate-600">{{ __('ads.no-ads-rented') }}</p>
                     @endif

@@ -21,9 +21,12 @@ class BidController extends Controller
             return back()->with('error', __('ads.cannot_bid_on_own_ad'));
         }
 
-        // Geen biedingen meer als verkoopadvertentie al verkocht is
-        if (!$ad->is_rental && $ad->bids()->where('is_accepted', true)->exists()) {
-            return back()->with('error', __('ads.already_sold') ?? 'Dit product is al verkocht.');
+        // Geen biedingen meer als er al een geaccepteerd bod is (zowel sale als rental)
+        if ($ad->bids()->where('is_accepted', true)->exists()) {
+            $msg = $ad->is_rental
+                ? __('ads.already_booked') ?? 'Deze advertentie is al geboekt.'
+                : __('ads.already_sold')   ?? 'Dit product is al verkocht.';
+            return back()->with('error', $msg);
         }
 
         // Max 4 biedingen per gebruiker

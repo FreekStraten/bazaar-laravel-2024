@@ -111,6 +111,12 @@ class AdsTableSeeder extends Seeder
 
             $filename = pathinfo($relPath, PATHINFO_FILENAME);
 
+            // Sla geüploade user-bestanden met random bestandsnaam (Str::random(40)) over,
+            // zodat migrate:fresh --seed geen user-content oppakt.
+            if (preg_match('/^[A-Za-z0-9]{40}$/', $filename)) {
+                continue;
+            }
+
             // Verwijder eventuele random suffixen → toonbaar maken
             // (maar in principe: kies gewoon nette bestandsnamen in orig/)
             $pretty = Str::title(preg_replace('/[_\-]+/', ' ', $filename));

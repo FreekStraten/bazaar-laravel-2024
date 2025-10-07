@@ -150,7 +150,11 @@
                                                     </h4>
                                                     <p class="text-sm text-slate-600" x-text="bidder + ' - \u20AC' + bidAmount"></p>
                                                     <p class="text-sm text-slate-600">
-                                                        {{ __('ads.accept_bid_confirm') ?? 'Weet je zeker dat je dit bod wilt accepteren? Dit markeert het product als verkocht.' }}
+                                                        @if($ad->is_rental)
+                                                            {{ __('ads.accept_bid_confirm_rental') ?? 'Are you sure you want to accept this bid? You can set rental dates afterwards.' }}
+                                                        @else
+                                                            {{ __('ads.accept_bid_confirm') ?? 'Weet je zeker dat je dit bod wilt accepteren? Dit markeert het product als verkocht.' }}
+                                                        @endif
                                                     </p>
                                                     <div class="flex items-center justify-end gap-2 pt-2">
                                                         <button type="button"
@@ -201,16 +205,20 @@
                             @if($bids->count() > 0)
                                 <ul class="divide-y divide-slate-200">
                                     @foreach($bids->sortByDesc('amount')->take(6) as $bid)
+                                        @php $bidOwnerCanAct = auth()->check() && auth()->id() === $ad->user_id && !$isSold && !$bid->is_accepted; @endphp
                                         <li
                                             class="py-3 flex items-center justify-between gap-3
-                                                {{ $loop->first ? 'bg-amber-50 border-l-4 border-amber-400 pl-3 -ml-3 pr-3 -mr-3 rounded' : '' }}
-                                                {{ (auth()->check() && auth()->id() === $ad->user_id && !$isSold && !$bid->is_accepted) ? 'cursor-pointer hover:bg-slate-50' : '' }}"
-                                            @if(auth()->check() && auth()->id() === $ad->user_id && !$isSold && !$bid->is_accepted)
+                                                {{ $bid->is_accepted ? 'bg-emerald-50 border-l-4 border-emerald-500 pl-3 -ml-3 pr-3 -mr-3 rounded' : '' }}
+                                                {{ $bidOwnerCanAct ? 'cursor-pointer hover:bg-slate-50' : '' }}"
+                                            @if($bidOwnerCanAct)
                                                 @click="open=true; bidId={{ $bid->id }}; bidAmount='{{ number_format((float)$bid->amount, 2, ',', '.') }}'; bidder='{{ addslashes($bid->user->name ?? 'User') }}'"
                                             @endif
                                         >
                                             <div class="text-sm text-slate-700">
                                                 <span class="font-medium">{{ $bid->user->name ?? 'User' }}</span>
+                                                @if($bid->is_accepted)
+                                                    <span class="ml-2 inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium bg-emerald-600/10 text-emerald-700 ring-1 ring-emerald-600/20">{{ __('Accepted') }}</span>
+                                                @endif
                                             </div>
                                             <div class="text-sm font-semibold text-slate-900">
                                                 €{{ number_format((float)$bid->amount, 2, ',', '.') }}
@@ -224,6 +232,7 @@
 
                             <div class="border-t border-slate-200"></div>
 
+                            @php $hasAccepted = (bool) ($bids->firstWhere('is_accepted', true)); @endphp
                             @auth
                                 {{-- Validation feedback --}}
                                 @if ($errors->any())
@@ -232,7 +241,13 @@
                                     </div>
                                 @endif
 
-                                @if(!$isSold)
+                                @php $isOwner = auth()->id() === ($ad->user_id ?? null); @endphp
+
+                                @if($isOwner)
+                                    <div class="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                                        {{ __('ads.cannot_bid_on_own_ad') }}
+                                    </div>
+                                @elseif(!$isSold && !$hasAccepted)
                                     <form method="POST" action="{{ route('ads.place-bid', $ad->id) }}" class="space-y-3">
                                         @csrf
                                         @php
@@ -266,7 +281,11 @@
                                     </form>
                                 @else
                                     <div class="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
-                                        {{ __('Verkocht: er kunnen geen biedingen meer worden geplaatst.') }}
+                                        @if($ad->is_rental || $hasAccepted)
+                                            {{ __('ads.no_more_bids_rental') ?? 'Geboekt: er kunnen geen biedingen meer worden geplaatst.' }}
+                                        @else
+                                            {{ __('ads.no_more_bids_sale') ?? 'Verkocht: er kunnen geen biedingen meer worden geplaatst.' }}
+                                        @endif
                                     </div>
                                 @endif
                             @else
@@ -277,6 +296,36 @@
                             @endauth
                         </div>
                     </section>
+
+                    {{-- Rental dates (only for owner when a bid is accepted) --}}
+                    @if($ad->is_rental && auth()->check() && auth()->id() === ($ad->user_id ?? null))
+                        @php $acceptedBid = $bids->firstWhere('is_accepted', true); @endphp
+                        @if($acceptedBid)
+                            <section class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
+                                <div class="p-6 space-y-4">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-2">{{ __('ads.pickup-return-dates') }}</h3>
+                                    <form method="POST" action="{{ route('ads.set-dates', $ad->id) }}" class="grid gap-4 sm:grid-cols-2">
+                                        @csrf
+                                        <div>
+                                            <label for="pickup-date" class="block text-sm text-slate-700 mb-1">{{ __('ads.pickup_date') }}</label>
+                                            <input id="pickup-date" name="pickup-date" type="datetime-local" class="w-full rounded-md border-slate-300"
+                                                   value="{{ $acceptedBid->pickup_date ? \Carbon\Carbon::parse($acceptedBid->pickup_date)->format('Y-m-d\TH:i') : '' }}" required>
+                                        </div>
+                                        <div>
+                                            <label for="return-date" class="block text-sm text-slate-700 mb-1">{{ __('ads.return_date') }}</label>
+                                            <input id="return-date" name="return-date" type="datetime-local" class="w-full rounded-md border-slate-300"
+                                                   value="{{ $acceptedBid->return_date ? \Carbon\Carbon::parse($acceptedBid->return_date)->format('Y-m-d\TH:i') : '' }}" required>
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <button type="submit" class="inline-flex items-center rounded-md bg-emerald-600 px-4 py-2 text-white text-sm font-medium hover:bg-emerald-700">
+                                                {{ __('ads.save_dates') }}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </section>
+                        @endif
+                    @endif
 
                     {{-- Reviews: alleen bij huuradvertenties --}}
                     @if($ad->is_rental)

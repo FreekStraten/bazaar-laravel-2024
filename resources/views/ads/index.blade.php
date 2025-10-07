@@ -24,7 +24,7 @@
                     </form>
 
                     {{-- Create Ad (opent gedeelde modal) --}}
-                    <button type="button"
+                    <button type="button" x-data="{}"
                             class="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm text-white hover:bg-emerald-700"
                             @click="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'create-ad' }))">
                         {{ __('Create Ad') }}

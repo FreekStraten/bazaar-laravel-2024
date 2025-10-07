@@ -274,11 +274,15 @@ class AdController extends Controller
     {
         $userId = auth()->id();
 
-        $adsIRenting = Ad::whereHas('bids', fn($q) => $q->where('user_id', $userId)->where('is_accepted', true))
+        // Alleen huuradvertenties tonen die ik huur (mijn bod geaccepteerd)
+        $adsIRenting = Ad::where('is_rental', true)
+            ->whereHas('bids', fn($q) => $q->where('user_id', $userId)->where('is_accepted', true))
             ->with('bids')
             ->paginate(10);
 
+        // Alleen huuradvertenties tonen die ik verhuur (iemand anders bod geaccepteerd)
         $adsIRentedOut = Ad::where('user_id', $userId)
+            ->where('is_rental', true)
             ->whereHas('bids', fn($q) => $q->where('is_accepted', true))
             ->with('bids')
             ->paginate(10);
@@ -286,7 +290,7 @@ class AdController extends Controller
         // Bouw events hier
         $events = [];
         foreach ($adsIRenting as $ad) {
-            foreach ($ad->bids as $bid) {
+            foreach ($ad->bids->where('is_accepted', true) as $bid) {
                 $events[] = [
                     'title' => $ad->title,
                     'start' => $bid->pickup_date,
@@ -296,7 +300,7 @@ class AdController extends Controller
             }
         }
         foreach ($adsIRentedOut as $ad) {
-            foreach ($ad->bids as $bid) {
+            foreach ($ad->bids->where('is_accepted', true) as $bid) {
                 $events[] = [
                     'title' => $ad->title,
                     'start' => $bid->pickup_date,
@@ -313,6 +317,11 @@ class AdController extends Controller
     public function setDates(Request $request, $id)
     {
         $ad = Ad::findOrFail($id);
+
+        // Alleen eigenaar mag datums instellen
+        if (!$request->user() || $request->user()->id !== $ad->user_id) {
+            abort(403);
+        }
 
         $request->validate([
             'pickup-date' => 'required|date',
