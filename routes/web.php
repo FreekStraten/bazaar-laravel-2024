@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ads/{id}', [AdController::class, 'show'])->name('ads.show');
     Route::post('/ads', [AdController::class, 'store'])->name('ads.store');
     Route::delete('/ads/{id}', [AdController::class, 'destroy'])->name('ads.destroy');
+    Route::patch('/ads/{id}', [AdController::class, 'update'])->name('ads.update');
 
     Route::post('/ads/upload-csv', [AdController::class, 'uploadCsv'])->name('ads.upload-csv');
     Route::get('/ads/{id}/qr-code', [AdController::class, 'showQrCode'])->name('ads.qr');

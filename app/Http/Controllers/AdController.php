@@ -206,6 +206,30 @@ class AdController extends Controller
         return redirect()->route('ads.index')->with('success', 'Advertentie verwijderd.');
     }
 
+    public function update($id, Request $request)
+    {
+        $ad = Ad::findOrFail($id);
+
+        if (!$request->user() || $request->user()->id !== $ad->user_id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'required|string',
+            'price'       => 'required|numeric|min:0',
+        ]);
+
+        $ad->fill($validated);
+        $ad->save();
+
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'ad' => $ad]);
+        }
+
+        return redirect()->route('ads.show', $ad->id)->with('success', 'Advertentie bijgewerkt.');
+    }
+
     public function uploadCsv(Request $request)
     {
         $request->validate([

@@ -72,7 +72,35 @@
 
                     {{-- Details --}}
                     <section class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
-                        <div class="p-6 text-slate-900 space-y-4">
+                        <div class="p-6 text-slate-900 space-y-4">@if(auth()->check() && auth()->id() === $ad->user_id)
+    <form method="POST" action="{{ route('ads.update', $ad->id) }}" class="space-y-3 p-4 mb-4 rounded-md border border-slate-200 bg-slate-50">
+        @csrf
+        @method('PATCH')
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="title" class="block text-sm text-slate-700 mb-1">{{ __('Titel') }}</label>
+                <input id="title" name="title" type="text" class="w-full rounded-md border-slate-300" value="{{ old('title', $ad->title) }}" required />
+                @error('title') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label for="price" class="block text-sm text-slate-700 mb-1">{{ __('Prijs') }}</label>
+                <input id="price" name="price" type="number" step="0.01" min="0" class="w-full rounded-md border-slate-300" value="{{ old('price', number_format((float)$ad->price, 2, '.', '')) }}" required />
+                @error('price') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+            </div>
+        </div>
+        <div>
+            <label for="description" class="block text-sm text-slate-700 mb-1">{{ __('Omschrijving') }}</label>
+            <textarea id="description" name="description" rows="4" class="w-full rounded-md border-slate-300" required>{{ old('description', $ad->description) }}</textarea>
+            @error('description') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+        </div>
+        <div class="flex items-center gap-2">
+            <button type="submit" class="inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-white font-medium hover:bg-slate-800">{{ __('Opslaan') }}</button>
+            @if (session('success'))
+                <span class="text-sm text-emerald-600">{{ session('success') }}</span>
+            @endif
+        </div>
+    </form>
+@endif
                             <div class="flex items-center justify-between">
                                 <div class="text-2xl font-semibold">
                                     €{{ number_format((float)$ad->price, 2, ',', '.') }}
@@ -223,3 +251,4 @@
         </div>
     </div>
 </x-app-layout>
+
