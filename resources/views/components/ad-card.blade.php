@@ -26,7 +26,11 @@
                 @click.stop.prevent="
                 fetch('{{ route('favorites.toggle', $ad) }}', {
                     method:'POST',
-                    headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}
+                    headers:{
+                        'X-CSRF-TOKEN':'{{ csrf_token() }}',
+                        'X-Requested-With':'XMLHttpRequest',
+                        'Accept':'application/json'
+                    }
                 })
                 .then(r=>r.json())
                 .then(d=>{

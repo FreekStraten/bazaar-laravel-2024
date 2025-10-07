@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ad;
+use App\Models\UserAdFavorite;
 use Illuminate\Http\Request;
 
 class FavoriteController extends Controller
@@ -23,21 +24,24 @@ class FavoriteController extends Controller
     {
         $user = $request->user();
 
-        // pivot is UNIQUE(user_id, ad_id); toggle is betrouwbaar
-        $user->favorites()->toggle($ad->id);
+        try {
+            // Toggle via pivot-relatie; handelt attach/detach voor je af
+            $result = $user->favorites()->toggle($ad->id);
 
-        // status + count fris uit DB
-        $isNowFavorite = $user->favorites()->whereKey($ad->id)->exists();
-        $newCount      = $user->favorites()->count();
+            // Als er iets "attached" is, dan is het nu favoriet; anders is het verwijderd
+            $isFavorite = !empty($result['attached']);
 
-        if ($request->expectsJson()) {
             return response()->json([
                 'success'  => true,
-                'favorite' => $isNowFavorite,
-                'count'    => $newCount,
+                'favorite' => $isFavorite,
+                'count'    => $user->favorites()->count(),
             ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kon favoriet niet bijwerken',
+            ], 422);
         }
-
-        return back();
     }
+
 }
