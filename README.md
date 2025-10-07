@@ -7,7 +7,7 @@
 
 **Rol:** Solo · **Jaar:** 2025
 
-Volledige **marktplaats** met zowel **koop** als **verhuur**. Ondersteunt bieden en accepteren, huurperiodes met voorstel‑/bevestigflow, favorieten, CSV‑import en QR‑codes. Inclusief meertaligheid (NL/EN) en nette, toegankelijke Blade/Tailwind UI.
+**Marktplaats** met zowel **koop** als **verhuur**. Ondersteunt bieden en accepteren, huurperiodes met voorstel‑/bevestigflow, favorieten, CSV‑import en QR‑codes. Inclusief meertaligheid (NL/EN) en nette, toegankelijke Blade/Tailwind UI.
 
 ---
 
