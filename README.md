@@ -7,12 +7,12 @@
 
 **Rol:** Solo · **Jaar:** 2025
 
-Volledige **marktplaats** met zowel **koop** als **verhuur**. Ondersteunt bieden en accepteren, huurperiodes met voorstel‑/bevestigflow, favorieten, CSV‑import en QR‑codes. Inclusief meertaligheid (NL/EN) en nette, toegankelijke Blade/Tailwind UI.
+**Marktplaats** met zowel **koop** als **verhuur**. Ondersteunt bieden en accepteren, huurperiodes met voorstel‑/bevestigflow, favorieten, CSV‑import en QR‑codes. Inclusief meertaligheid (NL/EN) en nette, toegankelijke Blade/Tailwind UI.
 
 ---
 
 ## Tech stack
-Laravel 11 · PHP 8.2+ · MySQL/MariaDB · Blade/Tailwind · Alpine.js · Auth scaffold: **Laravel Breeze** · (optioneel) Laravel Sanctum (API tokens) · PHP‑Spreadsheet (CSV) · simplesoftwareio/simple‑qrcode
+Laravel 11 · PHP 8.2+ · MySQL/MariaDB · Blade/Tailwind · Alpine.js · (optioneel) Laravel Sanctum (API tokens) · PHP‑Spreadsheet (CSV) · simplesoftwareio/simple‑qrcode
 
 ## Highlights
 - **Ads (koop & verhuur)** – koop met één geaccepteerd bod (verkoop), of **verhuur** met datumvoorstel.
@@ -68,8 +68,8 @@ php artisan serve
 ```
 
 ### Seed logins (demo)
-- owner@example.test / `12345678`
-- 123@gmail.com / `123456789`
+- freekstraten@gmail.com / `12345678`
+- 123@gmail.com / `12345678`
 - seller@gmail.com / `12345678`
 
 Elke van de eerste twee accounts heeft minimaal 1 huur‑ en 1 verkoopadvertentie. Seeders vermijden dubbele producten (hergebruiken bestaande items).
