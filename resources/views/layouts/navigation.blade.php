@@ -18,10 +18,14 @@
                     </a>
 
                     <div class="relative">
+                        @php
+                            $locale = app()->getLocale();
+                            $langLabel = $locale === 'nl' ? 'Nederlands' : 'English';
+                        @endphp
                         <button type="button"
                                 class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-sm text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition"
                                 onclick="const m=this.nextElementSibling; m.classList.toggle('hidden')">
-                            Language
+                            {{ $langLabel }}
                             <svg class="w-4 h-4 opacity-70" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                             </svg>

@@ -60,6 +60,37 @@ class AdsTableSeeder extends Seeder
         // --- advertenties aanmaken ---
         $this->createAds($faker, $rentalImages, true);   // huur
         $this->createAds($faker, $saleImages, false);    // verkoop
+
+        // --- Zorg dat vaste gebruikers elk min. 1 huur en 1 koop advertentie hebben ---
+        $ensureFor = function (string $email) use ($faker, $images) {
+            $user = \App\Models\User::where('email', $email)->first();
+            if (!$user) return;
+
+            $hasRental = \App\Models\Ad::where('user_id', $user->id)->where('is_rental', true)->exists();
+            $hasSale   = \App\Models\Ad::where('user_id', $user->id)->where('is_rental', false)->exists();
+
+            // In plaats van nieuwe advertenties te maken (risico op dubbele producten),
+            // claimen we bestaande advertenties van het juiste type voor deze gebruiker.
+            if (!$hasRental) {
+                $ad = \App\Models\Ad::where('is_rental', true)
+                    ->where('user_id', '!=', $user->id)
+                    ->inRandomOrder()
+                    ->first();
+                if ($ad) { $ad->update(['user_id' => $user->id]); }
+            }
+
+            if (!$hasSale) {
+                $ad = \App\Models\Ad::where('is_rental', false)
+                    ->where('user_id', '!=', $user->id)
+                    ->inRandomOrder()
+                    ->first();
+                if ($ad) { $ad->update(['user_id' => $user->id]); }
+            }
+        };
+
+        foreach (['123@gmail.com', 'freekstraten@gmail.com'] as $fixedEmail) {
+            $ensureFor($fixedEmail);
+        }
     }
 
     private function createAds($faker, array $images, bool $isRental): void
@@ -76,7 +107,8 @@ class AdsTableSeeder extends Seeder
         if (!$user || !$address) return;
 
         $baseTitle = $image['name'];                         // <-- leesbare titel uit filename
-        $title     = $isRental ? "Te huur: {$baseTitle}" : $baseTitle;
+        // Geen prefix meer (geen "Te huur:" of "Te koop:")
+        $title     = $baseTitle;
 
         // Realistische prijsverdeling
         $price = $isRental

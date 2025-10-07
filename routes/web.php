@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/ads/{id}/bids', [BidController::class, 'placeBid'])->name('ads.place-bid');
     Route::post('/ads/{ad_id}/bids/{bid_id}/accept', [BidController::class, 'acceptBid'])->name('ads.accept-bid');
+    Route::post('/ads/{ad_id}/bids/{bid_id}/confirm-dates', [BidController::class, 'confirmDates'])->name('ads.confirm-dates');
 
     Route::get('/reviews/{id}', [ReviewController::class, 'show'])->name('user.reviews.show');
     Route::post('/reviews/{id}', [ReviewController::class, 'store'])->name('user.reviews.store');

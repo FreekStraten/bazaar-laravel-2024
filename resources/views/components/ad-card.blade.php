@@ -8,7 +8,7 @@
 
     $isRental = (bool) $ad->is_rental;
     $isSold   = (!$isRental) && (bool) ($ad->is_sold ?? false);
-    $badgeText = $isRental ? __('Te huur') : __('Te koop');
+    $badgeText = $isRental ? __('ads.rental') : __('ads.sale');
     $badgeClasses = $isRental ? 'bg-amber-500 text-white' : 'bg-emerald-600 text-white';
 @endphp
 
@@ -102,20 +102,25 @@
                  class="h-full w-full object-cover {{ $isSold ? 'opacity-70' : '' }}" width="640" height="480"
                  loading="lazy" decoding="async">
         </div>
-        <div class="absolute left-2 top-2 flex flex-col gap-1">
+        <div class="absolute left-2 top-2 flex flex-col items-start gap-1">
+            @if(auth()->check() && auth()->id() === ($ad->user_id ?? null))
+                <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold shadow-sm bg-indigo-600 text-white">
+                    {{ __('ads.my_ad') ?? 'My Ad' }}
+                </span>
+            @endif
             <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium shadow-sm {{ $badgeClasses }}">
                 {{ $badgeText }}
             </span>
             @if($isSold)
                 <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold shadow-sm bg-rose-600 text-white">
-                    {{ __('Verkocht') }}
+                    {{ __('ads.sold') }}
                 </span>
             @endif
         </div>
         @if($isSold)
             <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <span class="select-none rounded-md bg-rose-600/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow">
-                    {{ __('Verkocht') }}
+                    {{ __('ads.sold') }}
                 </span>
             </div>
         @endif

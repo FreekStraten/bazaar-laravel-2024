@@ -32,6 +32,11 @@ class AdController extends Controller
             $query->where('is_rental', 0);
         }
 
+        // Zet eigen advertenties bovenaan indien ingelogd
+        if (auth()->check()) {
+            $query->orderByRaw('CASE WHEN user_id = ? THEN 0 ELSE 1 END', [auth()->id()]);
+        }
+
         $sort = request('sort');
         switch ($sort) {
             case 'price_asc':
@@ -290,7 +295,7 @@ class AdController extends Controller
         // Bouw events hier
         $events = [];
         foreach ($adsIRenting as $ad) {
-            foreach ($ad->bids->where('is_accepted', true) as $bid) {
+            foreach ($ad->bids->where('is_accepted', true)->where('dates_confirmed', true) as $bid) {
                 $events[] = [
                     'title' => $ad->title,
                     'start' => $bid->pickup_date,
@@ -300,7 +305,7 @@ class AdController extends Controller
             }
         }
         foreach ($adsIRentedOut as $ad) {
-            foreach ($ad->bids->where('is_accepted', true) as $bid) {
+            foreach ($ad->bids->where('is_accepted', true)->where('dates_confirmed', true) as $bid) {
                 $events[] = [
                     'title' => $ad->title,
                     'start' => $bid->pickup_date,
@@ -331,6 +336,10 @@ class AdController extends Controller
         $bid = $ad->bids()->where('is_accepted', true)->first();
         $bid->pickup_date = $request->input('pickup-date');
         $bid->return_date = $request->input('return-date');
+        // zodra eigenaar nieuwe datums zet: (her)bevestiging door huurder nodig
+        if (property_exists($bid, 'dates_confirmed') || isset($bid->dates_confirmed)) {
+            $bid->dates_confirmed = false;
+        }
         $bid->save();
 
         return redirect()->back()->with('success', 'Dates updated successfully.');
@@ -349,9 +358,24 @@ class AdController extends Controller
         $bids    = $ad->bids->sortByDesc('amount');
 
         $user    = auth()->user();
-        $hasBid  = $user
-            ? $ad->bids()->where('user_id', $user->id)->where('is_accepted', true)->exists()
-            : false;
+        $acceptedBidForUser = $user
+            ? $ad->bids()->where('user_id', $user->id)->where('is_accepted', true)->first()
+            : null;
+        $hasBid  = (bool) $acceptedBidForUser;
+
+        // Review alleen toegestaan na ophaaldatum
+        $canReview = false;
+        $cannotReviewMessage = null;
+        if ($acceptedBidForUser) {
+            $pickup = $acceptedBidForUser->pickup_date ? \Carbon\Carbon::parse($acceptedBidForUser->pickup_date) : null;
+            if ($pickup && $pickup->isPast()) {
+                $canReview = true;
+            } else {
+                $cannotReviewMessage = __('ads.can_only_review_after_pickup') ?? 'You can only leave a review after the pickup date.';
+            }
+        } else {
+            $cannotReviewMessage = __('ads.can_only_review_rented') ?? 'You can only leave a review for an ad you have rented.';
+        }
 
         if ($request->wantsJson()) {
             $imageData = $this->getEncodedImageData($ad);
@@ -365,7 +389,7 @@ class AdController extends Controller
             ]);
         }
 
-        return view('ads.show', compact('ad', 'reviews', 'hasBid', 'bids'));
+        return view('ads.show', compact('ad', 'reviews', 'hasBid', 'bids', 'canReview', 'cannotReviewMessage'));
     }
 
     private function getEncodedImageData($ad)
@@ -406,16 +430,23 @@ class AdController extends Controller
 
         $user = auth()->user();
 
-        // Alleen als deze gebruiker een geaccepteerde huur heeft
-        $hasBid = $ad->bids()
+        // Vind geaccepteerde bod van deze gebruiker
+        $acceptedBid = $ad->bids()
             ->where('user_id', $user->id)
             ->where('is_accepted', true)
-            ->exists();
+            ->first();
 
-        if (!$hasBid) {
+        if (!$acceptedBid) {
             return redirect()
                 ->back()
                 ->with('error', 'Je kunt alleen een review achterlaten voor een advertentie die je gehuurd hebt.');
+        }
+
+        // Alleen na de ophaaldatum
+        if (empty($acceptedBid->pickup_date) || !\Carbon\Carbon::parse($acceptedBid->pickup_date)->isPast()) {
+            return redirect()
+                ->back()
+                ->with('error', __('ads.can_only_review_after_pickup') ?? 'You can only leave a review after the pickup date.');
         }
 
         AdReview::create([

@@ -42,6 +42,19 @@ class UsersTableSeeder extends Seeder
             ]
         );
 
+        // Extra gewenste account
+        User::updateOrCreate(
+            ['email' => '123@gmail.com'],
+            [
+                'name' => 'User 123',
+                'email_verified_at' => now(),
+                'password' => Hash::make('123456789'),
+                'role_id' => $privateRoleId,
+                'address_id' => $nextAddressId(),
+                'remember_token' => null,
+            ]
+        );
+
         User::updateOrCreate(
             ['email' => 'seller@gmail.com'],
             [

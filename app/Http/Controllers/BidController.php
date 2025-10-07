@@ -63,8 +63,34 @@ class BidController extends Controller
 
         // Eerst alles resetten, dan 1 accepteren
         $ad->bids()->update(['is_accepted' => false]);
-        $bid->update(['is_accepted' => true]);
+        $bid->update(['is_accepted' => true, 'dates_confirmed' => false]);
 
         return redirect()->route('ads.show', $ad->id)->with('success', __('ads.bid_accepted') ?? 'Bid accepted');
 }
+
+    public function confirmDates($ad_id, $bid_id)
+    {
+        $ad  = Ad::findOrFail($ad_id);
+        $bid = Bid::findOrFail($bid_id);
+
+        // Moet bij deze ad horen
+        if ($bid->ad_id !== $ad->id) {
+            return redirect()->back()->with('error', __('ads.error'));
+        }
+
+        // Alleen de bieder (huurder) van het geaccepteerde bod kan bevestigen
+        if (!$bid->is_accepted || auth()->id() !== $bid->user_id) {
+            abort(403);
+        }
+
+        // Vereist voorgestelde datums
+        if (empty($bid->pickup_date) || empty($bid->return_date)) {
+            return redirect()->back()->with('error', __('ads.no_dates_set_yet'));
+        }
+
+        $bid->dates_confirmed = true;
+        $bid->save();
+
+        return redirect()->route('ads.show', $ad->id)->with('success', __('ads.dates_confirmed_success') ?? 'Dates confirmed');
+    }
 }
