@@ -68,7 +68,7 @@ php artisan serve
 ```
 
 ### Seed logins (demo)
-- freekstraten@gmail.com / `12345678`
+- owner@gmail.com / `12345678`
 - 123@gmail.com / `12345678`
 - seller@gmail.com / `12345678`
 
