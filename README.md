@@ -69,7 +69,7 @@ php artisan serve
 
 ### Seed logins (demo)
 - owner@example.test / `12345678`
-- 123@gmail.com / `123456789`
+- 123@gmail.com / `12345678`
 - seller@gmail.com / `12345678`
 
 Elke van de eerste twee accounts heeft minimaal 1 huur‑ en 1 verkoopadvertentie. Seeders vermijden dubbele producten (hergebruiken bestaande items).
