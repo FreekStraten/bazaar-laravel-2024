@@ -21,6 +21,11 @@ class BidController extends Controller
             return back()->with('error', __('ads.cannot_bid_on_own_ad'));
         }
 
+        // Geen biedingen meer als verkoopadvertentie al verkocht is
+        if (!$ad->is_rental && $ad->bids()->where('is_accepted', true)->exists()) {
+            return back()->with('error', __('ads.already_sold') ?? 'Dit product is al verkocht.');
+        }
+
         // Max 4 biedingen per gebruiker
         $userBidCount = auth()->user()->bids()->count();
         if ($userBidCount >= 4) {
@@ -43,6 +48,10 @@ class BidController extends Controller
     {
         $ad = Ad::findOrFail($ad_id);
         $bid = Bid::findOrFail($bid_id);
+
+        if ($bid->ad_id !== $ad->id) {
+            return redirect()->back()->with('error', __('ads.error'));
+        }
 
         // Alleen eigenaar van de advertentie mag accepteren
         if ($ad->user_id != auth()->id()) {

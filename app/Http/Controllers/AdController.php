@@ -19,7 +19,11 @@ class AdController extends Controller
 {
     public function index()
     {
-        $query = Ad::query()->with(['address','user']);
+        $query = Ad::query()->with([
+            'address',
+            'user',
+            'bids:id,ad_id,is_accepted',
+        ]);
 
         $filter = request('filter');
         if ($filter === 'rentals') {

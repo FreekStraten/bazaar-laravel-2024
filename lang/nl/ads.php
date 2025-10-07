@@ -32,6 +32,8 @@ return [
     'bids' => 'Biedingen',
     'no_bids' => 'Geen biedingen',
     'accept_bid' => 'Bod accepteren',
+    'accept_bid_confirm' => 'Weet je zeker dat je dit bod wilt accepteren? Dit markeert het product als verkocht.',
+    'accept' => 'Accepteren',
     'bid_amount' => 'Biedingsbedrag',
     'bidder' => 'Bieder',
     'amount' => 'Bedrag',

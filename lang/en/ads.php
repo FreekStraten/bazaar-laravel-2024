@@ -33,6 +33,8 @@ return [
     'no_bids' => 'No bids',
     'bid_amount' => 'Bid Amount',
     'accept_bid' => 'Accept Bid',
+    'accept_bid_confirm' => 'Are you sure you want to accept this bid? This will mark the product as sold.',
+    'accept' => 'Accept',
     'bidder' => 'Bidder',
     'amount' => 'Amount',
     'me' => 'Me',

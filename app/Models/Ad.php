@@ -65,5 +65,18 @@ class Ad extends Model
         return asset('images/product-placeholder.png');
     }
 
+    public function getIsSoldAttribute(): bool
+    {
+        if ((bool) $this->is_rental) {
+            return false;
+        }
+
+        if ($this->relationLoaded('bids')) {
+            return (bool) $this->bids->firstWhere('is_accepted', true);
+        }
+
+        return $this->bids()->where('is_accepted', true)->exists();
+    }
+
 
 }
