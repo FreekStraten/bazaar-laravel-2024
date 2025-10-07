@@ -78,7 +78,7 @@ class AdController extends Controller
     if ($userAdCount >= 4 && (int)$request->input('is_rental') === 1) {
         return $request->expectsJson()
             ? response()->json(['message' => __('ads.max_ads_reached')], 422)
-            : back()->withErrors(['message' => __('ads.max_ads_reached')]);
+            : back()->with('error', __('ads.max_ads_reached'));
     }
 
     // Adres aanmaken/zoeken
@@ -239,7 +239,7 @@ class AdController extends Controller
 
         $file = $request->file('csv_file') ?? $request->file('csv');
         if (!$file) {
-            return back()->withErrors(['csv' => 'No CSV file uploaded.']);
+            return back()->with('error', 'No CSV file uploaded.');
         }
 
         $this->processCsvFile($file);
@@ -394,7 +394,7 @@ class AdController extends Controller
         if (!$ad->is_rental) {
             return redirect()
                 ->back()
-                ->withErrors(['message' => 'Reviews zijn alleen beschikbaar voor huuradvertenties.']);
+                ->with('error', 'Reviews zijn alleen beschikbaar voor huuradvertenties.');
         }
 
         $request->validate([
@@ -413,7 +413,7 @@ class AdController extends Controller
         if (!$hasBid) {
             return redirect()
                 ->back()
-                ->withErrors(['message' => 'Je kunt alleen een review achterlaten voor een advertentie die je gehuurd hebt.']);
+                ->with('error', 'Je kunt alleen een review achterlaten voor een advertentie die je gehuurd hebt.');
         }
 
         AdReview::create([

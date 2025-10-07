@@ -72,7 +72,7 @@
 
                     {{-- Details --}}
                     <section class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
-                        <div class="p-6 text-slate-900 space-y-4">@if(auth()->check() && auth()->id() === $ad->user_id)
+        <div class="p-6 text-slate-900 space-y-4">@if(auth()->check() && auth()->id() === $ad->user_id)
     <form method="POST" action="{{ route('ads.update', $ad->id) }}" class="space-y-3 p-4 mb-4 rounded-md border border-slate-200 bg-slate-50">
         @csrf
         @method('PATCH')
@@ -95,9 +95,6 @@
         </div>
         <div class="flex items-center gap-2">
             <button type="submit" class="inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-white font-medium hover:bg-slate-800">{{ __('Opslaan') }}</button>
-            @if (session('success'))
-                <span class="text-sm text-emerald-600">{{ session('success') }}</span>
-            @endif
         </div>
     </form>
 @endif
@@ -164,23 +161,13 @@
                     <section class="bg-white border border-slate-200 shadow-sm sm:rounded-lg">
                         <div class="p-6 space-y-4">
                             @auth
-                                {{-- FEEDBACK BLOKKEN --}}
-                                @if (session('status'))
-                                    <div class="mb-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-                                        {{ session('status') }}
-                                    </div>
-                                @endif
+                                {{-- Flash feedback is rendered globally in the layout --}}
 
+                                {{-- Validation feedback (for form fields) --}}
                                 @if ($errors->any())
-                                    @if ($errors->has('bid-error'))
-                                        <div class="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
-                                            {{ $errors->first('bid-error') }}
-                                        </div>
-                                    @else
-                                        <div class="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
-                                            {{ $errors->first() }}
-                                        </div>
-                                    @endif
+                                    <div class="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+                                        {{ $errors->first() }}
+                                    </div>
                                 @endif
 
                                 <form method="POST" action="{{ route('ads.place-bid', $ad->id) }}" class="space-y-3">

@@ -18,13 +18,13 @@ class BidController extends Controller
 
         // Niet op eigen advertentie bieden
         if ($ad->user_id == auth()->id()) {
-            return back()->withErrors(['bid-error' => __('ads.cannot_bid_on_own_ad')]);
+            return back()->with('error', __('ads.cannot_bid_on_own_ad'));
         }
 
         // Max 4 biedingen per gebruiker
         $userBidCount = auth()->user()->bids()->count();
         if ($userBidCount >= 4) {
-            return back()->withErrors(['bid-error' => __('ads.max_bid_reached')]);
+            return back()->with('error', __('ads.max_bid_reached'));
         }
 
         // Bieding opslaan via relatie
@@ -36,7 +36,7 @@ class BidController extends Controller
         // Succes: terug naar de ad met status
         return redirect()
             ->route('ads.show', $ad->id)
-            ->with('status', __('ads.bid_placed') ?? 'Bid placed');
+            ->with('success', __('ads.bid_placed') ?? 'Bid placed');
     }
 
     public function acceptBid($ad_id, $bid_id)
@@ -46,13 +46,13 @@ class BidController extends Controller
 
         // Alleen eigenaar van de advertentie mag accepteren
         if ($ad->user_id != auth()->id()) {
-            return redirect()->back()->withErrors(['bid-error' => __('ads.error')]);
+            return redirect()->back()->with('error', __('ads.error'));
         }
 
         // Eerst alles resetten, dan 1 accepteren
         $ad->bids()->update(['is_accepted' => false]);
         $bid->update(['is_accepted' => true]);
 
-        return redirect()->route('ads.show', $ad->id)->with('status', __('ads.bid_accepted') ?? 'Bid accepted');
-    }
+        return redirect()->route('ads.show', $ad->id)->with('success', __('ads.bid_accepted') ?? 'Bid accepted');
+}
 }

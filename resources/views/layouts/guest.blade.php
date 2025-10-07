@@ -23,6 +23,7 @@
     </div>
 
     <div class="mt-6 w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <x-flash :keys="['error','success','warning','info']" />
         {{ $slot }}
     </div>
 </div>
